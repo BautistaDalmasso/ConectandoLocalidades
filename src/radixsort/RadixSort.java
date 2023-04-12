@@ -1,22 +1,24 @@
 package radixsort;
 
+import negocio.AristaPesada;
+
 public class RadixSort {
 	private static final int RANGO = 10; // Base 10.
 
-	private Integer[] arregloAOrdenar;
+	private AristaPesada[] arregloAOrdenar;
 	private Integer valorMaximo;
 
-	public RadixSort(Integer[] arregloAOrdenar, Integer valorMaximo) {
+	public RadixSort(AristaPesada[] arregloAOrdenar, Integer valorMaximo) {
 		this.arregloAOrdenar = arregloAOrdenar;
 		this.valorMaximo = valorMaximo;
 	}
 
-	static void countSort(Integer arregloAOrdenar[], Integer posicionSiendoOrdenada) {
-		Integer arregloOrdenado[] = new Integer[arregloAOrdenar.length];
+	static void countSort(AristaPesada arregloAOrdenar[], Integer posicionSiendoOrdenada) {
+		AristaPesada arregloOrdenado[] = new AristaPesada[arregloAOrdenar.length];
 		int[] frecuenciaDigitos = calcularFrecuenciaDigitos(arregloAOrdenar, posicionSiendoOrdenada);
 
 		for (int i = arregloAOrdenar.length - 1; i >= 0; i--) {
-			int digito = (arregloAOrdenar[i] / posicionSiendoOrdenada) % RANGO;
+			int digito = (arregloAOrdenar[i].getPeso() / posicionSiendoOrdenada) % RANGO;
 			arregloOrdenado[frecuenciaDigitos[digito] - 1] = arregloAOrdenar[i];
 			frecuenciaDigitos[digito]--;
 		}
@@ -25,11 +27,11 @@ public class RadixSort {
 		System.arraycopy(arregloOrdenado, 0, arregloAOrdenar, 0, arregloAOrdenar.length);
 	}
 
-	private static int[] calcularFrecuenciaDigitos(Integer[] arregloAOrdenar, Integer posicionSiendoOrdenada) {
+	private static int[] calcularFrecuenciaDigitos(AristaPesada[] arregloAOrdenar, Integer posicionSiendoOrdenada) {
 		int[] frecuenciaDigitos = new int[RANGO];
 
 		for (int i = 0; i < arregloAOrdenar.length; i++) {
-			int digito = (arregloAOrdenar[i] / posicionSiendoOrdenada) % RANGO;
+			int digito = (arregloAOrdenar[i].getPeso() / posicionSiendoOrdenada) % RANGO;
 			frecuenciaDigitos[digito]++;
 		}
 

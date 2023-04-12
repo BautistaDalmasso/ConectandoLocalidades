@@ -19,8 +19,6 @@ public class ComparacionRadixSort {
 		compararConArreglosChicosValoresGrandes();
 		compararConArreglosGrandesValoresChicos();
 		compararConArreglosGrandesValoresGrandes();
-		System.out.println("\n");
-		System.out.println("\n");
 	}
 
 	public static void compararConArreglosChicosValoresChicos() {
@@ -166,16 +164,18 @@ class ResultadoCreacionArreglo {
 	private static Random r = new Random();
 
 	public int valorMaximo;
-	public Integer[] arreglo;
+	public AristaPesadaParaTests[] arreglo;
 
 	public ResultadoCreacionArreglo(int tamanioArreglo, int valorMaximoPosible) {
 
-		arreglo = new Integer[tamanioArreglo];
+		arreglo = new AristaPesadaParaTests[tamanioArreglo];
 
 		for (int i = 0; i < arreglo.length; i++) {
-			arreglo[i] = r.nextInt(0, valorMaximoPosible);
+			Integer valor = r.nextInt(0, valorMaximoPosible);
+			
+			arreglo[i] = new AristaPesadaParaTests(valor);
 
-			valorMaximo = valorMaximo > arreglo[i] ? valorMaximo : arreglo[i];
+			valorMaximo = valorMaximo > valor ? valorMaximo : valor;
 		}
 	}
 }
