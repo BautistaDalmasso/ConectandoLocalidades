@@ -44,9 +44,23 @@ public class PosicionGeograficaTest {
 		PosicionGeografica salida = new PosicionGeografica(21, 53);
 		PosicionGeografica llegada = new PosicionGeografica(55, 66);
 		
-		Double distancia = 3938.05;
+		Double distanciaEsperada = 3938.05;
 		
-		assertResultadoDentroDelMargenDeError(distancia, PosicionGeografica.distanciaEnKilometros(salida, llegada));
+		assertResultadoDentroDelMargenDeError(distanciaEsperada, 
+				PosicionGeografica.distanciaEnKilometros(salida, llegada));
+	}
+	
+	@Test
+	public void distanciaEsValidaEnAmbasDireccionesTest() {
+		PosicionGeografica salida = new PosicionGeografica(0, 10);
+		PosicionGeografica llegada = new PosicionGeografica(-10, 0);
+		
+		Double distanciaEsperada = 1569.0;
+		
+		assertResultadoDentroDelMargenDeError(distanciaEsperada, 
+				PosicionGeografica.distanciaEnKilometros(salida, llegada));
+		assertResultadoDentroDelMargenDeError(distanciaEsperada, 
+				PosicionGeografica.distanciaEnKilometros(llegada, salida));
 	}
 	
 	public void assertResultadoDentroDelMargenDeError(Double resultadoEsperado, Double resultadoObtenido) {
