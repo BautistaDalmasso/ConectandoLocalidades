@@ -40,7 +40,7 @@ public class ComparacionRadixSort {
 			Long tiempoInicioRadixSort = System.nanoTime();
 
 			arregloChicoValoresChicos = new ResultadoCreacionArreglo(10, 999);
-			(new RadixSort(arregloChicoValoresChicos.arreglo, arregloChicoValoresChicos.valorMaximo)).ordenar();
+			RadixSort.ordenar(arregloChicoValoresChicos.arreglo, arregloChicoValoresChicos.valorMaximo);
 
 			Long tiempoFinalRadixSort = System.nanoTime() - tiempoInicioRadixSort;
 
@@ -74,8 +74,8 @@ public class ComparacionRadixSort {
 			Long tiempoInicioRadixSort = System.nanoTime();
 
 			arregloChicoValoresGrandes = new ResultadoCreacionArreglo(10, LINEA_MAS_LARGA_ARGENTINA);
-			(new RadixSort(arregloChicoValoresGrandes.arreglo, arregloChicoValoresGrandes.valorMaximo)).ordenar();
-
+			RadixSort.ordenar(arregloChicoValoresGrandes.arreglo, arregloChicoValoresGrandes.valorMaximo);
+			
 			Long tiempoFinalRadixSort = System.nanoTime() - tiempoInicioRadixSort;
 
 			if (tiempoFinalRadixSort < tiempoFinalArraysSort) {
@@ -108,7 +108,7 @@ public class ComparacionRadixSort {
 			Long tiempoInicioRadixSort = System.nanoTime();
 
 			arregloGrandeValoresChicos = new ResultadoCreacionArreglo(CANTIDAD_LOCALIDADES_ARGENTINAS, 999);
-			(new RadixSort(arregloGrandeValoresChicos.arreglo, arregloGrandeValoresChicos.valorMaximo)).ordenar();
+			RadixSort.ordenar(arregloGrandeValoresChicos.arreglo, arregloGrandeValoresChicos.valorMaximo);
 
 			Long tiempoFinalRadixSort = System.nanoTime() - tiempoInicioRadixSort;
 
@@ -144,7 +144,7 @@ public class ComparacionRadixSort {
 
 			arregloGrandeValoresGrandes = new ResultadoCreacionArreglo(CANTIDAD_LOCALIDADES_ARGENTINAS,
 					LINEA_MAS_LARGA_ARGENTINA);
-			(new RadixSort(arregloGrandeValoresGrandes.arreglo, arregloGrandeValoresGrandes.valorMaximo)).ordenar();
+			RadixSort.ordenar(arregloGrandeValoresGrandes.arreglo, arregloGrandeValoresGrandes.valorMaximo);
 
 			Long tiempoFinalRadixSort = System.nanoTime() - tiempoInicioRadixSort;
 

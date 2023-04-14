@@ -31,7 +31,7 @@ public class RadixSortTest {
 				new AristaPesadaParaTests(564),
 		};
 		
-		(new RadixSort(arregloInput, 564)).ordenar();
+		RadixSort.ordenar(arregloInput, 564);
 		
 		Assert.assertArrayEquals(arregloEsperado, arregloInput);
  	}
