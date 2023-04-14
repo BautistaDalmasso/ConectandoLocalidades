@@ -6,4 +6,5 @@
  *
  */
 module ConectandoLocalidades {
+	requires junit;
 }
