@@ -25,6 +25,14 @@ public class EdicionVerticesGrafoTest {
 	}
 
 	@Test
+	public void localidadNoAgregadaNoExisteTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+
+		Assert.assertFalse(grafo.localidadExiste(laPlata));
+	}
+
+	@Test
 	public void localidadExisteLuegoDeAgregarlaTest() {
 		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
 		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
