@@ -38,5 +38,8 @@ public class AristaPesadaParaTests implements AristaPesada, Comparable<AristaPes
 		return peso.compareTo(o.peso);
 	}
 	
-	
+	@Override
+	public String toString() {
+		return Integer.toString(peso);
+	}
 }
