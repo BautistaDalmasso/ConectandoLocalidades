@@ -13,7 +13,7 @@ public class Localidad {
 		this.posicion = new PosicionGeografica(latitud, longitud);
 	}
 
-	public Double distancia(Localidad otra) {
+	public Double distanciaEnKilometros(Localidad otra) {
 		return PosicionGeografica.distanciaEnKilometros(posicion, otra.posicion);
 	}
 	
