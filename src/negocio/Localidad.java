@@ -1,11 +1,12 @@
 package negocio;
 
+import java.util.Objects;
+
 public class Localidad {
 	private String nombre;
 	private String provincia;
 	private PosicionGeografica posicion;
-	
-	
+
 	public Localidad(String nombre, String provincia, double latitud, double longitud) {
 		validarNombreYProvincia(nombre, provincia);
 		this.nombre = nombre;
@@ -16,7 +17,7 @@ public class Localidad {
 	public Double distanciaEnKilometros(Localidad otra) {
 		return PosicionGeografica.distanciaEnKilometros(posicion, otra.posicion);
 	}
-	
+
 	private void validarNombreYProvincia(String nombre, String provincia) {
 		if (nombre == null) {
 			throw new IllegalArgumentException("El nombre de la localidad no puede ser null.");
@@ -32,18 +33,31 @@ public class Localidad {
 		}
 	}
 
-
 	public String getNombre() {
 		return nombre;
 	}
-
 
 	public String getProvincia() {
 		return provincia;
 	}
 
-
 	public PosicionGeografica getPosicion() {
 		return posicion;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(nombre, posicion, provincia);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Localidad))
+			return false;
+		Localidad other = (Localidad) obj;
+		return Objects.equals(nombre, other.nombre) && Objects.equals(posicion, other.posicion)
+				&& Objects.equals(provincia, other.provincia);
 	}
 }

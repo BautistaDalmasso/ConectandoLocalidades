@@ -25,6 +25,38 @@ public class ConexionEntreLocalidadesTest {
 	}
 
 	@Test
+	public void conexionesDistintasNoSonEqualsTest() {
+		ConexionEntreLocalidades a = new ConexionEntreLocalidades(new Localidad("a", "a", 90, 180),
+				new Localidad("A", "a", 89, 179));
+		ConexionEntreLocalidades b = new ConexionEntreLocalidades(new Localidad("b", "b", -90, -180),
+				new Localidad("A", "a", -89, -179));
+
+		Assert.assertFalse(a.equals(b));
+	}
+
+	@Test
+	public void conexionEntreAyB_equals_ConexionByATest() {
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		Localidad alberti = new Localidad("Alberti", "Buenos Aires", 1, 1);
+
+		ConexionEntreLocalidades ab = new ConexionEntreLocalidades(laPlata, alberti);
+		ConexionEntreLocalidades ba = new ConexionEntreLocalidades(alberti, laPlata);
+
+		Assert.assertTrue(ab.equals(ba));
+	}
+
+	@Test
+	public void hashCodeEntreAyB_esIgualA_HashCodeByATest() {
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		Localidad alberti = new Localidad("Alberti", "Buenos Aires", 1, 1);
+
+		ConexionEntreLocalidades ab = new ConexionEntreLocalidades(laPlata, alberti);
+		ConexionEntreLocalidades ba = new ConexionEntreLocalidades(alberti, laPlata);
+
+		Assert.assertTrue(ab.hashCode() == ba.hashCode());
+	}
+
+	@Test
 	public void localidadesEnLaMismaProvinciaAMenosDe300KMTest() {
 		Localidad alberti = new Localidad("Alberti", "Buenos Aires", -35.0330734347841, -60.2806197287099);
 		Localidad almiranteBrown = new Localidad("Almirante Brown", "Buenos Aires", -34.8044759080477,

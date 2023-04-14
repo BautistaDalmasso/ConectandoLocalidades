@@ -1,5 +1,7 @@
 package negocio;
 
+import java.util.Objects;
+
 public class PosicionGeografica {
 	private static final int RADIO_TIERRA_KM = 6371;
 	private static final double RADIANES_POR_GRADO = Math.PI / 180;
@@ -41,5 +43,21 @@ public class PosicionGeografica {
 	
 	static double gradosARadianes(double grados) {
 		return RADIANES_POR_GRADO * grados;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(latitud, longitud);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof PosicionGeografica))
+			return false;
+		PosicionGeografica other = (PosicionGeografica) obj;
+		return Double.doubleToLongBits(latitud) == Double.doubleToLongBits(other.latitud)
+				&& Double.doubleToLongBits(longitud) == Double.doubleToLongBits(other.longitud);
 	}
 }
