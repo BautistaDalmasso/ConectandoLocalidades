@@ -9,6 +9,46 @@ import radixsort.RadixSort;
 
 public class RadixSortTest {
 	@Test
+	public void arregloOrdenadoNoCambiaTest() {
+		AristaPesadaParaTests[] arregloInput = {
+				new AristaPesadaParaTests(9),
+				new AristaPesadaParaTests(99),
+				new AristaPesadaParaTests(999),
+				new AristaPesadaParaTests(1000),
+		};
+		AristaPesadaParaTests[] arregloEsperado = {
+				new AristaPesadaParaTests(9),
+				new AristaPesadaParaTests(99),
+				new AristaPesadaParaTests(999),
+				new AristaPesadaParaTests(1000),
+		};
+		
+		RadixSort.ordenar(arregloInput, 1000);
+		
+		Assert.assertArrayEquals(arregloInput, arregloEsperado);
+	}
+	
+	@Test
+	public void arregloInvertidoEsOrdenadoTest() {
+		AristaPesadaParaTests[] arregloInput = {
+				new AristaPesadaParaTests(1000),
+				new AristaPesadaParaTests(999),
+				new AristaPesadaParaTests(99),
+				new AristaPesadaParaTests(9),
+		};
+		AristaPesadaParaTests[] arregloEsperado = {
+				new AristaPesadaParaTests(9),
+				new AristaPesadaParaTests(99),
+				new AristaPesadaParaTests(999),
+				new AristaPesadaParaTests(1000),
+		};
+		
+		RadixSort.ordenar(arregloInput, 1000);
+		
+		Assert.assertArrayEquals(arregloInput, arregloEsperado);
+	}
+	
+	@Test
 	public void arregloEsOrdenadoTest() {
 		AristaPesadaParaTests[] arregloInput = {
 				new AristaPesadaParaTests(180),
@@ -31,7 +71,7 @@ public class RadixSortTest {
 				new AristaPesadaParaTests(564),
 		};
 		
-		(new RadixSort(arregloInput, 564)).ordenar();
+		RadixSort.ordenar(arregloInput, 564);
 		
 		Assert.assertArrayEquals(arregloEsperado, arregloInput);
  	}
