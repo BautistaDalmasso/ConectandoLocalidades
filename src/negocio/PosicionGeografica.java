@@ -60,4 +60,17 @@ public class PosicionGeografica {
 		return Double.doubleToLongBits(latitud) == Double.doubleToLongBits(other.latitud)
 				&& Double.doubleToLongBits(longitud) == Double.doubleToLongBits(other.longitud);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return Archivo.lenTexto(String.valueOf(latitud), 10) +
+			   Archivo.lenTexto(String.valueOf(longitud), 10);
+	}
+	
+	public String toFileLine()
+	{
+		return String.valueOf(latitud) + "#" + String.valueOf(longitud);
+	}
 }
+
