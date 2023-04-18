@@ -90,11 +90,6 @@ public class Mapa {
 		mapa.addMapPolygon(new MapPolygonImpl(route));
 	}
 	
-	private static Coordinate coordenada(Localidad loc) {
-		return new Coordinate(loc.getPosicion().getLatitud(), 
-					   loc.getPosicion().getLongitud());
-	}
-	
 	private void cargarGrafoDesdeArchivo(String listaLocalidades) {
 		Archivo zona = new Archivo(listaLocalidades);
 		LinkedList<Localidad> pueblos = zona.fetchLocalidades();
@@ -129,11 +124,6 @@ public class Mapa {
 		mapa.addMapMarker(m);
 	}
 
-	
-		
-		
-		
-		
 		
 	
 	
