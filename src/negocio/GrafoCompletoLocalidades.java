@@ -41,7 +41,14 @@ public class GrafoCompletoLocalidades {
 	public boolean localidadExiste(Localidad localidad) {
 		return localidades.contains(localidad);
 	}
+	
 
+	public Set<ConexionEntreLocalidades> getConexionesDeUnaLocalidad(Localidad loc)
+	{	
+		return localidadesConSusVecinos.get(loc);
+	}
+	
+	
 	public Set<ConexionEntreLocalidades> obtenerConexiones(Localidad localidad) {
 		return localidadesConSusVecinos.get(localidad);
 	}
@@ -53,5 +60,10 @@ public class GrafoCompletoLocalidades {
 		if (localidades.contains(localidad)) {
 			throw new IllegalArgumentException("La localidad <" + localidad + "> ya fue agregada.");
 		}
+	}
+	
+	public Set<Localidad> getLocalidades()
+	{
+		return localidades;
 	}
 }

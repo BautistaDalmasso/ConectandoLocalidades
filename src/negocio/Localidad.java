@@ -60,4 +60,17 @@ public class Localidad {
 		return Objects.equals(nombre, other.nombre) && Objects.equals(posicion, other.posicion)
 				&& Objects.equals(provincia, other.provincia);
 	}
+	
+	public String toFileLine()
+	{
+		return nombre + "#" + provincia + "#" + posicion.toFileLine();
+	}
+	
+	@Override
+	public String toString()
+	{
+		return Archivo.lenTexto(nombre, 25) + 
+			   Archivo.lenTexto(provincia, 25) +
+			   posicion.toString();
+	}
 }

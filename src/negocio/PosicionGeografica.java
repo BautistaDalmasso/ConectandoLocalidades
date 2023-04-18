@@ -18,10 +18,10 @@ public class PosicionGeografica {
 	}
 	
 	private static void validarLatitudYLongitud(double latitud, double longitud) {
-		if (latitud < -90 || latitud > 90) {
+		if (latitud <= -90 || latitud >= 90) {
 			throw new IllegalArgumentException("Latitud debe estar en el rango [-90, 90], se recibió latitud=" + latitud);
 		}
-		if (longitud < -180 || longitud > 180) {
+		if (longitud <= -180 || longitud >= 180) {
 			throw new IllegalArgumentException("Longitud debe estar en el rango [-180, 180], se recibió longitud=" + longitud);
 		}
 	}
@@ -59,5 +59,27 @@ public class PosicionGeografica {
 		PosicionGeografica other = (PosicionGeografica) obj;
 		return Double.doubleToLongBits(latitud) == Double.doubleToLongBits(other.latitud)
 				&& Double.doubleToLongBits(longitud) == Double.doubleToLongBits(other.longitud);
+	}
+	
+	public double getLatitud()
+	{
+		return latitud;
+	}
+	
+	public double getLongitud()
+	{
+		return longitud;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return Archivo.lenTexto(String.valueOf(latitud), 18) +
+			   Archivo.lenTexto(String.valueOf(longitud), 18);
+	}
+	
+	public String toFileLine()
+	{
+		return String.valueOf(latitud) + "#" + String.valueOf(longitud);
 	}
 }
