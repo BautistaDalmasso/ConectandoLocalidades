@@ -8,28 +8,39 @@ import java.util.Set;
 public class GrafoCompletoLocalidades {
 	private Set<Localidad> localidades;
 	private Set<ConexionEntreLocalidades> conexiones;
-	private Map<Localidad, Set<ConexionEntreLocalidades>> localidadesConSusVecinos;
+	private Map<String, Set<ConexionEntreLocalidades>> localidadesConSusVecinos;
+	private Map<String, Integer> localidadesConIndice;
+	private int cantidadDeLocalidades;
 
 	public GrafoCompletoLocalidades() {
 		localidades = new HashSet<Localidad>();
 		conexiones = new HashSet<ConexionEntreLocalidades>();
-		localidadesConSusVecinos = new HashMap<Localidad, Set<ConexionEntreLocalidades>>();
+		localidadesConSusVecinos = new HashMap<String, Set<ConexionEntreLocalidades>>();
+		localidadesConIndice = new HashMap<String, Integer>();
+		cantidadDeLocalidades = 0;
 	}
 
 	public void agregarLocalidad(Localidad localidad) {
 		verificarLocalidad(localidad);
-		localidadesConSusVecinos.put(localidad, new HashSet<ConexionEntreLocalidades>());
+		
+		String nombreLocalidad = localidad.getNombre();
+		
+		localidadesConSusVecinos.put(nombreLocalidad, new HashSet<ConexionEntreLocalidades>());
 
 		completarGrafoConNuevaLocalidad(localidad);
 
 		localidades.add(localidad);
+		localidadesConIndice.put(nombreLocalidad, cantidadDeLocalidades-1);
+		
+		cantidadDeLocalidades++;
 	}
 
 	private void completarGrafoConNuevaLocalidad(Localidad nuevaLocalidad) {
-		Set<ConexionEntreLocalidades> conexionesNuevaLocalidad = localidadesConSusVecinos.get(nuevaLocalidad);
+		Set<ConexionEntreLocalidades> conexionesNuevaLocalidad = localidadesConSusVecinos
+				.get(nuevaLocalidad.getNombre());
 
 		for (Localidad localidad : localidades) {
-			Set<ConexionEntreLocalidades> conexionesLocalidad = localidadesConSusVecinos.get(localidad);
+			Set<ConexionEntreLocalidades> conexionesLocalidad = localidadesConSusVecinos.get(localidad.getNombre());
 			ConexionEntreLocalidades nuevaConexion = new ConexionEntreLocalidades(localidad, nuevaLocalidad);
 
 			conexiones.add(nuevaConexion);
@@ -43,7 +54,7 @@ public class GrafoCompletoLocalidades {
 	}
 
 	public Set<ConexionEntreLocalidades> obtenerConexiones(Localidad localidad) {
-		return localidadesConSusVecinos.get(localidad);
+		return localidadesConSusVecinos.get(localidad.getNombre());
 	}
 
 	private void verificarLocalidad(Localidad localidad) {
