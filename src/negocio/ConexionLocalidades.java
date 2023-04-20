@@ -1,6 +1,6 @@
 package negocio;
 
-public class ConexionEntreLocalidades implements AristaPesada {
+public class ConexionLocalidades implements AristaPesada {
 	public static final int COSTO_POR_KILOMETRO = 1000;
 	public static final double AUMENTO_POR_SUPERAR_300_KM = 0.8;
 	public static final int COSTO_POR_INVOLUCRAR_2_PROVINCIAS = 20000;
@@ -9,7 +9,7 @@ public class ConexionEntreLocalidades implements AristaPesada {
 	private Localidad localidadB;
 	private Integer costoDeLaConexion;
 
-	public ConexionEntreLocalidades(Localidad localidadA, Localidad localidadB) {
+	public ConexionLocalidades(Localidad localidadA, Localidad localidadB) {
 		validarLocalidades(localidadA, localidadB);
 		this.localidadA = localidadA;
 		this.localidadB = localidadB;
@@ -61,12 +61,20 @@ public class ConexionEntreLocalidades implements AristaPesada {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!(obj instanceof ConexionEntreLocalidades))
+		if (!(obj instanceof ConexionLocalidades))
 			return false;
-		ConexionEntreLocalidades other = (ConexionEntreLocalidades) obj;
+		ConexionLocalidades other = (ConexionLocalidades) obj;
 		// El orden de las localidades no importa:
 		// conexionAB.equals(conexionBA) debe ser true.
 		return (localidadA.equals(other.localidadA) && localidadB.equals(other.localidadB))
 				|| (localidadA.equals(other.localidadB) && localidadB.equals(other.localidadA));
+	}
+
+	public Localidad getLocalidadA() {
+		return localidadA;
+	}
+
+	public Localidad getLocalidadB() {
+		return localidadB;
 	}
 }

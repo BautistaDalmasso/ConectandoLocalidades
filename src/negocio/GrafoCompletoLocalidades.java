@@ -1,68 +1,77 @@
 package negocio;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-public class GrafoCompletoLocalidades {
-	private Set<Localidad> localidades;
-	private Set<ConexionEntreLocalidades> conexiones;
-	private Map<String, Set<ConexionEntreLocalidades>> localidadesConSusVecinos;
+import radixsort.RadixSort;
+
+public class GrafoCompletoLocalidades extends GrafoLocalidades {
+	private List<ConexionLocalidades> conexiones;
 	private Map<String, Integer> localidadesConIndice;
+	private GrafoLocalidades arbolGeneradorMinimo;
 	private int cantidadDeLocalidades;
+	private Integer costoConexionMaxima;
 
 	public GrafoCompletoLocalidades() {
-		localidades = new HashSet<Localidad>();
-		conexiones = new HashSet<ConexionEntreLocalidades>();
-		localidadesConSusVecinos = new HashMap<String, Set<ConexionEntreLocalidades>>();
+		super();
+
+		arbolGeneradorMinimo = new GrafoLocalidades();
+		conexiones = new ArrayList<ConexionLocalidades>();
 		localidadesConIndice = new HashMap<String, Integer>();
 		cantidadDeLocalidades = 0;
 	}
 
+	@Override
 	public void agregarLocalidad(Localidad localidad) {
 		verificarLocalidad(localidad);
 		
+		arbolGeneradorMinimo.agregarLocalidad(localidad);
+
 		String nombreLocalidad = localidad.getNombre();
-		
-		localidadesConSusVecinos.put(nombreLocalidad, new HashSet<ConexionEntreLocalidades>());
+
+		getLocalidadesConSusVecinos().put(nombreLocalidad, new HashSet<ConexionLocalidades>());
 
 		completarGrafoConNuevaLocalidad(localidad);
+		getLocalidades().add(localidad);
 
-		localidades.add(localidad);
-		localidadesConIndice.put(nombreLocalidad, cantidadDeLocalidades-1);
-		
+		localidadesConIndice.put(nombreLocalidad, cantidadDeLocalidades);
 		cantidadDeLocalidades++;
 	}
 
 	private void completarGrafoConNuevaLocalidad(Localidad nuevaLocalidad) {
-		Set<ConexionEntreLocalidades> conexionesNuevaLocalidad = localidadesConSusVecinos
-				.get(nuevaLocalidad.getNombre());
-
-		for (Localidad localidad : localidades) {
-			Set<ConexionEntreLocalidades> conexionesLocalidad = localidadesConSusVecinos.get(localidad.getNombre());
-			ConexionEntreLocalidades nuevaConexion = new ConexionEntreLocalidades(localidad, nuevaLocalidad);
-
+		for (Localidad localidad : getLocalidades()) {
+			ConexionLocalidades nuevaConexion = agregarConexion(nuevaLocalidad, localidad);
 			conexiones.add(nuevaConexion);
-			conexionesNuevaLocalidad.add(nuevaConexion);
-			conexionesLocalidad.add(nuevaConexion);
+			
+			setCostoConexionMaxima(nuevaConexion);
 		}
 	}
 
-	public boolean localidadExiste(Localidad localidad) {
-		return localidades.contains(localidad);
+	private void setCostoConexionMaxima(ConexionLocalidades nuevaConexion) {
+		if (costoConexionMaxima == null || nuevaConexion.getPeso().compareTo(costoConexionMaxima) < 0) {
+			costoConexionMaxima = nuevaConexion.getPeso();
+		}
 	}
-
-	public Set<ConexionEntreLocalidades> obtenerConexiones(Localidad localidad) {
-		return localidadesConSusVecinos.get(localidad.getNombre());
+	
+	public void construirArbolGeneradorMinimo() {
+		ConexionLocalidades[] conexiones =  this.conexiones.toArray(ConexionLocalidades[]::new);
+		RadixSort.ordenar(conexiones, costoConexionMaxima);
+		
+		ArbolGeneradorMinimo.construir(this, conexiones);
 	}
-
-	private void verificarLocalidad(Localidad localidad) {
+	
+	public Integer indiceLocalidad(Localidad localidad) {
 		if (localidad == null) {
-			throw new IllegalArgumentException("localidad no puede ser null.");
+			throw new IllegalArgumentException("Localidad no puede ser null.");
 		}
-		if (localidades.contains(localidad)) {
-			throw new IllegalArgumentException("La localidad <" + localidad + "> ya fue agregada.");
-		}
+		
+		return localidadesConIndice.get(localidad.getNombre());
+	}
+	
+	public GrafoLocalidades getArbolGeneradorMinimo() {
+		return arbolGeneradorMinimo;
 	}
 }
