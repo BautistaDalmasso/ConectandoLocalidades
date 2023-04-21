@@ -69,8 +69,8 @@ public class Localidad {
 	@Override
 	public String toString()
 	{
-		return Archivo.lenTexto(nombre, 25) + 
-			   Archivo.lenTexto(provincia, 25) +
+		return Archivo.setLenCadenaTexto(nombre, 25) + 
+			   Archivo.setLenCadenaTexto(provincia, 25) +
 			   posicion.toString();
 	}
 }
