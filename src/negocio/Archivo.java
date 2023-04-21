@@ -86,10 +86,10 @@ public class Archivo {
 	@Override
 	public String toString()
 	{
-		String encabezado = lenTexto("Localidad", 25) +
-							lenTexto("Provincia", 25) +
-							lenTexto("Latitud", 18) +
-							lenTexto("Longitud", 18) + "\n";
+		String encabezado = setLenCadenaTexto("Localidad", 25) +
+							setLenCadenaTexto("Provincia", 25) +
+							setLenCadenaTexto("Latitud", 18) +
+							setLenCadenaTexto("Longitud", 18) + "\n";
 		
 		StringBuilder s = new StringBuilder(encabezado);
 		
@@ -101,7 +101,7 @@ public class Archivo {
 		return s.toString();
 	}
 	
-	public static String lenTexto(String texto, int anchoColumna)
+	public static String setLenCadenaTexto(String texto, int anchoColumna)
 	{
 		if (texto.length() > anchoColumna) // trunca texto si se pasa de medida
 		{
