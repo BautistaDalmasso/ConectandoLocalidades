@@ -18,10 +18,10 @@ public class PosicionGeografica {
 	}
 	
 	private static void validarLatitudYLongitud(double latitud, double longitud) {
-		if (latitud <= -90 || latitud >= 90) {
+		if (latitud < -90 || latitud > 90) {
 			throw new IllegalArgumentException("Latitud debe estar en el rango [-90, 90], se recibió latitud=" + latitud);
 		}
-		if (longitud <= -180 || longitud >= 180) {
+		if (longitud < -180 || longitud > 180) {
 			throw new IllegalArgumentException("Longitud debe estar en el rango [-180, 180], se recibió longitud=" + longitud);
 		}
 	}
