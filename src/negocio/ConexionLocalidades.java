@@ -43,12 +43,18 @@ public class ConexionLocalidades implements AristaPesada {
 					"Localidad A y localidad B no pueden ser las mismas: <" + localidadA + "," + localidadB + ">");
 		}
 	}
-
+	
+	public Integer getCostoDeLaConexion()
+	{
+		return costoDeLaConexion;
+	}
+	
 	@Override
 	public Integer getPeso() {
 		return costoDeLaConexion;
 	}
 
+	
 	@Override
 	public int hashCode() {
 		// Bitwise XOR es una operacion conmutativa que nos asegura que el hash code va

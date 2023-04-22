@@ -55,6 +55,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 			costoConexionMaxima = nuevaConexion.getPeso();
 		}
 	}
+
 	
 	public void construirArbolGeneradorMinimo() {
 		ConexionLocalidades[] conexiones =  this.conexiones.toArray(ConexionLocalidades[]::new);
