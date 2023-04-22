@@ -74,8 +74,8 @@ public class PosicionGeografica {
 	@Override
 	public String toString()
 	{
-		return Archivo.lenTexto(String.valueOf(latitud), 18) +
-			   Archivo.lenTexto(String.valueOf(longitud), 18);
+		return Archivo.setLenCadenaTexto(String.valueOf(latitud), 18) +
+			   Archivo.setLenCadenaTexto(String.valueOf(longitud), 18);
 	}
 	
 	public String toFileLine()

@@ -109,8 +109,8 @@ public class Mapa {
 		for (Localidad loc: puntosDelMapa)
 		{
 			pintarPunto(loc);		
-			Set <ConexionEntreLocalidades> conexiones = grafoCompleto.getConexionesDeUnaLocalidad(loc);		
-			for (ConexionEntreLocalidades c: conexiones)
+			Set <ConexionLocalidades> conexiones = grafoCompleto.obtenerConexiones(loc);		
+			for (ConexionLocalidades c: conexiones)
 			{
 				trazarArista(c.getLocalidadA(), c.getLocalidadB());
 			}

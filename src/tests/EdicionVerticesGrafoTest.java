@@ -3,7 +3,7 @@ package tests;
 import org.junit.Assert;
 import org.junit.Test;
 
-import negocio.ConexionEntreLocalidades;
+import negocio.ConexionLocalidades;
 import negocio.GrafoCompletoLocalidades;
 import negocio.Localidad;
 
@@ -52,7 +52,7 @@ public class EdicionVerticesGrafoTest {
 		grafo.agregarLocalidad(laPlata);
 		grafo.agregarLocalidad(almiranteBrown);
 
-		ConexionEntreLocalidades nuevaConexion = new ConexionEntreLocalidades(laPlata, almiranteBrown);
+		ConexionLocalidades nuevaConexion = new ConexionLocalidades(laPlata, almiranteBrown);
 
 		Assert.assertTrue(grafo.obtenerConexiones(laPlata).contains(nuevaConexion));
 	}
