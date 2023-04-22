@@ -20,6 +20,7 @@ public class Mapa {
 	private JFrame frame;
 	private static JMapViewer mapa;
 	private static GrafoCompletoLocalidades grafoCompleto;
+	private static GrafoLocalidades arbolMinimo;
 
 	/**
 	 * Launch the application.
@@ -64,8 +65,11 @@ public class Mapa {
 		cargarGrafoDesdeArchivo("archivoBairesChico");
 		
 		
-		// Calcula el árbol generador mínimo y dibuja el grafo resultante	
-		// 	FALTA IMPLEMENTAR EL CÁLCULO **********************	
+		// Calcula el árbol generador mínimo y dibuja el grafo resultante
+		
+		
+		grafoCompleto.construirArbolGeneradorMinimo();
+		arbolMinimo = grafoCompleto.getArbolGeneradorMinimo();
 		dibujarGrafo();
 		
 		
@@ -105,14 +109,17 @@ public class Mapa {
 	
 	private void dibujarGrafo()
 	{
-		Set <Localidad> puntosDelMapa = grafoCompleto.getLocalidades();		
+		Set <Localidad> puntosDelMapa = arbolMinimo.getLocalidades();
 		for (Localidad loc: puntosDelMapa)
 		{
 			pintarPunto(loc);		
-			Set <ConexionLocalidades> conexiones = grafoCompleto.obtenerConexiones(loc);		
+			Set <ConexionLocalidades> conexiones = arbolMinimo.obtenerConexiones(loc);		
 			for (ConexionLocalidades c: conexiones)
 			{
 				trazarArista(c.getLocalidadA(), c.getLocalidadB());
+				System.out.println("Costo entre " + c.getLocalidadA().getNombre() 
+										  + " y " + c.getLocalidadB().getNombre()
+										 + " es " + c.getCostoDeLaConexion());
 			}
 		}
 	}
@@ -123,8 +130,4 @@ public class Mapa {
 		m.getStyle().setColor(Color.red);
 		mapa.addMapMarker(m);
 	}
-
-		
-	
-	
 }
