@@ -54,15 +54,17 @@ public class Mapa {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 900, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("Mapa de conexiones telefonicas");
 		
+		cargarGrafoDesdeArchivo("archivoBairesChico");
 		// pone mapa en pantalla
 		mapa = new JMapViewer();
+		setearPosicionYZoom();
 		frame.getContentPane().add(mapa);
 		
 		
 		// carga el archivo y construye el grafo completo	
 		// FALTA IMPLEMENTAR: Pregunta al usuario por el archivo / localidades
-		cargarGrafoDesdeArchivo("archivoBairesChico");
 		
 		
 		// Calcula el árbol generador mínimo y dibuja el grafo resultante
@@ -129,5 +131,32 @@ public class Mapa {
 		m.getStyle().setBackColor(Color.red);
 		m.getStyle().setColor(Color.red);
 		mapa.addMapMarker(m);
+	}
+	
+	private void setearPosicionYZoom() {
+		Set<Localidad> localidades = grafoCompleto.getLocalidades();
+		double latMinima = 89;
+		double latMaxima = -89;
+		double longMinima = 189;
+		double longMaxima = -189;
+		for(Localidad localidad: localidades) {
+			PosicionGeografica coordenadas = localidad.getPosicion();
+			double latActual = coordenadas.getLatitud();
+			double longActual = coordenadas.getLongitud();
+			if(latActual < latMinima) {
+				latMinima = latActual;
+			}
+			if(latActual > latMaxima) {
+				latMaxima = latActual;
+			}
+			if(longActual < longMinima) {
+				longMinima = longActual;
+			}
+			if(longActual > longMaxima) {
+				longMaxima = longActual;
+			}
+		}
+		Coordinate coordenada = new Coordinate((latMinima + latMaxima)/2,(longMinima + longMaxima)/2);
+		mapa.setDisplayPosition(coordenada, 6);
 	}
 }
