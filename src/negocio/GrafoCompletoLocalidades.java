@@ -75,4 +75,8 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	public GrafoLocalidades getArbolGeneradorMinimo() {
 		return arbolGeneradorMinimo;
 	}
+	
+	public Integer getCostoConexionMaxima() {
+		return costoConexionMaxima;
+	}
 }
