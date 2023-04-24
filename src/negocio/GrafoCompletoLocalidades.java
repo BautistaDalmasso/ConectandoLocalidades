@@ -51,7 +51,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	}
 
 	private void setCostoConexionMaxima(ConexionLocalidades nuevaConexion) {
-		if (costoConexionMaxima == null || nuevaConexion.getPeso().compareTo(costoConexionMaxima) < 0) {
+		if (costoConexionMaxima == null || nuevaConexion.getPeso().compareTo(costoConexionMaxima) > 0) {
 			costoConexionMaxima = nuevaConexion.getPeso();
 		}
 	}

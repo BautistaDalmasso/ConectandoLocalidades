@@ -14,6 +14,7 @@ public class ArbolGeneradorMinimo {
 			ConexionLocalidades seleccionada = seleccionarConexionAciclica(grafoOriginal, conexionesOrdenadas,
 					unionfind);
 			
+			unirLocalidades(unionfind, grafoOriginal, seleccionada);
 			grafoOriginal.getArbolGeneradorMinimo().agregarConexion(seleccionada);
 		}
 	}
@@ -35,5 +36,12 @@ public class ArbolGeneradorMinimo {
 		Integer indiceLocalidadB = grafo.indiceLocalidad(conexion.getLocalidadB());
 
 		return uf.compartenComponenteConexa(indiceLocalidadA, indiceLocalidadB);
+	}
+	
+	private static void unirLocalidades(UnionFind uf, GrafoCompletoLocalidades grafo, ConexionLocalidades conexion) {
+		Integer indiceLocalidadA = grafo.indiceLocalidad(conexion.getLocalidadA());
+		Integer indiceLocalidadB = grafo.indiceLocalidad(conexion.getLocalidadB());
+		
+		uf.union(indiceLocalidadA, indiceLocalidadB);
 	}
 }

@@ -20,6 +20,7 @@ public class Mapa {
 	private JFrame frame;
 	private static JMapViewer mapa;
 	private static GrafoCompletoLocalidades grafoCompleto;
+	private static GrafoLocalidades arbolMinimo;
 
 	/**
 	 * Launch the application.
@@ -53,19 +54,24 @@ public class Mapa {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 900, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("Mapa de conexiones telefonicas");
 		
+		cargarGrafoDesdeArchivo("archivoBairesChico");
 		// pone mapa en pantalla
 		mapa = new JMapViewer();
+		setearPosicionYZoom();
 		frame.getContentPane().add(mapa);
 		
 		
 		// carga el archivo y construye el grafo completo	
 		// FALTA IMPLEMENTAR: Pregunta al usuario por el archivo / localidades
-		cargarGrafoDesdeArchivo("archivoBairesChico");
 		
 		
-		// Calcula el árbol generador mínimo y dibuja el grafo resultante	
-		// 	FALTA IMPLEMENTAR EL CÁLCULO **********************	
+		// Calcula el árbol generador mínimo y dibuja el grafo resultante
+		
+		
+		grafoCompleto.construirArbolGeneradorMinimo();
+		arbolMinimo = grafoCompleto.getArbolGeneradorMinimo();
 		dibujarGrafo();
 		
 		
@@ -105,14 +111,17 @@ public class Mapa {
 	
 	private void dibujarGrafo()
 	{
-		Set <Localidad> puntosDelMapa = grafoCompleto.getLocalidades();		
+		Set <Localidad> puntosDelMapa = arbolMinimo.getLocalidades();
 		for (Localidad loc: puntosDelMapa)
 		{
 			pintarPunto(loc);		
-			Set <ConexionLocalidades> conexiones = grafoCompleto.obtenerConexiones(loc);		
+			Set <ConexionLocalidades> conexiones = arbolMinimo.obtenerConexiones(loc);		
 			for (ConexionLocalidades c: conexiones)
 			{
 				trazarArista(c.getLocalidadA(), c.getLocalidadB());
+				System.out.println("Costo entre " + c.getLocalidadA().getNombre() 
+										  + " y " + c.getLocalidadB().getNombre()
+										 + " es " + c.getCostoDeLaConexion());
 			}
 		}
 	}
@@ -123,8 +132,31 @@ public class Mapa {
 		m.getStyle().setColor(Color.red);
 		mapa.addMapMarker(m);
 	}
-
-		
 	
-	
+	private void setearPosicionYZoom() {
+		Set<Localidad> localidades = grafoCompleto.getLocalidades();
+		double latMinima = 89;
+		double latMaxima = -89;
+		double longMinima = 189;
+		double longMaxima = -189;
+		for(Localidad localidad: localidades) {
+			PosicionGeografica coordenadas = localidad.getPosicion();
+			double latActual = coordenadas.getLatitud();
+			double longActual = coordenadas.getLongitud();
+			if(latActual < latMinima) {
+				latMinima = latActual;
+			}
+			if(latActual > latMaxima) {
+				latMaxima = latActual;
+			}
+			if(longActual < longMinima) {
+				longMinima = longActual;
+			}
+			if(longActual > longMaxima) {
+				longMaxima = longActual;
+			}
+		}
+		Coordinate coordenada = new Coordinate((latMinima + latMaxima)/2,(longMinima + longMaxima)/2);
+		mapa.setDisplayPosition(coordenada, 6);
+	}
 }
