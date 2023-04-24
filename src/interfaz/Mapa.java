@@ -14,6 +14,23 @@ import org.openstreetmap.gui.jmapviewer.*;
 import org.openstreetmap.gui.jmapviewer.interfaces.*;
 
 import negocio.*;
+import javax.swing.JPanel;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+
+import java.awt.BorderLayout;
+import javax.swing.JPopupMenu;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 
 public class Mapa {
 
@@ -21,6 +38,13 @@ public class Mapa {
 	private static JMapViewer mapa;
 	private static GrafoCompletoLocalidades grafoCompleto;
 	private static GrafoLocalidades arbolMinimo;
+	private static JPanel panelMapa;
+	private static JPanel panelControl;
+	private static JSplitPane panelDivisor;
+	/**
+	 * @wbp.nonvisual location=-48,259
+	 */
+	private final JPopupMenu popupMenu = new JPopupMenu();
 
 	/**
 	 * Launch the application.
@@ -51,16 +75,38 @@ public class Mapa {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		cargarGrafoDesdeArchivo("archivoBairesChico");
+		//CREA Y SETEA EL FRAME
 		frame = new JFrame();
-		frame.setBounds(100, 100, 900, 600);
+		frame.setBounds(300, 150, 1200, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Mapa de conexiones telefonicas");
+		frame.getContentPane().setLayout(new BorderLayout());
 		
-		cargarGrafoDesdeArchivo("archivoBairesChico");
-		// pone mapa en pantalla
+		//CREA Y SETE EL PANEL EN DONDE VA A ESTAR EL MAPA
+		panelMapa =new JPanel();
+		panelMapa.setLayout(new BorderLayout());
+		panelMapa.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		
+		//CREA Y SETEA EL PANEL EN DONDE SE VA A ENCONTRAR EL MENU DE OPCIONES
+		panelControl = new JPanel();
+		panelControl.setLayout(new FlowLayout(FlowLayout.CENTER));
+		setPanelControl(panelControl);
+		panelControl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		
+		//CREA LA DIVISION DEL FRAME CON LOS DOS PANELES
+		panelDivisor = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelControl, panelMapa);
+		panelDivisor.setDividerLocation(250);
+		panelDivisor.setDividerSize(0);
+		frame.getContentPane().add(panelDivisor,BorderLayout.CENTER);
+		
+		//CREA EL MAPA Y LO AGREGA A SU PANEL
 		mapa = new JMapViewer();
 		setearPosicionYZoom();
-		frame.getContentPane().add(mapa);
+		mapa.setBounds(0, 0, 500, 500);
+		panelMapa.add(mapa, BorderLayout.CENTER);
+		
+		
 		
 		
 		// carga el archivo y construye el grafo completo	
@@ -79,6 +125,36 @@ public class Mapa {
 		// FALTA IMPLEMENTAR **********************************
 
 
+	}
+	
+	private void setPanelControl(JPanel panelControl) {
+		JPanel botones = new JPanel();
+		botones.setPreferredSize(new Dimension(250, 300));
+		botones.setLayout(new FlowLayout(1,15,45));
+		panelControl.add(botones);
+		JButton botonAgregarLocalidad = new JButton("Agregar localidad");
+		botones.add(botonAgregarLocalidad);
+		JButton botonEliminarLocalidad = new JButton("Eliminar localidad");
+		botones.add(botonEliminarLocalidad);
+		JButton cambiarArchivo = new JButton("Cambiar archivo de localidades");
+		botones.add(cambiarArchivo);
+		
+		JPanel localidades = new JPanel();
+		localidades.setPreferredSize(new Dimension(250, 300));
+		localidades.setLayout(new FlowLayout(1,30,20));
+		mostrarLocalidades(localidades);
+		panelControl.add(localidades);
+		
+		
+	}
+
+
+	public static void mostrarLocalidades(JPanel panel) {
+		Set<Localidad> localidades = grafoCompleto.getLocalidades();
+		for(Localidad localidad: localidades) {
+			JLabel label = new JLabel(localidad.getNombre()+", "+localidad.getProvincia());
+			panel.add(label);
+		}
 	}
 	
 	public static Coordinate getCoordenadas(Localidad loc)
