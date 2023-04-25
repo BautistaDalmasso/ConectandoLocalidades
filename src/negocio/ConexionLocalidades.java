@@ -76,6 +76,14 @@ public class ConexionLocalidades implements AristaPesada {
 				|| (localidadA.equals(other.localidadB) && localidadB.equals(other.localidadA));
 	}
 
+	
+	@Override
+	public String toString() {
+		return "ConexionLocalidades [<" 
+				+ localidadA.getNombre() + ", " + localidadB.getNombre() + ">, "
+				+ costoDeLaConexion +"]";
+	}
+
 	public Localidad getLocalidadA() {
 		return localidadA;
 	}
