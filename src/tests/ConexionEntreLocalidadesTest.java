@@ -1,6 +1,6 @@
 package tests;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 import negocio.ConexionLocalidades;
@@ -31,7 +31,7 @@ public class ConexionEntreLocalidadesTest {
 		ConexionLocalidades b = new ConexionLocalidades(new Localidad("b", "b", -90, -180),
 				new Localidad("A", "a", -89, -179));
 
-		Assert.assertFalse(a.equals(b));
+		assertFalse(a.equals(b));
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class ConexionEntreLocalidadesTest {
 		ConexionLocalidades ab = new ConexionLocalidades(laPlata, alberti);
 		ConexionLocalidades ba = new ConexionLocalidades(alberti, laPlata);
 
-		Assert.assertTrue(ab.equals(ba));
+		assertTrue(ab.equals(ba));
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class ConexionEntreLocalidadesTest {
 		ConexionLocalidades ab = new ConexionLocalidades(laPlata, alberti);
 		ConexionLocalidades ba = new ConexionLocalidades(alberti, laPlata);
 
-		Assert.assertTrue(ab.hashCode() == ba.hashCode());
+		assertTrue(ab.hashCode() == ba.hashCode());
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class ConexionEntreLocalidadesTest {
 		Integer costoEsperado = (int) Math
 				.round((alberti.distanciaEnKilometros(almiranteBrown)) * ConexionLocalidades.COSTO_POR_KILOMETRO);
 
-		Assert.assertEquals(costoEsperado, conexion.getPeso());
+		assertEquals(costoEsperado, conexion.getPeso());
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class ConexionEntreLocalidadesTest {
 		Integer costoEsperado = (int) Math
 				.round(costoDistancia + costoDistancia * ConexionLocalidades.AUMENTO_POR_SUPERAR_300_KM);
 
-		Assert.assertEquals(costoEsperado, conexion.getPeso());
+		assertEquals(costoEsperado, conexion.getPeso());
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class ConexionEntreLocalidadesTest {
 		Integer costoEsperado = (int) Math
 				.round(costoDistancia + ConexionLocalidades.COSTO_POR_INVOLUCRAR_2_PROVINCIAS);
 
-		Assert.assertEquals(costoEsperado, conexion.getPeso());
+		assertEquals(costoEsperado, conexion.getPeso());
 	}
 
 	@Test
@@ -112,6 +112,6 @@ public class ConexionEntreLocalidadesTest {
 				.round(costoDistancia + costoDistancia * ConexionLocalidades.AUMENTO_POR_SUPERAR_300_KM
 						+ ConexionLocalidades.COSTO_POR_INVOLUCRAR_2_PROVINCIAS);
 
-		Assert.assertEquals(costoEsperado, conexion.getPeso());
+		assertEquals(costoEsperado, conexion.getPeso());
 	}
 }

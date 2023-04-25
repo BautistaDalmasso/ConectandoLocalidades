@@ -1,6 +1,7 @@
 package tests;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import negocio.ConexionLocalidades;
@@ -29,7 +30,7 @@ public class EdicionVerticesGrafoTest {
 		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
 		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
 
-		Assert.assertFalse(grafo.localidadExiste(laPlata));
+		assertFalse(grafo.localidadExiste(laPlata));
 	}
 
 	@Test
@@ -40,7 +41,7 @@ public class EdicionVerticesGrafoTest {
 
 		grafo.agregarLocalidad(laPlata);
 
-		Assert.assertTrue(grafo.localidadExiste(laPlataRepetida));
+		assertTrue(grafo.localidadExiste(laPlataRepetida));
 	}
 
 	@Test
@@ -54,6 +55,6 @@ public class EdicionVerticesGrafoTest {
 
 		ConexionLocalidades nuevaConexion = new ConexionLocalidades(laPlata, almiranteBrown);
 
-		Assert.assertTrue(grafo.obtenerConexiones(laPlata).contains(nuevaConexion));
+		assertTrue(grafo.obtenerConexiones(laPlata).contains(nuevaConexion));
 	}
 }
