@@ -1,7 +1,6 @@
 package interfaz;
 
-import java.awt.Color;
-import java.awt.EventQueue;
+import java.awt.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,12 +14,6 @@ import org.openstreetmap.gui.jmapviewer.interfaces.*;
 
 import negocio.*;
 import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -28,8 +21,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-
-import java.awt.BorderLayout;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -110,9 +101,11 @@ public class Mapa {
 
 	private void crearPanelControl() {
 		panelControl = new JPanel();
+		panelControl.setBackground(Color.BLACK);
 		panelControl.setLayout(new FlowLayout(FlowLayout.CENTER));
-		crearBotonesDelPanelControl(panelControl);
+		crearInstanciaDeAgregadoDeLocalidades(panelControl);
 		panelControl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		
 	}
 
 
@@ -143,25 +136,48 @@ public class Mapa {
 		frame.getContentPane().setLayout(new BorderLayout());
 	}
 	
-	private void crearBotonesDelPanelControl(JPanel panelControl) {
+	private void crearInstanciaDeAgregadoDeLocalidades(JPanel panelControl) {
 		JPanel botones = new JPanel();
+		botones.setBackground(Color.getHSBColor(233, 18, 97));
+		botones.setLayout(new FlowLayout(1,7,15));		
 		botones.setPreferredSize(new Dimension(250, 300));
-		botones.setLayout(new FlowLayout(1,15,45));
 		panelControl.add(botones);
-		JButton botonAgregarLocalidad = new JButton("Agregar localidad");
-		botones.add(botonAgregarLocalidad);
-		JButton botonEliminarLocalidad = new JButton("Dibujar Arbol Generador Minimo");
-		botones.add(botonEliminarLocalidad);
-		JButton cambiarArchivo = new JButton("Cambiar archivo de localidades");
-		botones.add(cambiarArchivo);
+		crearComponentesParaAgregarLocalidad(botones);
 		
 		JPanel localidades = new JPanel();
-		localidades.setPreferredSize(new Dimension(250, 300));
+		localidades.setBackground(Color.getHSBColor(233, 18, 97));
+		localidades.setPreferredSize(new Dimension(250, 350));
 		localidades.setLayout(new FlowLayout(1,30,20));
-		mostrarLocalidades(localidades);
+		mostrarLocalidades(localidades);  //acá en realidad se deberian ir agregando
 		panelControl.add(localidades);
 		
 		
+	}
+
+
+	private void crearComponentesParaAgregarLocalidad(JPanel botones) {
+		JButton botonDibujarArbol = new JButton("Dibujar Arbol Generador Minimo");
+		botones.add(botonDibujarArbol);
+		JLabel preguntaNombre = new JLabel("     Ingrese el nombre de la Localidad     ");
+		botones.add(preguntaNombre);
+		JTextField nombreLoc = new JTextField(15);
+		botones.add(nombreLoc);
+		JLabel preguntaProv = new JLabel("      Ingrese el nombre de la provincia      ");
+		botones.add(preguntaProv);		
+		JTextField nombreProv = new JTextField(15);
+		botones.add(nombreProv);		
+		JLabel preguntaCoord = new JLabel("          Ingrese las coordenadas          ");
+		botones.add(preguntaCoord);
+		JLabel lat = new JLabel("Latitud:");
+		botones.add(lat);
+		JTextField latitud = new JTextField(4);
+		botones.add(latitud);
+		JLabel longi = new JLabel("Latitud:");
+		botones.add(longi);
+		JTextField longitud = new JTextField(4);
+		botones.add(longitud);
+		JButton botonAgregarLocalidad = new JButton("     Agregar Localidad     ");
+		botones.add(botonAgregarLocalidad);
 	}
 
 
