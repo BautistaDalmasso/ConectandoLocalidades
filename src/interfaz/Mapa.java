@@ -1,7 +1,8 @@
 package interfaz;
 
 import java.awt.*;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -14,30 +15,27 @@ import org.openstreetmap.gui.jmapviewer.interfaces.*;
 
 import negocio.*;
 import javax.swing.JPanel;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 public class Mapa {
 
 	private JFrame frame;
-	private static JMapViewer mapa;
-	private static GrafoCompletoLocalidades grafoCompleto;
-	private static GrafoLocalidades arbolMinimo;
-	private static JPanel panelMapa;
-	private static JPanel panelControl;
-	private static JSplitPane panelDivisor;
+	private JMapViewer mapa;
+	private GrafoCompletoLocalidades grafoCompleto;
+	private GrafoLocalidades arbolMinimo;
+	private JPanel panelMapa;
+	private JPanel panelControl;
+	private JSplitPane panelDivisor;
 
+	private JTextField fieldNombreLocalidad;
+	private JTextField fieldProvinciaLocalidad;
+	private JTextField fieldLatitud;
+	private JTextField fieldLongitud;
 	
 	/**
 	 * @wbp.nonvisual location=-48,259
@@ -85,17 +83,7 @@ public class Mapa {
 		
 		
 		// Calcula el árbol generador mínimo y dibuja el grafo resultante
-		
-		
-		grafoCompleto.construirArbolGeneradorMinimo();
 		arbolMinimo = grafoCompleto.getArbolGeneradorMinimo();
-		dibujarGrafo();
-		
-		
-		// Agrega botones MODIFICAR LOCALIDADES, GUARDAR PROYECTO, SALIR
-		// FALTA IMPLEMENTAR **********************************
-
-
 	}
 
 
@@ -150,38 +138,63 @@ public class Mapa {
 		localidades.setLayout(new FlowLayout(1,30,20));
 		mostrarLocalidades(localidades);  //acá en realidad se deberian ir agregando
 		panelControl.add(localidades);
-		
-		
 	}
 
 
 	private void crearComponentesParaAgregarLocalidad(JPanel botones) {
 		JButton botonDibujarArbol = new JButton("Dibujar Arbol Generador Minimo");
+		botonDibujarArbol.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				grafoCompleto.construirArbolGeneradorMinimo();
+				dibujarGrafo();
+			}
+		});
 		botones.add(botonDibujarArbol);
+		
 		JLabel preguntaNombre = new JLabel("     Ingrese el nombre de la Localidad     ");
 		botones.add(preguntaNombre);
-		JTextField nombreLoc = new JTextField(15);
-		botones.add(nombreLoc);
+		fieldNombreLocalidad = new JTextField(15);
+		botones.add(fieldNombreLocalidad);
+
 		JLabel preguntaProv = new JLabel("      Ingrese el nombre de la provincia      ");
 		botones.add(preguntaProv);		
-		JTextField nombreProv = new JTextField(15);
-		botones.add(nombreProv);		
+		fieldProvinciaLocalidad = new JTextField(15);
+		botones.add(fieldProvinciaLocalidad);
+		
 		JLabel preguntaCoord = new JLabel("          Ingrese las coordenadas          ");
 		botones.add(preguntaCoord);
+		
 		JLabel lat = new JLabel("Latitud:");
 		botones.add(lat);
-		JTextField latitud = new JTextField(4);
-		botones.add(latitud);
-		JLabel longi = new JLabel("Latitud:");
+		fieldLatitud = new JTextField(4);
+		botones.add(fieldLatitud);
+		
+		JLabel longi = new JLabel("Longitud:");
 		botones.add(longi);
-		JTextField longitud = new JTextField(4);
-		botones.add(longitud);
+		fieldLongitud = new JTextField(4);
+		botones.add(fieldLongitud);
+		
 		JButton botonAgregarLocalidad = new JButton("     Agregar Localidad     ");
+		botonAgregarLocalidad.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				agregarLocalidadIngresada();
+			}
+		});
 		botones.add(botonAgregarLocalidad);
 	}
 
-
-	private static void mostrarLocalidades(JPanel panel) {
+	private void agregarLocalidadIngresada() {
+		String nombreLocalidad = fieldNombreLocalidad.getText();
+		String provinciaLocaliadad = fieldProvinciaLocalidad.getText();
+		double latitud = Double.parseDouble(fieldLatitud.getText());
+		double longitud = Double.parseDouble(fieldLongitud.getText());
+		
+		grafoCompleto.agregarLocalidad(nombreLocalidad, provinciaLocaliadad, latitud, longitud);
+	}
+	
+	private void mostrarLocalidades(JPanel panel) {
 		Set<Localidad> localidades = grafoCompleto.getLocalidades();
 		for(Localidad localidad: localidades) {
 			JLabel label = new JLabel(localidad.getNombre()+", "+localidad.getProvincia());
@@ -195,7 +208,7 @@ public class Mapa {
 				   loc.getPosicion().getLongitud());
 	}
 	
-	public static void trazarArista(Localidad loc1, Localidad loc2)
+	public void trazarArista(Localidad loc1, Localidad loc2)
 	{
 		Coordinate uno = getCoordenadas(loc1);
 		Coordinate dos = getCoordenadas(loc2);
@@ -212,9 +225,6 @@ public class Mapa {
 		{
 			grafoCompleto.agregarLocalidad(loc);
 		}	
-			
-//		System.out.println(zona.toString());
-//		System.out.println("Distancia entre pueblo 5 y 11: " + pueblos.get(5).distanciaEnKilometros(pueblos.get(11)));
 	}
 	
 	private void dibujarGrafo()
@@ -227,9 +237,6 @@ public class Mapa {
 			for (ConexionLocalidades c: conexiones)
 			{
 				trazarArista(c.getLocalidadA(), c.getLocalidadB());
-				System.out.println("Costo entre " + c.getLocalidadA().getNombre() 
-										  + " y " + c.getLocalidadB().getNombre()
-										 + " es " + c.getCostoDeLaConexion());
 			}
 		}
 	}
