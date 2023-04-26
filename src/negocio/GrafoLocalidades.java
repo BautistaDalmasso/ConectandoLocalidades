@@ -55,6 +55,12 @@ public class GrafoLocalidades {
 		
 		return conexion;
 	}
+	
+	public void limpiarConexiones() {
+		for (Localidad loc : localidades) {
+			localidadesConSusVecinos.put(loc.getNombre(), new HashSet<ConexionLocalidades>());
+		}
+	}
 
 	public Set<ConexionLocalidades> obtenerConexiones(Localidad localidad) {
 		return localidadesConSusVecinos.get(localidad.getNombre());

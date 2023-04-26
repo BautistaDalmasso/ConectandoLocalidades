@@ -67,6 +67,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 
 	
 	public void construirArbolGeneradorMinimo() {
+		arbolGeneradorMinimo.limpiarConexiones();
 		constructorAGM.construir();
 	}
 	
