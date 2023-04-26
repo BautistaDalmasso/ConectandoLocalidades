@@ -44,6 +44,12 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 		cantidadDeLocalidades++;
 	}
 
+	public void agregarLocalidad(String nombreLocalidad, String provinciaLocalidad, double latitud, double longitud) {
+		Localidad nuevaLocalidad = new Localidad(nombreLocalidad, provinciaLocalidad, latitud, longitud);
+		
+		agregarLocalidad(nuevaLocalidad);
+	}
+	
 	private void completarGrafoConNuevaLocalidad(Localidad nuevaLocalidad) {
 		for (Localidad localidad : getLocalidades()) {
 			ConexionLocalidades nuevaConexion = agregarConexion(nuevaLocalidad, localidad);
