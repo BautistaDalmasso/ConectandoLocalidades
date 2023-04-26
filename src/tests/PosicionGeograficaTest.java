@@ -1,6 +1,7 @@
 package tests;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import negocio.PosicionGeografica;
@@ -66,6 +67,6 @@ public class PosicionGeograficaTest {
 	public void assertResultadoDentroDelMargenDeError(Double resultadoEsperado, Double resultadoObtenido) {
 		Double porcentajeDeError = ((resultadoObtenido - resultadoEsperado) / resultadoEsperado) * 100;
 		
-		Assert.assertTrue(porcentajeDeError <= ERROR_ACEPTABLE_PORCENTAJE);
+		assertTrue(porcentajeDeError <= ERROR_ACEPTABLE_PORCENTAJE);
 	}
 }

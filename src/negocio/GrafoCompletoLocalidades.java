@@ -14,6 +14,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	private GrafoLocalidades arbolGeneradorMinimo;
 	private int cantidadDeLocalidades;
 	private Integer costoConexionMaxima;
+	private ConstructorAGM constructorAGM;
 
 	public GrafoCompletoLocalidades() {
 		super();
@@ -22,6 +23,8 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 		conexiones = new ArrayList<ConexionLocalidades>();
 		localidadesConIndice = new HashMap<String, Integer>();
 		cantidadDeLocalidades = 0;
+		costoConexionMaxima = 0;
+		constructorAGM = new ConstructorAGM(this);
 	}
 
 	@Override
@@ -51,17 +54,21 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	}
 
 	private void setCostoConexionMaxima(ConexionLocalidades nuevaConexion) {
-		if (costoConexionMaxima == null || nuevaConexion.getPeso().compareTo(costoConexionMaxima) > 0) {
+		if (nuevaConexion.getPeso().compareTo(costoConexionMaxima) > 0) {
 			costoConexionMaxima = nuevaConexion.getPeso();
 		}
 	}
 
 	
 	public void construirArbolGeneradorMinimo() {
+		constructorAGM.construir();
+	}
+	
+	public ConexionLocalidades[] getConexionesOrdenadas() {
 		ConexionLocalidades[] conexiones =  this.conexiones.toArray(ConexionLocalidades[]::new);
 		RadixSort.ordenar(conexiones, costoConexionMaxima);
 		
-		ArbolGeneradorMinimo.construir(this, conexiones);
+		return conexiones;
 	}
 	
 	public Integer indiceLocalidad(Localidad localidad) {

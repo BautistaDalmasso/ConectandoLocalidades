@@ -1,6 +1,7 @@
 package tests;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import radixsort.AristaPesadaParaTests;
@@ -25,7 +26,7 @@ public class RadixSortTest {
 		
 		RadixSort.ordenar(arregloInput, 1000);
 		
-		Assert.assertArrayEquals(arregloInput, arregloEsperado);
+		assertArrayEquals(arregloInput, arregloEsperado);
 	}
 	
 	@Test
@@ -45,7 +46,7 @@ public class RadixSortTest {
 		
 		RadixSort.ordenar(arregloInput, 1000);
 		
-		Assert.assertArrayEquals(arregloInput, arregloEsperado);
+		assertArrayEquals(arregloInput, arregloEsperado);
 	}
 	
 	@Test
@@ -73,6 +74,6 @@ public class RadixSortTest {
 		
 		RadixSort.ordenar(arregloInput, 564);
 		
-		Assert.assertArrayEquals(arregloEsperado, arregloInput);
+		assertArrayEquals(arregloEsperado, arregloInput);
  	}
 }

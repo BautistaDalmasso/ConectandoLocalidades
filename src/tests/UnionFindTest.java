@@ -1,6 +1,7 @@
 package tests;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import unionfind.UnionFind;
@@ -57,14 +58,14 @@ public class UnionFindTest {
 	public void raizEnUnionFindNuevoTest() {
 		UnionFind uf = new UnionFind(1);
 
-		Assert.assertEquals((Integer) 0, uf.find(0).getRaiz());
+		assertEquals((Integer) 0, uf.find(0).getRaiz());
 	}
 
 	@Test
 	public void findEnUnionFindNuevoTest() {
 		UnionFind uf = new UnionFind(2);
 
-		Assert.assertFalse(uf.compartenComponenteConexa(0, 1));
+		assertFalse(uf.compartenComponenteConexa(0, 1));
 	}
 
 	@Test
@@ -73,7 +74,7 @@ public class UnionFindTest {
 
 		uf.union(0, 1);
 
-		Assert.assertTrue(uf.compartenComponenteConexa(0, 1));
+		assertTrue(uf.compartenComponenteConexa(0, 1));
 	}
 
 	@Test
@@ -85,7 +86,7 @@ public class UnionFindTest {
 		uf.union(2, 3);
 		uf.union(3, 4);
 
-		Assert.assertTrue(uf.compartenComponenteConexa(0, 4));
+		assertTrue(uf.compartenComponenteConexa(0, 4));
 	}
 
 	@Test
@@ -103,7 +104,7 @@ public class UnionFindTest {
 		// Union arboles.
 		uf.union(0, 5);
 
-		Assert.assertEquals((Integer) 5, uf.find(0).getRaiz());
+		assertEquals((Integer) 5, uf.find(0).getRaiz());
 	}
 
 	@Test
@@ -117,6 +118,6 @@ public class UnionFindTest {
 
 		uf.find(0); // Camino se comprime luego de un find.
 
-		Assert.assertEquals(1, uf.find(0).getProfundidadArbol());
+		assertEquals(1, uf.find(0).getProfundidadArbol());
 	}
 }

@@ -1,7 +1,6 @@
 package interfaz;
 
-import java.awt.Color;
-import java.awt.EventQueue;
+import java.awt.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,22 +14,19 @@ import org.openstreetmap.gui.jmapviewer.interfaces.*;
 
 import negocio.*;
 import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-
-import java.awt.BorderLayout;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class Mapa {
 
@@ -41,6 +37,8 @@ public class Mapa {
 	private static JPanel panelMapa;
 	private static JPanel panelControl;
 	private static JSplitPane panelDivisor;
+
+	
 	/**
 	 * @wbp.nonvisual location=-48,259
 	 */
@@ -76,37 +74,10 @@ public class Mapa {
 	 */
 	private void initialize() {
 		cargarGrafoDesdeArchivo("archivoBairesChico");
-		//CREA Y SETEA EL FRAME
-		frame = new JFrame();
-		frame.setBounds(300, 150, 1200, 700);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle("Mapa de conexiones telefonicas");
-		frame.getContentPane().setLayout(new BorderLayout());
-		
-		//CREA Y SETE EL PANEL EN DONDE VA A ESTAR EL MAPA
-		panelMapa =new JPanel();
-		panelMapa.setLayout(new BorderLayout());
-		panelMapa.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		
-		//CREA Y SETEA EL PANEL EN DONDE SE VA A ENCONTRAR EL MENU DE OPCIONES
-		panelControl = new JPanel();
-		panelControl.setLayout(new FlowLayout(FlowLayout.CENTER));
-		setPanelControl(panelControl);
-		panelControl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		
-		//CREA LA DIVISION DEL FRAME CON LOS DOS PANELES
-		panelDivisor = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelControl, panelMapa);
-		panelDivisor.setDividerLocation(250);
-		panelDivisor.setDividerSize(0);
-		frame.getContentPane().add(panelDivisor,BorderLayout.CENTER);
-		
-		//CREA EL MAPA Y LO AGREGA A SU PANEL
-		mapa = new JMapViewer();
-		setearPosicionYZoom();
-		mapa.setBounds(0, 0, 500, 500);
-		panelMapa.add(mapa, BorderLayout.CENTER);
-		
-		
+		crearYSetearVentanaPrincipal();
+		crearYSetearPanelMapa();
+		crearPanelControl();
+		crearPanelDivisor(panelControl, panelMapa);
 		
 		
 		// carga el archivo y construye el grafo completo	
@@ -126,30 +97,91 @@ public class Mapa {
 
 
 	}
+
+
+	private void crearPanelControl() {
+		panelControl = new JPanel();
+		panelControl.setBackground(Color.BLACK);
+		panelControl.setLayout(new FlowLayout(FlowLayout.CENTER));
+		crearInstanciaDeAgregadoDeLocalidades(panelControl);
+		panelControl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		
+	}
+
+
+	private void crearPanelDivisor(JPanel panelControl, JPanel panelMapa) {
+		panelDivisor = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelControl, panelMapa);
+		panelDivisor.setDividerLocation(250);
+		panelDivisor.setDividerSize(0);
+		frame.getContentPane().add(panelDivisor,BorderLayout.CENTER);
+	}
+
+
+	private void crearYSetearPanelMapa() {
+		panelMapa =new JPanel();
+		panelMapa.setLayout(new BorderLayout());
+		panelMapa.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		mapa = new JMapViewer();
+		setearPosicionYZoom();
+		mapa.setBounds(0, 0, 500, 500);
+		panelMapa.add(mapa, BorderLayout.CENTER);
+	}
+
+
+	private void crearYSetearVentanaPrincipal() {
+		frame = new JFrame();
+		frame.setBounds(300, 150, 1200, 700);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("Mapa de conexiones telefonicas");
+		frame.getContentPane().setLayout(new BorderLayout());
+	}
 	
-	private void setPanelControl(JPanel panelControl) {
+	private void crearInstanciaDeAgregadoDeLocalidades(JPanel panelControl) {
 		JPanel botones = new JPanel();
+		botones.setBackground(Color.getHSBColor(233, 18, 97));
+		botones.setLayout(new FlowLayout(1,7,15));		
 		botones.setPreferredSize(new Dimension(250, 300));
-		botones.setLayout(new FlowLayout(1,15,45));
 		panelControl.add(botones);
-		JButton botonAgregarLocalidad = new JButton("Agregar localidad");
-		botones.add(botonAgregarLocalidad);
-		JButton botonEliminarLocalidad = new JButton("Eliminar localidad");
-		botones.add(botonEliminarLocalidad);
-		JButton cambiarArchivo = new JButton("Cambiar archivo de localidades");
-		botones.add(cambiarArchivo);
+		crearComponentesParaAgregarLocalidad(botones);
 		
 		JPanel localidades = new JPanel();
-		localidades.setPreferredSize(new Dimension(250, 300));
+		localidades.setBackground(Color.getHSBColor(233, 18, 97));
+		localidades.setPreferredSize(new Dimension(250, 350));
 		localidades.setLayout(new FlowLayout(1,30,20));
-		mostrarLocalidades(localidades);
+		mostrarLocalidades(localidades);  //acá en realidad se deberian ir agregando
 		panelControl.add(localidades);
 		
 		
 	}
 
 
-	public static void mostrarLocalidades(JPanel panel) {
+	private void crearComponentesParaAgregarLocalidad(JPanel botones) {
+		JButton botonDibujarArbol = new JButton("Dibujar Arbol Generador Minimo");
+		botones.add(botonDibujarArbol);
+		JLabel preguntaNombre = new JLabel("     Ingrese el nombre de la Localidad     ");
+		botones.add(preguntaNombre);
+		JTextField nombreLoc = new JTextField(15);
+		botones.add(nombreLoc);
+		JLabel preguntaProv = new JLabel("      Ingrese el nombre de la provincia      ");
+		botones.add(preguntaProv);		
+		JTextField nombreProv = new JTextField(15);
+		botones.add(nombreProv);		
+		JLabel preguntaCoord = new JLabel("          Ingrese las coordenadas          ");
+		botones.add(preguntaCoord);
+		JLabel lat = new JLabel("Latitud:");
+		botones.add(lat);
+		JTextField latitud = new JTextField(4);
+		botones.add(latitud);
+		JLabel longi = new JLabel("Latitud:");
+		botones.add(longi);
+		JTextField longitud = new JTextField(4);
+		botones.add(longitud);
+		JButton botonAgregarLocalidad = new JButton("     Agregar Localidad     ");
+		botones.add(botonAgregarLocalidad);
+	}
+
+
+	private static void mostrarLocalidades(JPanel panel) {
 		Set<Localidad> localidades = grafoCompleto.getLocalidades();
 		for(Localidad localidad: localidades) {
 			JLabel label = new JLabel(localidad.getNombre()+", "+localidad.getProvincia());
