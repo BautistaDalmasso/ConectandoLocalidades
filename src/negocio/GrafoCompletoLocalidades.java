@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import radixsort.RadixSort;
 
@@ -39,14 +40,14 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 		
 		arbolGeneradorMinimo.agregarLocalidad(localidad);
 
-		String nombreLocalidad = localidad.getNombre();
+		String nombreUnicoLocalidad = localidad.getNombreUnico();
 
-		getLocalidadesConSusVecinos().put(nombreLocalidad, new HashSet<ConexionLocalidades>());
+		getLocalidadesConSusVecinos().put(nombreUnicoLocalidad, new HashSet<ConexionLocalidades>());
 
 		completarGrafoConNuevaLocalidad(localidad);
 		getLocalidades().add(localidad);
 
-		localidadesConIndice.put(nombreLocalidad, cantidadDeLocalidades);
+		localidadesConIndice.put(nombreUnicoLocalidad, cantidadDeLocalidades);
 		cantidadDeLocalidades++;
 	}
 
@@ -108,7 +109,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 			throw new IllegalArgumentException("Localidad no puede ser null.");
 		}
 		
-		return localidadesConIndice.get(localidad.getNombre());
+		return localidadesConIndice.get(localidad.getNombreUnico());
 	}
 	
 	public GrafoLocalidades getArbolGeneradorMinimo() {
