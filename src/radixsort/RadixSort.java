@@ -5,14 +5,28 @@ import negocio.AristaPesada;
 public class RadixSort {
 	private static final int BASE = 10;
 
-	private AristaPesada[] arregloAOrdenar;
-	private Integer valorMaximo;
-
 	public static void ordenar(AristaPesada[] arregloAOrdenar, Integer valorMaximo) {
 		int auxValorMaximo = valorMaximo;
 
 		for (int posicionSiendoOrdenada = 1; auxValorMaximo / posicionSiendoOrdenada > 0; posicionSiendoOrdenada *= BASE)
 			CountingSort.ordenar(arregloAOrdenar, posicionSiendoOrdenada);
+	}
+	
+	public static int cantidadDeDigitos(Integer x) {
+		comprobarEnteroPositivoOCero(x);
+		if (x.equals(0)) {
+			return 1;
+		}
+		return (int) Math.log10(x) + 1;
+	}
+	
+	private static void comprobarEnteroPositivoOCero(Integer x) {
+		if (x == null) {
+			throw new IllegalArgumentException("Entero no puede ser null.");
+		}
+		if (x < 0) {
+			throw new IllegalArgumentException("Entero debe ser mayor o igual a 0, se recibió: " + x);
+		}
 	}
 }
 

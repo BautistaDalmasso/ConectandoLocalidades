@@ -9,6 +9,26 @@ import radixsort.RadixSort;
 
 public class RadixSortTest {
 	@Test
+	public void arregloVacioTest() {
+		AristaPesadaParaTests[] arregloInput = {};
+		AristaPesadaParaTests[] arregloEsperado = {};
+		
+		RadixSort.ordenar(arregloInput, 0);
+		
+		assertArrayEquals(arregloInput, arregloEsperado);
+	}
+	
+	@Test
+	public void arregloUnElementoTest() {
+		AristaPesadaParaTests[] arregloInput = {new AristaPesadaParaTests(1)};
+		AristaPesadaParaTests[] arregloEsperado = {new AristaPesadaParaTests(1)};
+		
+		RadixSort.ordenar(arregloInput, 1);
+		
+		assertArrayEquals(arregloInput, arregloEsperado);
+	}
+	
+	@Test
 	public void arregloOrdenadoNoCambiaTest() {
 		AristaPesadaParaTests[] arregloInput = crearArregloDeAristas(new int[] { 9, 99, 999, 1000 });
 
@@ -41,7 +61,32 @@ public class RadixSortTest {
 
 		assertArrayEquals(arregloEsperado, arregloInput);
 	}
-
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void cantidadDeDigitosNullTest() {
+		RadixSort.cantidadDeDigitos(null);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void cantidadDeDigitosNegativoTest() {
+		RadixSort.cantidadDeDigitos(-1);
+	}
+	
+	@Test
+	public void cantidadDeDigitosCeroTest() {
+		assertEquals(1, RadixSort.cantidadDeDigitos(0));
+	}
+	
+	@Test
+	public void cantidadDeDigitosNumeroUnDigitoTest() {
+		assertEquals(1, RadixSort.cantidadDeDigitos(9));
+	}
+	
+	@Test
+	public void cantidadDeDigitosNumeroTresDigitosTest() {
+		assertEquals(3, RadixSort.cantidadDeDigitos(793));
+	}
+	
 	private AristaPesadaParaTests[] crearArregloDeAristas(int[] pesos) {
 		AristaPesadaParaTests[] ret = new AristaPesadaParaTests[pesos.length];
 
