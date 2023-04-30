@@ -84,6 +84,8 @@ public class Mapa {
 		
 		// Calcula el árbol generador mínimo y dibuja el grafo resultante
 		arbolMinimo = grafoCompleto.getArbolGeneradorMinimo();
+		
+		pintarLocalidades();
 	}
 
 
@@ -146,6 +148,9 @@ public class Mapa {
 		botonDibujarArbol.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				mapa.removeAllMapMarkers();
+				mapa.removeAllMapPolygons();
+				mapa.repaint();
 				grafoCompleto.construirArbolGeneradorMinimo();
 				dibujarGrafo();
 			}
@@ -190,8 +195,10 @@ public class Mapa {
 		String provinciaLocaliadad = fieldProvinciaLocalidad.getText();
 		double latitud = Double.parseDouble(fieldLatitud.getText());
 		double longitud = Double.parseDouble(fieldLongitud.getText());
+		Localidad nuevaLocalidad = new Localidad(nombreLocalidad, provinciaLocaliadad, latitud, longitud);
 		
-		grafoCompleto.agregarLocalidad(nombreLocalidad, provinciaLocaliadad, latitud, longitud);
+		grafoCompleto.agregarLocalidad(nuevaLocalidad);
+		pintarPunto(nuevaLocalidad);
 	}
 	
 	private void mostrarLocalidades(JPanel panel) {
@@ -208,15 +215,7 @@ public class Mapa {
 				   loc.getPosicion().getLongitud());
 	}
 	
-	public void trazarArista(Localidad loc1, Localidad loc2)
-	{
-		Coordinate uno = getCoordenadas(loc1);
-		Coordinate dos = getCoordenadas(loc2);
-		
-		List<Coordinate> route = new ArrayList<Coordinate>(Arrays.asList(uno, dos, dos));
-		mapa.addMapPolygon(new MapPolygonImpl(route));
-	}
-	
+	// TODO: mover al negocio.
 	private void cargarGrafoDesdeArchivo(String listaLocalidades) {
 		Archivo zona = new Archivo(listaLocalidades);
 		LinkedList<Localidad> pueblos = zona.fetchLocalidades();
@@ -225,6 +224,14 @@ public class Mapa {
 		{
 			grafoCompleto.agregarLocalidad(loc);
 		}	
+	}
+	
+	private void pintarLocalidades() {
+		Set <Localidad> puntosDelMapa = arbolMinimo.getLocalidades();
+		for (Localidad loc: puntosDelMapa)
+		{
+			pintarPunto(loc);
+		}
 	}
 	
 	private void dibujarGrafo()
@@ -240,12 +247,21 @@ public class Mapa {
 			}
 		}
 	}
-
+	
 	private void pintarPunto(Localidad loc) {
 		MapMarker m = new MapMarkerDot(loc.getNombre(), getCoordenadas(loc));	
 		m.getStyle().setBackColor(Color.red);
 		m.getStyle().setColor(Color.red);
 		mapa.addMapMarker(m);
+	}
+
+	public void trazarArista(Localidad loc1, Localidad loc2)
+	{
+		Coordinate uno = getCoordenadas(loc1);
+		Coordinate dos = getCoordenadas(loc2);
+		
+		List<Coordinate> route = new ArrayList<Coordinate>(Arrays.asList(uno, dos, dos));
+		mapa.addMapPolygon(new MapPolygonImpl(route));
 	}
 	
 	private void setearPosicionYZoom() {
