@@ -18,9 +18,9 @@ public class GrafoLocalidades {
 	public void agregarLocalidad(Localidad localidad) {
 		verificarLocalidad(localidad);
 
-		String nombreLocalidad = localidad.getNombre();
+		String nombreUnico = localidad.getNombreUnico();
 
-		getLocalidadesConSusVecinos().put(nombreLocalidad, new HashSet<ConexionLocalidades>());
+		getLocalidadesConSusVecinos().put(nombreUnico, new HashSet<ConexionLocalidades>());
 
 		getLocalidades().add(localidad);
 	}
@@ -30,12 +30,12 @@ public class GrafoLocalidades {
 			throw new IllegalArgumentException("localidad no puede ser null.");
 		}
 		if (localidadExiste(localidad)) {
-			throw new IllegalArgumentException("La localidad <" + localidad + "> ya fue agregada.");
+			throw new IllegalArgumentException("La localidad <" + localidad.getNombreUnico() + "> ya fue agregada.");
 		}
 	}
 
 	public boolean localidadExiste(Localidad localidad) {
-		return localidades.contains(localidad);
+		return localidadesConSusVecinos.containsKey(localidad.getNombreUnico());
 	}
 	
 	public ConexionLocalidades agregarConexion(Localidad localidadA, Localidad localidadB) {
@@ -45,8 +45,8 @@ public class GrafoLocalidades {
 	}
 	
 	public ConexionLocalidades agregarConexion(ConexionLocalidades conexion) {
-		String nombreLocalidadA = conexion.getLocalidadA().getNombre();
-		String nombreLocalidadB = conexion.getLocalidadB().getNombre();
+		String nombreLocalidadA = conexion.getLocalidadA().getNombreUnico();
+		String nombreLocalidadB = conexion.getLocalidadB().getNombreUnico();
 		Set<ConexionLocalidades> conexionesLocalidadA = localidadesConSusVecinos.get(nombreLocalidadA);
 		Set<ConexionLocalidades> conexionesLocalidadB = localidadesConSusVecinos.get(nombreLocalidadB);
 		
@@ -58,12 +58,12 @@ public class GrafoLocalidades {
 	
 	public void limpiarConexiones() {
 		for (Localidad loc : localidades) {
-			localidadesConSusVecinos.put(loc.getNombre(), new HashSet<ConexionLocalidades>());
+			localidadesConSusVecinos.put(loc.getNombreUnico(), new HashSet<ConexionLocalidades>());
 		}
 	}
 
 	public Set<ConexionLocalidades> obtenerConexiones(Localidad localidad) {
-		return localidadesConSusVecinos.get(localidad.getNombre());
+		return localidadesConSusVecinos.get(localidad.getNombreUnico());
 	}
 	
 	public Set<Localidad> getLocalidades() {

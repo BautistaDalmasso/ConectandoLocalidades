@@ -1,6 +1,6 @@
 package negocio;
 
-public class ConexionLocalidades implements AristaPesada {
+public class ConexionLocalidades implements AristaPesada, Comparable<ConexionLocalidades> {
 	public static final int COSTO_POR_KILOMETRO = 1000;
 	public static final double AUMENTO_POR_SUPERAR_300_KM = 0.8;
 	public static final int COSTO_POR_INVOLUCRAR_2_PROVINCIAS = 20000;
@@ -90,5 +90,10 @@ public class ConexionLocalidades implements AristaPesada {
 
 	public Localidad getLocalidadB() {
 		return localidadB;
+	}
+
+	@Override
+	public int compareTo(ConexionLocalidades o) {
+		return costoDeLaConexion.compareTo(o.costoDeLaConexion);
 	}
 }

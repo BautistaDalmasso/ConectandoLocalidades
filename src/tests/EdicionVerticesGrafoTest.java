@@ -24,6 +24,16 @@ public class EdicionVerticesGrafoTest {
 		grafo.agregarLocalidad(laPlata);
 		grafo.agregarLocalidad(laPlata);
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void agregarLocalidadNombreUnicoRepetidoTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata1 = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		Localidad laPlata2 = new Localidad("La Plata", "Buenos Aires", 1, 1);
+		
+		grafo.agregarLocalidad(laPlata1);
+		grafo.agregarLocalidad(laPlata2);
+	}
 
 	@Test
 	public void localidadNoAgregadaNoExisteTest() {
@@ -44,6 +54,18 @@ public class EdicionVerticesGrafoTest {
 		assertTrue(grafo.localidadExiste(laPlataRepetida));
 	}
 
+	@Test
+	public void localidadMismoNombreProvinciaDistintaTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata1 = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		Localidad laPlata2 = new Localidad("La Plata", "La Pampa", 1, 1);
+		
+		grafo.agregarLocalidad(laPlata1);
+		grafo.agregarLocalidad(laPlata2);
+		
+		assertTrue(grafo.localidadExiste(laPlata2));
+	}
+	
 	@Test
 	public void grafoSeCompletaAlAgregarLocalidades() {
 		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();

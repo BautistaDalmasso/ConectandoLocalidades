@@ -1,10 +1,12 @@
 package negocio;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import radixsort.RadixSort;
 
@@ -16,6 +18,9 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	private Integer costoConexionMaxima;
 	private ConstructorAGM constructorAGM;
 
+	public static enum AlgoritmoDeOrdenamiento { NO_SELECCIONADO, RADIX_SORT, ARRAYS_SORT };
+	private AlgoritmoDeOrdenamiento algoritmoDeOrdenamientoSeleccionado;
+	
 	public GrafoCompletoLocalidades() {
 		super();
 
@@ -25,6 +30,8 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 		cantidadDeLocalidades = 0;
 		costoConexionMaxima = 0;
 		constructorAGM = new ConstructorAGM(this);
+		
+		algoritmoDeOrdenamientoSeleccionado = AlgoritmoDeOrdenamiento.NO_SELECCIONADO;
 	}
 
 	@Override
@@ -33,14 +40,14 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 		
 		arbolGeneradorMinimo.agregarLocalidad(localidad);
 
-		String nombreLocalidad = localidad.getNombre();
+		String nombreUnicoLocalidad = localidad.getNombreUnico();
 
-		getLocalidadesConSusVecinos().put(nombreLocalidad, new HashSet<ConexionLocalidades>());
+		getLocalidadesConSusVecinos().put(nombreUnicoLocalidad, new HashSet<ConexionLocalidades>());
 
 		completarGrafoConNuevaLocalidad(localidad);
 		getLocalidades().add(localidad);
 
-		localidadesConIndice.put(nombreLocalidad, cantidadDeLocalidades);
+		localidadesConIndice.put(nombreUnicoLocalidad, cantidadDeLocalidades);
 		cantidadDeLocalidades++;
 	}
 
@@ -73,9 +80,28 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	
 	public ConexionLocalidades[] getConexionesOrdenadas() {
 		ConexionLocalidades[] conexiones =  this.conexiones.toArray(ConexionLocalidades[]::new);
-		RadixSort.ordenar(conexiones, costoConexionMaxima);
+		
+		if (algoritmoDeOrdenamientoSeleccionado == AlgoritmoDeOrdenamiento.NO_SELECCIONADO) {
+			seleccionarAlgoritmo();
+		}
+		
+		if (algoritmoDeOrdenamientoSeleccionado == AlgoritmoDeOrdenamiento.RADIX_SORT) {			
+			RadixSort.ordenar(conexiones, costoConexionMaxima);
+		}
+		else {
+			Arrays.sort(conexiones);
+		}
 		
 		return conexiones;
+	}
+	
+	private void seleccionarAlgoritmo() {
+		if (conexiones.size() - RadixSort.cantidadDeDigitos(costoConexionMaxima) > 5) {
+			setAlgoritmoDeOrdenamiento(AlgoritmoDeOrdenamiento.RADIX_SORT);
+		}
+		else {
+			setAlgoritmoDeOrdenamiento(AlgoritmoDeOrdenamiento.ARRAYS_SORT);
+		}
 	}
 	
 	public Integer indiceLocalidad(Localidad localidad) {
@@ -83,10 +109,14 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 			throw new IllegalArgumentException("Localidad no puede ser null.");
 		}
 		
-		return localidadesConIndice.get(localidad.getNombre());
+		return localidadesConIndice.get(localidad.getNombreUnico());
 	}
 	
 	public GrafoLocalidades getArbolGeneradorMinimo() {
 		return arbolGeneradorMinimo;
+	}
+	
+	public void setAlgoritmoDeOrdenamiento(AlgoritmoDeOrdenamiento algoritmo) {
+		algoritmoDeOrdenamientoSeleccionado = algoritmo;
 	}
 }

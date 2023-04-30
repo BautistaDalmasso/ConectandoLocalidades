@@ -4,7 +4,7 @@ import unionfind.UnionFind;
 
 public class ConstructorAGM {
 	private GrafoCompletoLocalidades grafoOriginal;
-	private static int indiceProximaConexion;
+	private int indiceProximaConexion;
 
 	public ConstructorAGM(GrafoCompletoLocalidades grafoOriginal) {
 		this.grafoOriginal = grafoOriginal;

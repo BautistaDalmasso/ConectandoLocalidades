@@ -40,6 +40,10 @@ public class Localidad {
 	public String getProvincia() {
 		return provincia;
 	}
+	
+	public String getNombreUnico() {
+		return nombre + ", " + provincia;
+	}
 
 	public PosicionGeografica getPosicion() {
 		return posicion;
