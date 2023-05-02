@@ -79,4 +79,16 @@ public class EdicionVerticesGrafoTest {
 
 		assertTrue(grafo.obtenerConexiones(laPlata).contains(nuevaConexion));
 	}
+	
+	@Test
+	public void localidadesSeAgreganConIndiceCorrecto() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		Localidad almiranteBrown = new Localidad("Almirante Brown", "Buenos Aires", 0, 0);
+		
+		grafo.agregarLocalidad(laPlata);
+		grafo.agregarLocalidad(almiranteBrown);
+		
+		assertEquals(1, (int) grafo.getIndiceLocalidad(almiranteBrown));
+	}
 }

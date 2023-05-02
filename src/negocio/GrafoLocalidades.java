@@ -45,10 +45,8 @@ public class GrafoLocalidades {
 	}
 	
 	public ConexionLocalidades agregarConexion(ConexionLocalidades conexion) {
-		String nombreLocalidadA = conexion.getLocalidadA().getNombreUnico();
-		String nombreLocalidadB = conexion.getLocalidadB().getNombreUnico();
-		Set<ConexionLocalidades> conexionesLocalidadA = localidadesConSusVecinos.get(nombreLocalidadA);
-		Set<ConexionLocalidades> conexionesLocalidadB = localidadesConSusVecinos.get(nombreLocalidadB);
+		Set<ConexionLocalidades> conexionesLocalidadA = obtenerConexiones(conexion.getLocalidadA());
+		Set<ConexionLocalidades> conexionesLocalidadB = obtenerConexiones(conexion.getLocalidadB());
 		
 		conexionesLocalidadA.add(conexion);
 		conexionesLocalidadB.add(conexion);

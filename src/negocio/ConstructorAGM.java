@@ -39,15 +39,15 @@ public class ConstructorAGM {
 	}
 
 	private boolean conexionGeneraCiclo(UnionFind uf, ConexionLocalidades conexion) {
-		Integer indiceLocalidadA = grafoOriginal.indiceLocalidad(conexion.getLocalidadA());
-		Integer indiceLocalidadB = grafoOriginal.indiceLocalidad(conexion.getLocalidadB());
+		Integer indiceLocalidadA = grafoOriginal.getIndiceLocalidad(conexion.getLocalidadA());
+		Integer indiceLocalidadB = grafoOriginal.getIndiceLocalidad(conexion.getLocalidadB());
 
 		return uf.compartenComponenteConexa(indiceLocalidadA, indiceLocalidadB);
 	}
 	
 	private void unirLocalidades(UnionFind uf, ConexionLocalidades conexion) {
-		Integer indiceLocalidadA = grafoOriginal.indiceLocalidad(conexion.getLocalidadA());
-		Integer indiceLocalidadB = grafoOriginal.indiceLocalidad(conexion.getLocalidadB());
+		Integer indiceLocalidadA = grafoOriginal.getIndiceLocalidad(conexion.getLocalidadA());
+		Integer indiceLocalidadB = grafoOriginal.getIndiceLocalidad(conexion.getLocalidadB());
 		
 		uf.union(indiceLocalidadA, indiceLocalidadB);
 	}
