@@ -35,10 +35,12 @@ public class PosicionGeografica {
 		Double a = Math.sin(diferenciaLatitudes / 2) * Math.sin(diferenciaLatitudes / 2) + 
 		Math.cos(gradosARadianes(posicionSalida.latitud)) * Math.cos(gradosARadianes(posicionLlegada.latitud)) * 
 		Math.sin(diferenciaLongitudes / 2) * Math.sin(diferenciaLongitudes / 2);
-		Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-		Double distance = RADIO_TIERRA_KM * c;
 		
-		return distance;
+		Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+		
+		Double distancia = RADIO_TIERRA_KM * c;
+		
+		return distancia;
 	}
 	
 	static double gradosARadianes(double grados) {
