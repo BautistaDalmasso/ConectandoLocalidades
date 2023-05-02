@@ -77,6 +77,46 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 		cantidadDeLocalidades++;
 	}
 	
+	@Override
+	public void eliminarLocalidad(Localidad localidad) {
+		verificarLocalidadValidaExistente(localidad);
+		
+		eliminarDeConexiones(localidad);
+		eliminarDeIndices(localidad);
+		arbolGeneradorMinimo.eliminarLocalidad(localidad);
+		
+		super.eliminarLocalidad(localidad);
+		cantidadDeLocalidades--;
+	}
+	
+	private void eliminarDeConexiones(Localidad localidad) {
+		for (ConexionLocalidades conexion : obtenerConexiones(localidad)) {
+			conexiones.remove(conexion);
+		}
+	}
+
+	private void eliminarDeIndices(Localidad localidad) {
+		Integer indiceLocalidad = localidadesConIndice.get(localidad.getNombreUnico());
+
+		reducirIndices(indiceLocalidad);
+		
+		localidadesConIndice.remove(localidad.getNombreUnico());
+	}
+	
+	private void reducirIndices(Integer pisoReduccion) {
+		String nombreUnicoLocalidad;
+		Integer indiceLocalidad;
+		
+		for (Localidad loc : getLocalidades()) {
+			nombreUnicoLocalidad = loc.getNombreUnico();
+			indiceLocalidad = localidadesConIndice.get(nombreUnicoLocalidad);
+			
+			if (indiceLocalidad.compareTo(pisoReduccion) > 0) {
+				localidadesConIndice.put(nombreUnicoLocalidad, indiceLocalidad - 1);
+			}
+		}
+	}
+
 	public void construirArbolGeneradorMinimo() {
 		arbolGeneradorMinimo.limpiarConexiones();
 		constructorAGM.construir();

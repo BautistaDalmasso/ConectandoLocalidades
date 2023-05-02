@@ -50,7 +50,57 @@ public class ArbolGeneradorMinimoTest {
 		
 		assertEquals(arbolEsperado, agm);
 	}
+	
+	@Test
+	public void agmLuegoDeEliminarLocalidadTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		Localidad almiranteBrown = new Localidad("Almirante Brown", "Buenos Aires", 0, 0);
+		Localidad belgrano = new Localidad("Belgrano", "Buenos Aires", 0, 0);
+		grafo.agregarLocalidad(laPlata);
+		grafo.agregarLocalidad(almiranteBrown);
+		grafo.agregarLocalidad(belgrano);
+		
+		grafo.eliminarLocalidad(almiranteBrown);
+		
+		grafo.construirArbolGeneradorMinimo();
+		
+		assertEquals(crearArbolEsperadoLaPlata_Belgrano(), grafo.getArbolGeneradorMinimo());
+	}
+	
+	@Test
+	public void segundoAgmLuegoDeEliminarLocalidadTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		Localidad almiranteBrown = new Localidad("Almirante Brown", "Buenos Aires", 0, 0);
+		Localidad belgrano = new Localidad("Belgrano", "Buenos Aires", 0, 0);
+		grafo.agregarLocalidad(laPlata);
+		grafo.agregarLocalidad(almiranteBrown);
+		grafo.agregarLocalidad(belgrano);
+				
+		grafo.construirArbolGeneradorMinimo();
+		
+		grafo.eliminarLocalidad(almiranteBrown);
+		
+		grafo.construirArbolGeneradorMinimo();
+		
+		assertEquals(crearArbolEsperadoLaPlata_Belgrano(), grafo.getArbolGeneradorMinimo());
+	}
 
+	private GrafoLocalidades crearArbolEsperadoLaPlata_Belgrano() {
+		GrafoLocalidades grafo = new GrafoLocalidades();
+		
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		Localidad belgrano = new Localidad("Belgrano", "Buenos Aires", 0, 0);
+				
+		grafo.agregarLocalidad(laPlata);
+		grafo.agregarLocalidad(belgrano);
+		
+		grafo.agregarConexion(laPlata, belgrano);
+		
+		return grafo;
+	}
+	
 	private GrafoCompletoLocalidades crearGrafoTresLocalidades() {
 		Localidad localidadCentro = new Localidad("centro", "Buenos Aires", 0, 0);
 		Localidad localidadEste = new Localidad("Este", "Buenos Aires", -1, 0);

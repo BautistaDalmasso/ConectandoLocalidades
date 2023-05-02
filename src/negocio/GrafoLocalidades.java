@@ -16,7 +16,7 @@ public class GrafoLocalidades {
 	}
 
 	public void agregarLocalidad(Localidad localidad) {
-		verificarLocalidad(localidad);
+		verificarLocalidadValidaInexistente(localidad);
 
 		String nombreUnico = localidad.getNombreUnico();
 
@@ -25,10 +25,8 @@ public class GrafoLocalidades {
 		getLocalidades().add(localidad);
 	}
 
-	protected void verificarLocalidad(Localidad localidad) {
-		if (localidad == null) {
-			throw new IllegalArgumentException("localidad no puede ser null.");
-		}
+	protected void verificarLocalidadValidaInexistente(Localidad localidad) {
+		verificarLocalidadNoNula(localidad);
 		if (localidadExiste(localidad)) {
 			throw new IllegalArgumentException("La localidad <" + localidad.getNombreUnico() + "> ya fue agregada.");
 		}
@@ -52,6 +50,44 @@ public class GrafoLocalidades {
 		conexionesLocalidadB.add(conexion);
 		
 		return conexion;
+	}
+	
+	public void eliminarLocalidad(Localidad localidad) {
+		verificarLocalidadValidaExistente(localidad);
+
+		eliminarConexiones(localidad);
+		
+		localidadesConSusVecinos.remove(localidad.getNombreUnico());
+		localidades.remove(localidad);
+	}
+	
+	protected void verificarLocalidadValidaExistente(Localidad localidad) {
+		verificarLocalidadNoNula(localidad);
+		if (!localidadExiste(localidad)) {
+			throw new IllegalArgumentException("La localidad <" + localidad.getNombreUnico() + "> no existe en el grafo.");
+		}
+	}
+	
+	private void verificarLocalidadNoNula(Localidad localidad) {
+		if (localidad == null) {
+			throw new IllegalArgumentException("localidad no puede ser null.");
+		}
+	}
+	
+	private void eliminarConexiones(Localidad localidad) {
+		Set<ConexionLocalidades> conexiones = Set.copyOf(obtenerConexiones(localidad));
+				
+		for (ConexionLocalidades conexion : conexiones) {
+			eliminarConexion(conexion);
+		}
+	}
+	
+	private void eliminarConexion(ConexionLocalidades conexion) {
+		Set<ConexionLocalidades> conexionesLocalidadA = obtenerConexiones(conexion.getLocalidadA());
+		Set<ConexionLocalidades> conexionesLocalidadB = obtenerConexiones(conexion.getLocalidadB());
+		
+		conexionesLocalidadA.remove(conexion);
+		conexionesLocalidadB.remove(conexion);
 	}
 	
 	public void limpiarConexiones() {
