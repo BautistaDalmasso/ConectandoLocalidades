@@ -163,4 +163,14 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	public void setAlgoritmoDeOrdenamiento(AlgoritmoDeOrdenamiento algoritmo) {
 		algoritmoDeOrdenamientoSeleccionado = algoritmo;
 	}
+	public void cargarListaLocalidades(ArrayList<Localidad> localidadesElegidas) {
+		for (Localidad l: localidadesElegidas)
+		{
+			this.agregarLocalidad(l);
+		}
+	}
+
+	public int getCantidadDeLocalidades() {
+		return cantidadDeLocalidades;
+	}
 }
