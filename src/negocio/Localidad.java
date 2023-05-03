@@ -40,10 +40,6 @@ public class Localidad {
 	public String getProvincia() {
 		return provincia;
 	}
-	
-	public String getNombreUnico() {
-		return nombre + ", " + provincia;
-	}
 
 	public PosicionGeografica getPosicion() {
 		return posicion;
@@ -73,8 +69,8 @@ public class Localidad {
 	@Override
 	public String toString()
 	{
-		return Archivo.setLenCadenaTexto(nombre, 25) + 
-			   Archivo.setLenCadenaTexto(provincia, 25) +
+		return Archivo_old.setLenCadenaTexto(nombre, 25) + 
+			   Archivo_old.setLenCadenaTexto(provincia, 25) +
 			   posicion.toString();
 	}
 }
