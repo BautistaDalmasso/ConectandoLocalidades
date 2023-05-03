@@ -58,7 +58,7 @@ public class UnionFindTest {
 	public void raizEnUnionFindNuevoTest() {
 		UnionFind uf = new UnionFind(1);
 
-		assertEquals((Integer) 0, uf.find(0).getRaiz());
+		assertEquals(0, uf.find(0));
 	}
 
 	@Test
@@ -104,7 +104,7 @@ public class UnionFindTest {
 		// Union arboles.
 		uf.union(0, 5);
 
-		assertEquals((Integer) 5, uf.find(0).getRaiz());
+		assertEquals(5, uf.find(0));
 	}
 
 	@Test
@@ -117,7 +117,8 @@ public class UnionFindTest {
 		uf.union(3, 4);
 
 		uf.find(0); // Camino se comprime luego de un find.
-
-		assertEquals(1, uf.find(0).getProfundidadArbol());
+		uf.find(0);
+		
+		assertEquals(1, uf.getUltimaProfundidad());
 	}
 }

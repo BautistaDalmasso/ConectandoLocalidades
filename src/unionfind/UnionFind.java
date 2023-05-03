@@ -2,6 +2,7 @@ package unionfind;
 
 public class UnionFind {
 	private Integer[] componentesConexas;
+	private int ultimaProfundidad;
 
 	public UnionFind(int cantidadDeVertices) {
 		if (cantidadDeVertices <= 0) {
@@ -11,10 +12,13 @@ public class UnionFind {
 		this.componentesConexas = new Integer[cantidadDeVertices];
 	}
 
-	public ResultadoFind find(Integer i) {
+	public int find(Integer i) {
 		chequearVerticeValido(i);
 
-		return findConPathCompression(i);
+		ResultadoFind resultado = findConPathCompression(i);
+		ultimaProfundidad = resultado.getProfundidadArbol();
+		
+		return resultado.getRaiz();
 	}
 
 	private ResultadoFind findConPathCompression(Integer i) {
@@ -43,15 +47,15 @@ public class UnionFind {
 		chequearVerticeValido(i);
 		chequearVerticeValido(j);
 
-		return find(i).getRaiz().equals(find(j).getRaiz());
+		return find(i) == find(j);
 	}
 
 	public void union(Integer i, Integer j) {
 		chequearVerticeValido(i);
 		chequearVerticeValido(j);
 
-		ResultadoFind raiz_i = find(i);
-		ResultadoFind raiz_j = find(j);
+		ResultadoFind raiz_i = findConPathCompression(i);
+		ResultadoFind raiz_j = findConPathCompression(j);
 
 		if (raiz_i.getProfundidadArbol() < raiz_j.getProfundidadArbol()) {
 			componentesConexas[raiz_j.getRaiz()] = raiz_i.getRaiz();
@@ -67,5 +71,31 @@ public class UnionFind {
 		if (i >= componentesConexas.length) {
 			throw new IllegalArgumentException("El vertice <" + i + "> no se encuentra entre los vertices posibles.");
 		}
+	}
+
+	public int getUltimaProfundidad() {
+		return ultimaProfundidad;
+	}
+}
+
+class ResultadoFind {
+	private int raiz;
+	private int profundidadArbol;
+
+	public ResultadoFind(int raiz) {
+		this.raiz = raiz;
+		this.profundidadArbol = 0;
+	}
+
+	public void aumentarProfundidad() {
+		profundidadArbol++;
+	}
+
+	public int getRaiz() {
+		return raiz;
+	}
+
+	public int getProfundidadArbol() {
+		return profundidadArbol;
 	}
 }

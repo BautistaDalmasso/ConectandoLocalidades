@@ -35,6 +35,31 @@ public class EdicionVerticesGrafoTest {
 		grafo.agregarLocalidad(laPlata2);
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void eliminarLocalidadNulaTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		
+		grafo.eliminarLocalidad(null);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void eliminarLocalidadNoAgregadaTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+
+		grafo.eliminarLocalidad(laPlata);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void eliminarLocalidadDosVecesTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		grafo.agregarLocalidad(laPlata);
+		
+		grafo.eliminarLocalidad(laPlata);
+		grafo.eliminarLocalidad(laPlata);
+	}
+	
 	@Test
 	public void localidadNoAgregadaNoExisteTest() {
 		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
@@ -67,7 +92,7 @@ public class EdicionVerticesGrafoTest {
 	}
 	
 	@Test
-	public void grafoSeCompletaAlAgregarLocalidades() {
+	public void grafoSeCompletaAlAgregarLocalidadesTest() {
 		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
 		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
 		Localidad almiranteBrown = new Localidad("Almirante Brown", "Buenos Aires", 0, 0);
@@ -78,5 +103,44 @@ public class EdicionVerticesGrafoTest {
 		ConexionLocalidades nuevaConexion = new ConexionLocalidades(laPlata, almiranteBrown);
 
 		assertTrue(grafo.obtenerConexiones(laPlata).contains(nuevaConexion));
+	}
+	
+	@Test
+	public void localidadesSeAgreganConIndiceCorrectoTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		Localidad almiranteBrown = new Localidad("Almirante Brown", "Buenos Aires", 0, 0);
+		Localidad belgrano = new Localidad("Belgrano", "Buenos Aires", 0, 0);
+		grafo.agregarLocalidad(laPlata);
+		grafo.agregarLocalidad(almiranteBrown);
+		grafo.agregarLocalidad(belgrano);
+		
+		assertEquals(2, (int) grafo.getIndiceLocalidad(belgrano));
+	}
+	
+	@Test
+	public void localidadEliminadaNoExisteTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		grafo.agregarLocalidad(laPlata);
+		
+		grafo.eliminarLocalidad(laPlata);
+		
+		assertFalse(grafo.localidadExiste(laPlata));
+	}
+	
+	@Test
+	public void indicesSeActualizanLuegoDeEliminarLocalidadTest() {
+		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
+		Localidad laPlata = new Localidad("La Plata", "Buenos Aires", 0, 0);
+		Localidad almiranteBrown = new Localidad("Almirante Brown", "Buenos Aires", 0, 0);
+		Localidad belgrano = new Localidad("Belgrano", "Buenos Aires", 0, 0);
+		grafo.agregarLocalidad(laPlata);
+		grafo.agregarLocalidad(almiranteBrown);
+		grafo.agregarLocalidad(belgrano);
+		
+		grafo.eliminarLocalidad(almiranteBrown);
+		
+		assertEquals(1, (int) grafo.getIndiceLocalidad(belgrano));
 	}
 }

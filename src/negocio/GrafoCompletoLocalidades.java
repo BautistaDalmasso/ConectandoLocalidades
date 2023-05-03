@@ -3,10 +3,8 @@ package negocio;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import radixsort.RadixSort;
 
@@ -34,36 +32,38 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 		algoritmoDeOrdenamientoSeleccionado = AlgoritmoDeOrdenamiento.NO_SELECCIONADO;
 	}
 
-	@Override
-	public void agregarLocalidad(Localidad localidad) {
-		verificarLocalidad(localidad);
-		
-		arbolGeneradorMinimo.agregarLocalidad(localidad);
-
-		String nombreUnicoLocalidad = localidad.getNombreUnico();
-
-		getLocalidadesConSusVecinos().put(nombreUnicoLocalidad, new HashSet<ConexionLocalidades>());
-
-		completarGrafoConNuevaLocalidad(localidad);
-		getLocalidades().add(localidad);
-
-		localidadesConIndice.put(nombreUnicoLocalidad, cantidadDeLocalidades);
-		cantidadDeLocalidades++;
-	}
-
 	public void agregarLocalidad(String nombreLocalidad, String provinciaLocalidad, double latitud, double longitud) {
 		Localidad nuevaLocalidad = new Localidad(nombreLocalidad, provinciaLocalidad, latitud, longitud);
 		
 		agregarLocalidad(nuevaLocalidad);
 	}
 	
+	@Override
+	public void agregarLocalidad(Localidad localidad) {
+		super.agregarLocalidad(localidad);
+		
+		arbolGeneradorMinimo.agregarLocalidad(localidad);
+
+		completarGrafoConNuevaLocalidad(localidad);
+		actualizarLocalidadesConIndice(localidad);
+	}
+	
 	private void completarGrafoConNuevaLocalidad(Localidad nuevaLocalidad) {
 		for (Localidad localidad : getLocalidades()) {
-			ConexionLocalidades nuevaConexion = agregarConexion(nuevaLocalidad, localidad);
-			conexiones.add(nuevaConexion);
-			
-			setCostoConexionMaxima(nuevaConexion);
+			if (localidad != nuevaLocalidad) {
+				agregarConexion(nuevaLocalidad, localidad);
+			}
 		}
+	}
+
+	@Override
+	public ConexionLocalidades agregarConexion(Localidad nuevaLocalidad, Localidad localidad) {
+		ConexionLocalidades nuevaConexion = super.agregarConexion(nuevaLocalidad, localidad);
+		conexiones.add(nuevaConexion);
+		
+		setCostoConexionMaxima(nuevaConexion);
+		
+		return nuevaConexion;
 	}
 
 	private void setCostoConexionMaxima(ConexionLocalidades nuevaConexion) {
@@ -72,7 +72,51 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 		}
 	}
 
+	private void actualizarLocalidadesConIndice(Localidad localidad) {
+		localidadesConIndice.put(localidad.getNombreUnico(), cantidadDeLocalidades);
+		cantidadDeLocalidades++;
+	}
 	
+	@Override
+	public void eliminarLocalidad(Localidad localidad) {
+		verificarLocalidadValidaExistente(localidad);
+		
+		eliminarDeConexiones(localidad);
+		eliminarDeIndices(localidad);
+		arbolGeneradorMinimo.eliminarLocalidad(localidad);
+		
+		super.eliminarLocalidad(localidad);
+		cantidadDeLocalidades--;
+	}
+	
+	private void eliminarDeConexiones(Localidad localidad) {
+		for (ConexionLocalidades conexion : obtenerConexiones(localidad)) {
+			conexiones.remove(conexion);
+		}
+	}
+
+	private void eliminarDeIndices(Localidad localidad) {
+		Integer indiceLocalidad = localidadesConIndice.get(localidad.getNombreUnico());
+
+		reducirIndices(indiceLocalidad);
+		
+		localidadesConIndice.remove(localidad.getNombreUnico());
+	}
+	
+	private void reducirIndices(Integer pisoReduccion) {
+		String nombreUnicoLocalidad;
+		Integer indiceLocalidad;
+		
+		for (Localidad loc : getLocalidades()) {
+			nombreUnicoLocalidad = loc.getNombreUnico();
+			indiceLocalidad = localidadesConIndice.get(nombreUnicoLocalidad);
+			
+			if (indiceLocalidad.compareTo(pisoReduccion) > 0) {
+				localidadesConIndice.put(nombreUnicoLocalidad, indiceLocalidad - 1);
+			}
+		}
+	}
+
 	public void construirArbolGeneradorMinimo() {
 		arbolGeneradorMinimo.limpiarConexiones();
 		constructorAGM.construir();
@@ -104,7 +148,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 		}
 	}
 	
-	public Integer indiceLocalidad(Localidad localidad) {
+	public Integer getIndiceLocalidad(Localidad localidad) {
 		if (localidad == null) {
 			throw new IllegalArgumentException("Localidad no puede ser null.");
 		}
