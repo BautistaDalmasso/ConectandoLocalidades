@@ -61,16 +61,9 @@ public class Localidad {
 				&& Objects.equals(provincia, other.provincia);
 	}
 	
-	public String toFileLine()
-	{
-		return nombre + "#" + provincia + "#" + posicion.toFileLine();
-	}
-	
 	@Override
 	public String toString()
 	{
-		return Archivo_old.setLenCadenaTexto(nombre, 25) + 
-			   Archivo_old.setLenCadenaTexto(provincia, 25) +
-			   posicion.toString();
+		return "<" + nombre + ", " + provincia + ". Posicion: " + posicion.toString() + ">";
 	}
 }
