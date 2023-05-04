@@ -110,20 +110,6 @@ public class ArchivoLocalidades
 	public HashMap<String, HashSet<Localidad>> getLocalidadesPorProvincia() {
 		return localidadesPorProvincia;
 	}
-
-//	public void imprimirLocalidadesPorProvincia() // método usado para pruebas durante la programación 
-//	{
-//		Set<String> provincias = getProvincias();
-//		for (String p: provincias)
-//		{
-//			System.out.println("\nProvincia de " + p);
-//			HashSet <Localidad> localidades = localidadesPorProvincia.get(p);
-//			for (Localidad l: localidades)
-//			{
-//				System.out.println("   " + l.getNombre());
-//			}
-//		}
-//	}
 	
 	public Set<String> getProvincias()
 	{

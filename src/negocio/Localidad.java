@@ -44,6 +44,10 @@ public class Localidad {
 	public PosicionGeografica getPosicion() {
 		return posicion;
 	}
+	
+	public String getNombreUnico() {
+		return nombre + ", " + provincia;
+	}
 
 	@Override
 	public int hashCode() {

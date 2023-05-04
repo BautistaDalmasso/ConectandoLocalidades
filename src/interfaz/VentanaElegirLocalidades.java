@@ -47,15 +47,12 @@ public class VentanaElegirLocalidades extends JFrame{
 	private String dataLocElegidas[][];
 	private String colLocElegidas[];
 	private JTableHeader encabezado;
-
-	
 	
 	private static String provinciaElegida;
 	private static JLabel localidadElegida;
 	private static String locElegida;
 	private static JButton aceptarLocalidad;
 	private static JButton borrarLocalidad;
-	private final VentanaElegirLocalidades THIS;
 	private static HashMap<String, String> provinciasIATA;
 	
 	private ArrayList<Localidad> localidadesElegidas;
@@ -71,7 +68,7 @@ public class VentanaElegirLocalidades extends JFrame{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {		
-					THIS.ventana.setVisible(true);
+					ventana.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -87,7 +84,6 @@ public class VentanaElegirLocalidades extends JFrame{
 
 	public VentanaElegirLocalidades()
 	{	
-		THIS = this;
 		ventana = new JFrame();
 	}
 	
