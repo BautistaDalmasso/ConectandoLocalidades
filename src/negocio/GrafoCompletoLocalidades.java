@@ -140,12 +140,20 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	}
 	
 	private void seleccionarAlgoritmo() {
-		if (conexiones.size() - RadixSort.cantidadDeDigitos(costoConexionMaxima) > 5) {
+		if (elegibleParaRadixSort()) {
 			setAlgoritmoDeOrdenamiento(AlgoritmoDeOrdenamiento.RADIX_SORT);
 		}
 		else {
 			setAlgoritmoDeOrdenamiento(AlgoritmoDeOrdenamiento.ARRAYS_SORT);
 		}
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean elegibleParaRadixSort() {
+		// El stress test arrojo que RadixSort es más lento que Arrays.Sort en casi todos los casos.
+		// Mantenemos esta función como un ejemplo de selección "inteligente" de algoritmo que podría usarse si
+		// nuestra implementación de RadixSort fuera más eficiente en ciertos casos (actualmente siempre devuelve false).
+		return false && (conexiones.size() - RadixSort.cantidadDeDigitos(costoConexionMaxima) > 5);
 	}
 	
 	public Integer getIndiceLocalidad(Localidad localidad) {
