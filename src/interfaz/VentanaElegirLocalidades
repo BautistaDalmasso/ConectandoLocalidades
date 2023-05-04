@@ -16,7 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +56,7 @@ public class VentanaElegirLocalidades extends JFrame{
 	private static JButton aceptarLocalidad;
 	private static JButton borrarLocalidad;
 	private final VentanaElegirLocalidades THIS;
+	private static HashMap<String, String> provinciasIATA;
 	
 	private ArrayList<Localidad> localidadesElegidas;
 	
@@ -65,6 +66,7 @@ public class VentanaElegirLocalidades extends JFrame{
 			"Debe instanciar las localidades (.setLocalidadesElegibles) antes de lanzar.");
 		
 		grafoCompleto = g;
+		cargarCodigosIataProvincias();
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -217,22 +219,29 @@ public class VentanaElegirLocalidades extends JFrame{
 		HashSet<Localidad> locsProvEspecifica = archivo.getLocalidadesDeUnaProvincia(provinciaElegida);
 		int i =  indiceNombreRepetidoLocalidad();
 		if (i>0) quitarIndiceAlNombreLoc();
+		String index ="";
+		if (i>0) index="("+i+")";
 		
 		for (Localidad l: locsProvEspecifica)
 		{
 			if (l.getNombre().equals(locElegida)) {
 				if (i==0)
 				{
-					boolean entroAlGrafo = enviarLocalidadAlGrafoCompleto(l);
+					Localidad nueva = new Localidad(l.getNombre() + index + sufijoLocalidad(), l.getProvincia(), 
+							l.getPosicion().getLatitud(), l.getPosicion().getLongitud());
+					boolean entroAlGrafo = enviarLocalidadAlGrafoCompleto(nueva);
 					if (entroAlGrafo)
 					{	
-						addLocalidadATablaLocalidades(l);				
+						addLocalidadATablaLocalidades(nueva);
+						System.out.println("Entró al grafo!");
+						if (i>0) reagregarIndiceAlNombreLoc(i);
 						return true;
 					}
 				}
 				i--; System.out.println(i);
 			}
 		}
+		if (i>0) reagregarIndiceAlNombreLoc(i);
 		return false;
 	}
 	
@@ -256,6 +265,11 @@ public class VentanaElegirLocalidades extends JFrame{
 		locElegida = locElegida.substring(0, locElegida.length()-3);
 	}
 	
+	private void reagregarIndiceAlNombreLoc(int i)
+	{
+		locElegida = locElegida + "(" + i + ")";
+	}
+	
 	private int indiceNombreRepetidoLocalidad()
 	{
 		return esNombreRepetido()? indiceRepeticion(): 0;
@@ -272,6 +286,28 @@ public class VentanaElegirLocalidades extends JFrame{
 		return Integer.parseInt(""+locElegida.charAt(locElegida.length()-2));
 	}
 	
+	private String sufijoLocalidad() {
+		String sufijo = "[" + provinciasIATA.get(provinciaElegida) + "]";
+		return sufijo;
+	}
+	
+	private void cargarCodigosIataProvincias()
+	{
+		String [] abreviaturasIATA = {"CABA", "BA", "CA", "CH", "CT", "CB", "CR", 
+				   "ER", "FO", "JY", "LP", "LR", "MZ", "MI", "NQN", "RN", 
+				   "SA", "SJ", "SL", "SC", "SF", "SE", "TF", "TU"};
+		String [] provincias = {"Ciudad Autónoma de Buenos Aires", "Buenos Aires", "Catamarca", "Chaco", "Chubut", 
+				"Córdoba", "Corrientes", "Entre Ríos", "Formosa", "Jujuy", 
+				"La Pampa", "La Rioja", "Mendoza", "Misiones", "Neuquén", 
+				"Río Negro", "Salta", "San Juan", "San Luis", "Santa Cruz", 
+				"Santa Fe", "Santiago del Estero", 
+				"Tierra del Fuego, Antártida e Islas del Atlántico Sur", "Tucumán"};
+		provinciasIATA = new HashMap<String, String>();
+		for (int i = 0; i < 23; i++)
+		{
+			provinciasIATA.put(provincias[i], abreviaturasIATA[i]);
+		}
+	}
 	
 	private void addLocalidadATablaLocalidades(Localidad l)
 	{
@@ -425,3 +461,4 @@ public class VentanaElegirLocalidades extends JFrame{
 		grafoCompleto = g;
 	}
 }
+
