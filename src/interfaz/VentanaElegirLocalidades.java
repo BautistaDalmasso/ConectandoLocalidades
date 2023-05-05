@@ -6,7 +6,6 @@ import javax.swing.JFrame;
 
 import negocio.ArchivoLocalidades;
 import negocio.Localidad;
-import negocio.GrafoCompletoLocalidades;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,7 +38,6 @@ public class VentanaElegirLocalidades extends JFrame{
 	private JFrame ventana;
 	private ArchivoLocalidades archivo;
 	
-	private GrafoCompletoLocalidades grafoCompleto;
 	private static JComboBox<String> comboBoxLocalidades;
 	private static JTable panelLocalidadesElegidas;
 	private static JScrollPane panelScroll;
@@ -57,12 +55,13 @@ public class VentanaElegirLocalidades extends JFrame{
 	
 	private ArrayList<Localidad> localidadesElegidas;
 	
-	public void launch(GrafoCompletoLocalidades grafoCompleto) 
+	private static Mapa mapa;
+	
+	public void launch() 
 	{			
 		if (archivo==null) throw new IllegalArgumentException(
 			"Debe instanciar las localidades (.setLocalidadesElegibles) antes de lanzar.");
 		
-		this.grafoCompleto = grafoCompleto;
 		cargarCodigosIataProvincias();
 		
 		EventQueue.invokeLater(new Runnable() {
@@ -82,9 +81,10 @@ public class VentanaElegirLocalidades extends JFrame{
 		return localidadesElegidas;
 	}
 
-	public VentanaElegirLocalidades()
+	public VentanaElegirLocalidades(Mapa mapa)
 	{	
 		ventana = new JFrame();
+		VentanaElegirLocalidades.mapa = mapa;
 	}
 	
 	public void setLocalidadesElegibles(ArchivoLocalidades a)
@@ -209,7 +209,7 @@ public class VentanaElegirLocalidades extends JFrame{
 	{
 		Localidad localidadActual = obtenerLocalidadActual();
 		
-		boolean entroAlGrafo = enviarLocalidadAlGrafoCompleto(localidadActual);
+		boolean entroAlGrafo = mapa.agregarLocalidad(localidadActual);
 		if (entroAlGrafo)
 		{	
 			addLocalidadATablaLocalidades(localidadActual);
@@ -219,20 +219,10 @@ public class VentanaElegirLocalidades extends JFrame{
 		return false;
 	}
 	
-	private boolean enviarLocalidadAlGrafoCompleto(Localidad l)
-	{
-		try {
-			grafoCompleto.agregarLocalidad(l);
-			return true;
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
-	}
-	
 	private boolean borrarLocalidadActual() {		
 		Localidad localidadActual = obtenerLocalidadActual();
 		
-		boolean localidadEliminada = eliminarLocalidadDelGrafoCompleto(localidadActual);
+		boolean localidadEliminada = mapa.eliminarLocalidad(localidadActual);
 		if (localidadEliminada) {			
 			localidadesElegidas.remove(localidadActual);
 			refrescarTablaLocElegidas();
@@ -242,21 +232,12 @@ public class VentanaElegirLocalidades extends JFrame{
 		return false;
 	}
 	
-	private boolean eliminarLocalidadDelGrafoCompleto(Localidad localidad) {
-		try {
-			grafoCompleto.eliminarLocalidad(localidad);
-			return true;
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
-	}
-	
 	private Localidad obtenerLocalidadActual() {
 		HashSet<Localidad> locsProvEspecifica = archivo.getLocalidadesDeUnaProvincia(provinciaElegida);
 		
-		for (Localidad l: locsProvEspecifica) {
-			if (l.getNombre().equals(locElegida)) {
-				return l;
+		for (Localidad localidad: locsProvEspecifica) {
+			if (localidad.getNombre().equals(locElegida)) {
+				return localidad;
 			}
 		}
 		return null;
@@ -281,9 +262,9 @@ public class VentanaElegirLocalidades extends JFrame{
 		}
 	}
 	
-	private void addLocalidadATablaLocalidades(Localidad l)
+	private void addLocalidadATablaLocalidades(Localidad localidad)
 	{
-		localidadesElegidas.add(l);
+		localidadesElegidas.add(localidad);
 		refrescarTablaLocElegidas();
 	}
 	
@@ -355,10 +336,13 @@ public class VentanaElegirLocalidades extends JFrame{
 		localidadesDeProvinciaSeleccionada = new String[localidades.size()];
 		
 		int i = 0;
-		for (Localidad l: localidades)
+		for (Localidad localidad: localidades)
 		{
-			String nuevaLoc = l.getNombre();
-			if (verificarSiEsNombreRepetido(nuevaLoc)) nuevaLoc = agregarNumeroAlNombre(nuevaLoc);
+			String nuevaLoc = localidad.getNombre();
+			if (verificarSiEsNombreRepetido(nuevaLoc)) {
+				nuevaLoc = agregarNumeroAlNombre(nuevaLoc);
+				System.out.println(nuevaLoc);
+			}
 			localidadesDeProvinciaSeleccionada[i] = nuevaLoc;
 			i++;
 		}
@@ -369,21 +353,21 @@ public class VentanaElegirLocalidades extends JFrame{
 		return Arrays.stream(localidadesDeProvinciaSeleccionada).anyMatch(n::equals);
 	}
 	
-	private String agregarNumeroAlNombre(String l)
+	private String agregarNumeroAlNombre(String localidad)
 	{
 		int cont = 1;
-		while (Arrays.stream(localidadesDeProvinciaSeleccionada).anyMatch((l + "(" + cont + ")")::equals))
+		while (Arrays.stream(localidadesDeProvinciaSeleccionada).anyMatch((localidad + "(" + cont + ")")::equals))
 		{
 			cont++;
 		}
-		return l + "(" + cont + ")";
+		return localidad + "(" + cont + ")";
 	}
 	
 	private static String[] ordenar(String[] lista)
 	{
-		List<String> l = Arrays.asList(lista);
-		l.sort(null);		
-		return l.toArray(new String[l.size()]);
+		List<String> localidad = Arrays.asList(lista);
+		localidad.sort(null);		
+		return localidad.toArray(new String[localidad.size()]);
 	}
 
 	private String[] listaProvincias() {
@@ -412,10 +396,6 @@ public class VentanaElegirLocalidades extends JFrame{
 		ventana.getContentPane().add(b);
 		b.setVisible(true);
 		return b;
-	}
-
-	public void setGrafoCompleto(GrafoCompletoLocalidades grafoCompleto) {
-		this.grafoCompleto = grafoCompleto;
 	}
 }
 
