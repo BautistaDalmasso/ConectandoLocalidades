@@ -57,12 +57,12 @@ public class VentanaElegirLocalidades extends JFrame{
 	
 	private ArrayList<Localidad> localidadesElegidas;
 	
-	public void launch(GrafoCompletoLocalidades g) 
+	public void launch(GrafoCompletoLocalidades grafoCompleto) 
 	{			
 		if (archivo==null) throw new IllegalArgumentException(
 			"Debe instanciar las localidades (.setLocalidadesElegibles) antes de lanzar.");
 		
-		grafoCompleto = g;
+		this.grafoCompleto = grafoCompleto;
 		cargarCodigosIataProvincias();
 		
 		EventQueue.invokeLater(new Runnable() {
@@ -134,7 +134,7 @@ public class VentanaElegirLocalidades extends JFrame{
 		aceptarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (agregarALocalidadesElegidas())
+				if (agregarLocalidadActual())
 				{
 					avisarEleccionExitosa();
 				} else {
@@ -146,10 +146,7 @@ public class VentanaElegirLocalidades extends JFrame{
 		borrarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("APRETÓ BORRAR");
-				
-				boolean borroLocalidad = borrarLocalidadActual();
-				if (borroLocalidad)
+				if (borrarLocalidadActual())
 				{
 					avisarBorradoExitoso();
 				} else {
@@ -182,9 +179,9 @@ public class VentanaElegirLocalidades extends JFrame{
 	
 	private void avisarEleccionExitosa()
 	{
-		localidadElegida.setText("Usted Eligió: " + localidadElegida.getText());
+		Localidad localidadActual = obtenerLocalidadActual();
+		localidadElegida.setText("Usted Eligió: " + localidadActual.getNombre());
 		localidadElegida.setBackground(Color.green);
-		aceptarLocalidad.setEnabled(false);
 	}
 	
 	private void avisarEleccionRechazada()
@@ -192,100 +189,79 @@ public class VentanaElegirLocalidades extends JFrame{
 		localidadElegida.setBackground(Color.red);
 		localidadElegida.setForeground(Color.white);
 		localidadElegida.setText("Localidad ya ingresada");
-		aceptarLocalidad.setEnabled(false);
 	}
 	
 	private void avisarBorradoExitoso()
 	{
-		localidadElegida.setText(localidadElegida.getText() + " eliminada de lista");
+		Localidad localidadActual = obtenerLocalidadActual();
+		localidadElegida.setText(localidadActual.getNombre() + " eliminada de lista");
 		localidadElegida.setBackground(Color.green);
-		aceptarLocalidad.setEnabled(false);
 	}
 
 	private void avisarBorradoRechazado()
 	{
 		localidadElegida.setBackground(Color.red);
 		localidadElegida.setForeground(Color.white);
-		localidadElegida.setText("Localidad fuera de la lista de elegidas");
-		aceptarLocalidad.setEnabled(false);
+		localidadElegida.setText("Localidad no se encontraba en el grafo");
 	}
 		
-	private boolean agregarALocalidadesElegidas()
+	private boolean agregarLocalidadActual()
 	{
-		HashSet<Localidad> locsProvEspecifica = archivo.getLocalidadesDeUnaProvincia(provinciaElegida);
-		int i =  indiceNombreRepetidoLocalidad();
-		if (i>0) quitarIndiceAlNombreLoc();
-		String index ="";
-		if (i>0) index="("+i+")";
+		Localidad localidadActual = obtenerLocalidadActual();
 		
-		for (Localidad l: locsProvEspecifica)
-		{
-			if (l.getNombre().equals(locElegida)) {
-				if (i==0)
-				{
-					Localidad nueva = new Localidad(l.getNombre() + index + sufijoLocalidad(), l.getProvincia(), 
-							l.getPosicion().getLatitud(), l.getPosicion().getLongitud());
-					boolean entroAlGrafo = enviarLocalidadAlGrafoCompleto(nueva);
-					if (entroAlGrafo)
-					{	
-						addLocalidadATablaLocalidades(nueva);
-						System.out.println("Entró al grafo!");
-						if (i>0) reagregarIndiceAlNombreLoc(i);
-						return true;
-					}
-				}
-				i--; System.out.println(i);
-			}
+		boolean entroAlGrafo = enviarLocalidadAlGrafoCompleto(localidadActual);
+		if (entroAlGrafo)
+		{	
+			addLocalidadATablaLocalidades(localidadActual);
+			return true;
 		}
-		if (i>0) reagregarIndiceAlNombreLoc(i);
+
 		return false;
 	}
 	
+	private boolean enviarLocalidadAlGrafoCompleto(Localidad l)
+	{
+		try {
+			grafoCompleto.agregarLocalidad(l);
+			return true;
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+	}
+	
 	private boolean borrarLocalidadActual() {		
+		Localidad localidadActual = obtenerLocalidadActual();
 		
-		for (Localidad l: localidadesElegidas)
-		{
+		boolean localidadEliminada = eliminarLocalidadDelGrafoCompleto(localidadActual);
+		if (localidadEliminada) {			
+			localidadesElegidas.remove(localidadActual);
+			refrescarTablaLocElegidas();
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean eliminarLocalidadDelGrafoCompleto(Localidad localidad) {
+		try {
+			grafoCompleto.eliminarLocalidad(localidad);
+			return true;
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+	}
+	
+	private Localidad obtenerLocalidadActual() {
+		HashSet<Localidad> locsProvEspecifica = archivo.getLocalidadesDeUnaProvincia(provinciaElegida);
+		
+		for (Localidad l: locsProvEspecifica) {
 			if (l.getNombre().equals(locElegida)) {
-				if (l.getProvincia().equals(provinciaElegida))
-				{	
-					localidadesElegidas.remove(l);
-					return true;
-				}
+				return l;
 			}
 		}
-		return false;	
+		return null;
 	}
 	
-	private void quitarIndiceAlNombreLoc()
-	{
-		locElegida = locElegida.substring(0, locElegida.length()-3);
-	}
-	
-	private void reagregarIndiceAlNombreLoc(int i)
-	{
-		locElegida = locElegida + "(" + i + ")";
-	}
-	
-	private int indiceNombreRepetidoLocalidad()
-	{
-		return esNombreRepetido()? indiceRepeticion(): 0;
-	}
-	
-	private static boolean esNombreRepetido()
-	{
-		return (locElegida.charAt(locElegida.length()-1) == ')'
-				&& locElegida.charAt(locElegida.length()-3) == '(');
-	}
-	
-	private static int indiceRepeticion()
-	{
-		return Integer.parseInt(""+locElegida.charAt(locElegida.length()-2));
-	}
-	
-	private String sufijoLocalidad() {
-		String sufijo = "[" + provinciasIATA.get(provinciaElegida) + "]";
-		return sufijo;
-	}
 	
 	private void cargarCodigosIataProvincias()
 	{
@@ -309,8 +285,12 @@ public class VentanaElegirLocalidades extends JFrame{
 	{
 		localidadesElegidas.add(l);
 		refrescarTablaLocElegidas();
-
-			System.out.println(l.toString());
+	}
+	
+	public void limpiarVentana()
+	{
+		localidadesElegidas = new ArrayList<Localidad>();
+		refrescarTablaLocElegidas();
 	}
 	
 	private void refrescarTablaLocElegidas()
@@ -335,24 +315,6 @@ public class VentanaElegirLocalidades extends JFrame{
 		jpLocElegidas.add(panelScroll);
 		jpLocElegidas.setBounds(20,230,500,310);
 		ventana.add(jpLocElegidas);
-	}
-	
-	public void limpiarVentana()
-	{
-		localidadesElegidas = null;
-		localidadesElegidas = new ArrayList<Localidad>();
-		refrescarTablaLocElegidas();
-	}
-
-	private boolean enviarLocalidadAlGrafoCompleto(Localidad l)
-	{
-		try {
-		grafoCompleto.agregarLocalidad(l);
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
-		
 	}
 
 	private void habilitarBotonLocalidades()
@@ -390,7 +352,6 @@ public class VentanaElegirLocalidades extends JFrame{
 	
 	private void fetchListaLocalidades(String provincia) {
 		HashSet<Localidad> localidades = archivo.getLocalidadesDeUnaProvincia(provincia);
-		localidadesDeProvinciaSeleccionada = null;
 		localidadesDeProvinciaSeleccionada = new String[localidades.size()];
 		
 		int i = 0;
@@ -453,8 +414,8 @@ public class VentanaElegirLocalidades extends JFrame{
 		return b;
 	}
 
-	public void setGrafoCompleto(GrafoCompletoLocalidades g) {
-		grafoCompleto = g;
+	public void setGrafoCompleto(GrafoCompletoLocalidades grafoCompleto) {
+		this.grafoCompleto = grafoCompleto;
 	}
 }
 

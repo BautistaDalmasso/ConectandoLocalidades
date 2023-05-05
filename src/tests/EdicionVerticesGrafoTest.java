@@ -24,16 +24,6 @@ public class EdicionVerticesGrafoTest {
 		grafo.agregarLocalidad(laPlata);
 		grafo.agregarLocalidad(laPlata);
 	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void agregarLocalidadNombreUnicoRepetidoTest() {
-		GrafoCompletoLocalidades grafo = new GrafoCompletoLocalidades();
-		Localidad laPlata1 = new Localidad("La Plata", "Buenos Aires", 0, 0);
-		Localidad laPlata2 = new Localidad("La Plata", "Buenos Aires", 1, 1);
-		
-		grafo.agregarLocalidad(laPlata1);
-		grafo.agregarLocalidad(laPlata2);
-	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void eliminarLocalidadNulaTest() {

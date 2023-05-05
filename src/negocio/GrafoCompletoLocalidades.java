@@ -10,7 +10,7 @@ import radixsort.RadixSort;
 
 public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	private List<ConexionLocalidades> conexiones;
-	private Map<String, Integer> localidadesConIndice;
+	private Map<Localidad, Integer> localidadesConIndice;
 	private GrafoLocalidades arbolGeneradorMinimo;
 	private int cantidadDeLocalidades;
 	private Integer costoConexionMaxima;
@@ -24,7 +24,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 
 		arbolGeneradorMinimo = new GrafoLocalidades();
 		conexiones = new ArrayList<ConexionLocalidades>();
-		localidadesConIndice = new HashMap<String, Integer>();
+		localidadesConIndice = new HashMap<Localidad, Integer>();
 		cantidadDeLocalidades = 0;
 		costoConexionMaxima = 0;
 		constructorAGM = new ConstructorAGM(this);
@@ -73,7 +73,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	}
 
 	private void actualizarLocalidadesConIndice(Localidad localidad) {
-		localidadesConIndice.put(localidad.getNombreUnico(), cantidadDeLocalidades);
+		localidadesConIndice.put(localidad, cantidadDeLocalidades);
 		cantidadDeLocalidades++;
 	}
 	
@@ -96,23 +96,21 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	}
 
 	private void eliminarDeIndices(Localidad localidad) {
-		Integer indiceLocalidad = localidadesConIndice.get(localidad.getNombreUnico());
+		Integer indiceLocalidad = localidadesConIndice.get(localidad);
 
 		reducirIndices(indiceLocalidad);
 		
-		localidadesConIndice.remove(localidad.getNombreUnico());
+		localidadesConIndice.remove(localidad);
 	}
 	
 	private void reducirIndices(Integer pisoReduccion) {
-		String nombreUnicoLocalidad;
 		Integer indiceLocalidad;
 		
 		for (Localidad loc : getLocalidades()) {
-			nombreUnicoLocalidad = loc.getNombreUnico();
-			indiceLocalidad = localidadesConIndice.get(nombreUnicoLocalidad);
+			indiceLocalidad = localidadesConIndice.get(loc);
 			
 			if (indiceLocalidad.compareTo(pisoReduccion) > 0) {
-				localidadesConIndice.put(nombreUnicoLocalidad, indiceLocalidad - 1);
+				localidadesConIndice.put(loc, indiceLocalidad - 1);
 			}
 		}
 	}
@@ -161,7 +159,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 			throw new IllegalArgumentException("Localidad no puede ser null.");
 		}
 		
-		return localidadesConIndice.get(localidad.getNombreUnico());
+		return localidadesConIndice.get(localidad);
 	}
 	
 	public GrafoLocalidades getArbolGeneradorMinimo() {

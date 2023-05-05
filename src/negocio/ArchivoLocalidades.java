@@ -65,17 +65,17 @@ public class ArchivoLocalidades
 	private void asignaLocalidadesASusProvincias(JsonArray arrayJSON) {
 		Gson gson = new Gson();
 		for (int i = 0; i < arrayJSON.size(); i++) {
-		    Localidad l = traerLocalidadDesdeArchivo(arrayJSON, gson, i);	    
-		    addLocalidadASuProvincia(l);
+		    Localidad localidad = traerLocalidadDesdeArchivo(arrayJSON, gson, i);	    
+		    addLocalidadASuProvincia(localidad);
 		}
 	}
 
 	private Localidad traerLocalidadDesdeArchivo(JsonArray arrayJSON, Gson gson, int i) {
 		JsonObject datoLocalidad = arrayJSON.get(i).getAsJsonObject();
 		LocalidadJSON localidadJSON = gson.fromJson(datoLocalidad, LocalidadJSON.class);	
-		Localidad l = new Localidad(localidadJSON.getNombre(), localidadJSON.getProvincia(),
+		Localidad localidad = new Localidad(localidadJSON.getNombre(), localidadJSON.getProvincia(),
 				localidadJSON.getLatitud(), localidadJSON.getLongitud());
-		return l;
+		return localidad;
 	}
 
 	private JsonArray obtenerArrayLocalidades(JsonObject objetoJSON) {
@@ -83,24 +83,22 @@ public class ArchivoLocalidades
 		return arrayJSON;
 	}
 
-	private void addLocalidadASuProvincia(Localidad l) {
-		String provinciaActual = l.getProvincia();
+	private void addLocalidadASuProvincia(Localidad localidad) {
+		String provinciaActual = localidad.getProvincia();
 		if (localidadesPorProvincia.containsKey(provinciaActual))
-			agregaLocalidadAProvinciaExistente(l, provinciaActual);
+			agregaLocalidadAProvinciaExistente(localidad, provinciaActual);
 		 else 
-			agregaLocalidadAProvinciaNueva(l, provinciaActual);
+			agregaLocalidadAProvinciaNueva(localidad, provinciaActual);
 	}
 
-	private void agregaLocalidadAProvinciaNueva(Localidad l, String provinciaActual) {
+	private void agregaLocalidadAProvinciaNueva(Localidad localidad, String provinciaActual) {
 		HashSet<Localidad> localidadProvinciaNueva = new HashSet<Localidad>();
-		localidadProvinciaNueva.add(l);
+		localidadProvinciaNueva.add(localidad);
 		localidadesPorProvincia.put(provinciaActual, localidadProvinciaNueva);
 	}
 
-	private void agregaLocalidadAProvinciaExistente(Localidad l, String provinciaActual) {
-		HashSet<Localidad> localidadesProvinciaActual = localidadesPorProvincia.get(provinciaActual);
-		localidadesProvinciaActual.add(l);
-		localidadesPorProvincia.put(provinciaActual, localidadesProvinciaActual);
+	private void agregaLocalidadAProvinciaExistente(Localidad localidad, String provinciaActual) {
+		localidadesPorProvincia.get(provinciaActual).add(localidad);
 	}
 
 	public ArrayList<Localidad> getLocalidadesDisponibles() {

@@ -260,25 +260,24 @@ public class Mapa extends JPanel{
 		dibujarLasAristas();
 	}
 
-private void agregarAlSetDeConexionesTelefonicas(ConexionLocalidades c)
-{
-	HashSet<Localidad> conexion = new HashSet<Localidad>();
-	conexion.add(c.getLocalidadA());
-	conexion.add(c.getLocalidadB());
-	tuplasDeLocalidadesConectadas.add(conexion);
-}
-
-private void dibujarLasAristas()
-{
-	for(Set<Localidad> conexion: tuplasDeLocalidadesConectadas)
+	private void agregarAlSetDeConexionesTelefonicas(ConexionLocalidades c)
 	{
-		Localidad [] locConectadas = new Localidad[2];
-		System.arraycopy(conexion.toArray(), 0, locConectadas, 0, 2);
-		trazarArista(locConectadas[0], locConectadas[1]);
-		System.out.println("DIBUJÓ");
+		HashSet<Localidad> conexion = new HashSet<Localidad>();
+		conexion.add(c.getLocalidadA());
+		conexion.add(c.getLocalidadB());
+		tuplasDeLocalidadesConectadas.add(conexion);
 	}
 	
-}
+	private void dibujarLasAristas()
+	{
+		for(Set<Localidad> conexion: tuplasDeLocalidadesConectadas)
+		{
+			Localidad [] locConectadas = new Localidad[2];
+			System.arraycopy(conexion.toArray(), 0, locConectadas, 0, 2);
+			trazarArista(locConectadas[0], locConectadas[1]);
+		}
+		
+	}
 
 	private void pintarPunto(Localidad loc) {
 		MapMarker m = new MapMarkerDot(loc.getNombre(), getCoordenadas(loc));	

@@ -8,19 +8,17 @@ import java.util.Set;
 
 public class GrafoLocalidades {
 	private Set<Localidad> localidades;
-	private Map<String, Set<ConexionLocalidades>> localidadesConSusVecinos;
+	private Map<Localidad, Set<ConexionLocalidades>> localidadesConSusVecinos;
 
 	public GrafoLocalidades() {
 		localidades = new HashSet<Localidad>();
-		localidadesConSusVecinos = new HashMap<String, Set<ConexionLocalidades>>();
+		localidadesConSusVecinos = new HashMap<Localidad, Set<ConexionLocalidades>>();
 	}
 
 	public void agregarLocalidad(Localidad localidad) {
 		verificarLocalidadValidaInexistente(localidad);
 
-		String nombreUnico = localidad.getNombreUnico();
-
-		getLocalidadesConSusVecinos().put(nombreUnico, new HashSet<ConexionLocalidades>());
+		getLocalidadesConSusVecinos().put(localidad, new HashSet<ConexionLocalidades>());
 
 		getLocalidades().add(localidad);
 	}
@@ -33,7 +31,7 @@ public class GrafoLocalidades {
 	}
 
 	public boolean localidadExiste(Localidad localidad) {
-		return localidadesConSusVecinos.containsKey(localidad.getNombreUnico());
+		return localidades.contains(localidad);
 	}
 	
 	public ConexionLocalidades agregarConexion(Localidad localidadA, Localidad localidadB) {
@@ -57,7 +55,7 @@ public class GrafoLocalidades {
 
 		eliminarConexiones(localidad);
 		
-		localidadesConSusVecinos.remove(localidad.getNombreUnico());
+		localidadesConSusVecinos.remove(localidad);
 		localidades.remove(localidad);
 	}
 	
@@ -92,19 +90,19 @@ public class GrafoLocalidades {
 	
 	public void limpiarConexiones() {
 		for (Localidad loc : localidades) {
-			localidadesConSusVecinos.put(loc.getNombreUnico(), new HashSet<ConexionLocalidades>());
+			localidadesConSusVecinos.put(loc, new HashSet<ConexionLocalidades>());
 		}
 	}
 
 	public Set<ConexionLocalidades> obtenerConexiones(Localidad localidad) {
-		return localidadesConSusVecinos.get(localidad.getNombreUnico());
+		return localidadesConSusVecinos.get(localidad);
 	}
 	
 	public Set<Localidad> getLocalidades() {
 		return localidades;
 	}
 
-	public Map<String, Set<ConexionLocalidades>> getLocalidadesConSusVecinos() {
+	public Map<Localidad, Set<ConexionLocalidades>> getLocalidadesConSusVecinos() {
 		return localidadesConSusVecinos;
 	}
 	
