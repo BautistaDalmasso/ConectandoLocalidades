@@ -2,10 +2,10 @@ package negocio;
 
 public class LocalidadJSON {
 
-	private String localidad;
-	private String provincia;
-	private double latitud;
-	private double longitud;
+	public String localidad;
+	public String provincia;
+	public double latitud;
+	public double longitud;
 
 	public LocalidadJSON(Localidad l)
 	{

@@ -20,7 +20,6 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
