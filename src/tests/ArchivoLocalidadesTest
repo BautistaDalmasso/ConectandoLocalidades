@@ -33,5 +33,19 @@ public class ArchivoLocalidadesTest {
 		@SuppressWarnings("unused")
 		ArchivoLocalidades a = new ArchivoLocalidades(nombre);
 	}
+	
+	@Test (expected = IllegalArgumentException.class)
+	public void envioCaracteresProhibidosTest() {
+		String nombre = "<<**";
+		ArchivoLocalidades a = new ArchivoLocalidades(nombre);
+		a.validarStrNoCharsProhibidos(nombre);
+	}
+	
+	@Test
+	public void envioCaracteresPermitidosTest() {
+		String nombre = "dkf543";
+		ArchivoLocalidades a = new ArchivoLocalidades(nombre);
+		a.validarStrNoCharsProhibidos(nombre);
+	}
 
 }
