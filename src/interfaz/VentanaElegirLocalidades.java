@@ -43,7 +43,6 @@ public class VentanaElegirLocalidades extends JFrame {
 	private String nombreLocalidadElegida;
 
 	private JButton aceptarLocalidad;
-	private JButton borrarLocalidad;
 
 	private Mapa mapa;
 
@@ -61,7 +60,6 @@ public class VentanaElegirLocalidades extends JFrame {
 		crearSeleccionDeLocalidades();
 
 		crearBotonAceptarLocalidad();
-		crearBotonEliminarLocalidad();
 	}
 
 	private void inicializarDimensionesFrame() {
@@ -103,7 +101,6 @@ public class VentanaElegirLocalidades extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				limpiarLocalidadElegida();
-				borrarLocalidad.setEnabled(false);
 				nombreProvinciaElegida = (String) comboBoxProvincias.getSelectedItem();
 				fetchListaLocalidades(nombreProvinciaElegida);
 				habilitarBotonLocalidades();
@@ -122,7 +119,7 @@ public class VentanaElegirLocalidades extends JFrame {
 	}
 
 	private void crearBotonAceptarLocalidad() {
-		aceptarLocalidad = nuevoJButton("Aceptar", 155, 185, 120, 21);
+		aceptarLocalidad = nuevoJButton("Aceptar", 215, 185, 120, 21);
 		aceptarLocalidad.setEnabled(false);
 		agregarActionListenerAceptarLocalidad();
 	}
@@ -136,28 +133,6 @@ public class VentanaElegirLocalidades extends JFrame {
 				} else {
 					avisarEleccionRechazada();
 				}
-			}
-		});
-	}
-
-	private void crearBotonEliminarLocalidad() {
-		borrarLocalidad = nuevoJButton("Borrar", 275, 185, 120, 21);
-		borrarLocalidad.setEnabled(false);
-
-		agregarActionListenerEliminarLocalidad();
-	}
-
-	private void agregarActionListenerEliminarLocalidad() {
-		borrarLocalidad.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (borrarLocalidadActual()) {
-					avisarBorradoExitoso();
-				} else {
-					avisarBorradoRechazado();
-				}
-
-				borrarLocalidad.setEnabled(false);
 			}
 		});
 	}
@@ -190,36 +165,12 @@ public class VentanaElegirLocalidades extends JFrame {
 		resultadoLocalidadElegida.setText("Localidad ya ingresada");
 	}
 
-	private void avisarBorradoExitoso() {
-		Localidad localidadActual = obtenerLocalidadActual();
-		resultadoLocalidadElegida.setText(localidadActual.getNombre() + " eliminada de lista");
-		resultadoLocalidadElegida.setBackground(Color.green);
-	}
-
-	private void avisarBorradoRechazado() {
-		resultadoLocalidadElegida.setBackground(Color.red);
-		resultadoLocalidadElegida.setForeground(Color.white);
-		resultadoLocalidadElegida.setText("Localidad no se encontraba en el grafo");
-	}
-
 	private boolean agregarLocalidadActual() {
 		Localidad localidadActual = obtenerLocalidadActual();
 
 		try {
 			mapa.agregarLocalidad(localidadActual);
 			addLocalidadATablaLocalidades(localidadActual);
-			return true;
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
-	}
-
-	private boolean borrarLocalidadActual() {
-		Localidad localidadActual = obtenerLocalidadActual();
-
-		try {
-			mapa.eliminarLocalidad(localidadActual);
-			refrescarTablaLocalidadesElegidas();
 			return true;
 		} catch (IllegalArgumentException e) {
 			return false;
@@ -278,7 +229,6 @@ public class VentanaElegirLocalidades extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String localidadSeleccionada = (String) comboBoxLocalidades.getSelectedItem();
-				borrarLocalidad.setEnabled(true);
 				habilitarBotonAceptar(localidadSeleccionada);
 			}
 		});
