@@ -57,29 +57,40 @@ public class VentanaElegirLocalidades extends JFrame {
 	}
 
 	private void initialize() {
+		inicializarDimensionesFrame();
+
+		inicializarPanelLocalidadesElegidas();
+
+		crearSeleccionDeLocalidades();
+
+		crearBotonAceptarLocalidad();
+		crearBotonEliminarLocalidad();
+	}
+
+	private void inicializarDimensionesFrame() {
 		setBounds(500, 100, 550, 700);
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setResizable(false);
 		getContentPane().setLayout(null);
 		setLocation(0, 0);
+	}
 
-		comboBoxLocalidades = new JComboBox<String>();
-		localidadesElegidas = new ArrayList<Localidad>();
-		resultadoLocalidadElegida = nuevaJLabel("", 20, 147, 490, 18);
-		resultadoLocalidadElegida.setOpaque(true);
-
-		aceptarLocalidad = nuevoJButton("Aceptar", 155, 185, 120, 21);
-		aceptarLocalidad.setEnabled(false);
-
-		borrarLocalidad = nuevoJButton("Borrar", 275, 185, 120, 21);
-		borrarLocalidad.setEnabled(false);
-
-		filasLocalidadesElegidas = new String[localidadesElegidas.size()][4];
+	private void inicializarPanelLocalidadesElegidas() {
+		filasLocalidadesElegidas = new String[][] {};
 		setearPanelLocalidadesElegidas();
+	}
 
+	private void crearSeleccionDeLocalidades() {
 		nuevaJLabel("Ingrese las localidades deseadas", 135, 15, 250, 18);
+
+		crearComboBoxProvincias();
+		crearComboBoxLocalidades();
+
+		crearLabelResultado();
+	}
+
+	private void crearComboBoxProvincias() {
 		nuevaJLabel("Seleccione provincia:", 0, 67, 213, 18);
-		nuevaJLabel("Seleccione localidad:", 0, 107, 213, 18);
 
 		JComboBox<String> comboBoxProvincias = new JComboBox<String>();
 
@@ -87,6 +98,10 @@ public class VentanaElegirLocalidades extends JFrame {
 		comboBoxProvincias.setBounds(249, 67, 245, 23);
 		getContentPane().add(comboBoxProvincias);
 
+		agregarActionListenerCBProvincias(comboBoxProvincias);
+	}
+
+	private void agregarActionListenerCBProvincias(JComboBox<String> comboBoxProvincias) {
 		comboBoxProvincias.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -97,7 +112,26 @@ public class VentanaElegirLocalidades extends JFrame {
 				habilitarBotonLocalidades();
 			}
 		});
+	}
 
+	private void crearComboBoxLocalidades() {
+		nuevaJLabel("Seleccione localidad:", 0, 107, 213, 18);
+		comboBoxLocalidades = new JComboBox<String>();
+		localidadesElegidas = new ArrayList<Localidad>();
+	}
+
+	private void crearLabelResultado() {
+		resultadoLocalidadElegida = nuevaJLabel("", 20, 147, 490, 18);
+		resultadoLocalidadElegida.setOpaque(true);
+	}
+
+	private void crearBotonAceptarLocalidad() {
+		aceptarLocalidad = nuevoJButton("Aceptar", 155, 185, 120, 21);
+		aceptarLocalidad.setEnabled(false);
+		agregarActionListenerAceptarLocalidad();
+	}
+
+	private void agregarActionListenerAceptarLocalidad() {
 		aceptarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -108,7 +142,16 @@ public class VentanaElegirLocalidades extends JFrame {
 				}
 			}
 		});
+	}
 
+	private void crearBotonEliminarLocalidad() {
+		borrarLocalidad = nuevoJButton("Borrar", 275, 185, 120, 21);
+		borrarLocalidad.setEnabled(false);
+
+		agregarActionListenerEliminarLocalidad();
+	}
+
+	private void agregarActionListenerEliminarLocalidad() {
 		borrarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -120,7 +163,6 @@ public class VentanaElegirLocalidades extends JFrame {
 
 				borrarLocalidad.setEnabled(false);
 			}
-
 		});
 	}
 
