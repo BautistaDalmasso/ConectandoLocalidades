@@ -70,12 +70,15 @@ public class VentanaElegirLocalidades extends JFrame {
 		setLocation(0, 0);
 	}
 
+
 	private void inicializarPanelLocalidadesElegidas() {
 		filasLocalidadesElegidas = new String[][] {};
+
 		setearPanelLocalidadesElegidas();
 	}
 
 	private void crearSeleccionDeLocalidades() {
+
 		nuevaJLabel("Ingrese las localidades deseadas", 135, 15, 250, 18);
 
 		crearComboBoxProvincias();
@@ -90,6 +93,7 @@ public class VentanaElegirLocalidades extends JFrame {
 		JComboBox<String> comboBoxProvincias = new JComboBox<String>();
 
 		comboBoxProvincias.setModel(new DefaultComboBoxModel<String>(getProvinciasOrdenadas()));
+
 		comboBoxProvincias.setBounds(249, 67, 245, 23);
 		getContentPane().add(comboBoxProvincias);
 
@@ -97,6 +101,7 @@ public class VentanaElegirLocalidades extends JFrame {
 	}
 
 	private void agregarActionListenerCBProvincias(JComboBox<String> comboBoxProvincias) {
+
 		comboBoxProvincias.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
