@@ -16,7 +16,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.SwingConstants;
@@ -84,7 +83,7 @@ public class VentanaElegirLocalidades extends JFrame {
 
 		JComboBox<String> comboBoxProvincias = new JComboBox<String>();
 
-		comboBoxProvincias.setModel(new DefaultComboBoxModel<String>(ordenar(listaProvincias())));
+		comboBoxProvincias.setModel(new DefaultComboBoxModel<String>(getProvinciasOrdenadas()));
 		comboBoxProvincias.setBounds(249, 67, 245, 23);
 		getContentPane().add(comboBoxProvincias);
 
@@ -236,7 +235,8 @@ public class VentanaElegirLocalidades extends JFrame {
 
 	private void habilitarBotonLocalidades() {
 		comboBoxLocalidades.setBounds(249, 107, 245, 23);
-		comboBoxLocalidades.setModel(new DefaultComboBoxModel<String>(ordenar(localidadesDeProvinciaSeleccionada)));
+		Arrays.sort(localidadesDeProvinciaSeleccionada);
+		comboBoxLocalidades.setModel(new DefaultComboBoxModel<String>(localidadesDeProvinciaSeleccionada));
 		getContentPane().add(comboBoxLocalidades);
 
 		comboBoxLocalidades.addActionListener(new ActionListener() {
@@ -293,15 +293,10 @@ public class VentanaElegirLocalidades extends JFrame {
 		return localidad + "(" + cont + ")";
 	}
 
-	private static String[] ordenar(String[] lista) {
-		List<String> localidad = Arrays.asList(lista);
-		localidad.sort(null);
-		return localidad.toArray(new String[localidad.size()]);
-	}
-
-	private String[] listaProvincias() {
+	private String[] getProvinciasOrdenadas() {
 		Set<String> p = archivo.getProvincias();
-		String[] provinciasLista = p.toArray(new String[p.size()]);
+		String[] provinciasLista = archivo.getProvincias().toArray(new String[p.size()]);
+		Arrays.sort(provinciasLista);
 		return provinciasLista;
 	}
 
