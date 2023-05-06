@@ -312,27 +312,10 @@ public class VentanaElegirLocalidades extends JFrame {
 		localidadesDeProvinciaSeleccionada = new String[localidades.size()];
 
 		int i = 0;
-		for (Localidad localidad : localidades) {
-			String nuevaLoc = localidad.getNombre();
-			if (verificarSiEsNombreRepetido(nuevaLoc)) {
-				nuevaLoc = agregarNumeroAlNombre(nuevaLoc);
-				System.out.println(nuevaLoc);
-			}
-			localidadesDeProvinciaSeleccionada[i] = nuevaLoc;
+		for (Localidad localidad : localidades) {			
+			localidadesDeProvinciaSeleccionada[i] = localidad.getNombre();
 			i++;
 		}
-	}
-
-	private boolean verificarSiEsNombreRepetido(String n) {
-		return Arrays.stream(localidadesDeProvinciaSeleccionada).anyMatch(n::equals);
-	}
-
-	private String agregarNumeroAlNombre(String localidad) {
-		int cont = 1;
-		while (Arrays.stream(localidadesDeProvinciaSeleccionada).anyMatch((localidad + "(" + cont + ")")::equals)) {
-			cont++;
-		}
-		return localidad + "(" + cont + ")";
 	}
 
 	private String[] getProvinciasOrdenadas() {
@@ -358,9 +341,5 @@ public class VentanaElegirLocalidades extends JFrame {
 		b.setBounds(x, y, ancho, alto);
 		getContentPane().add(b);
 		return b;
-	}
-
-	public ArrayList<Localidad> getLocalidadesElegidas() {
-		return localidadesElegidas;
 	}
 }
