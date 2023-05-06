@@ -63,6 +63,7 @@ public class Mapa extends JPanel {
 
 	private void initialize() {
 		localidadesElegidas = new ArrayList<Localidad>();
+
 		grafoCompleto = new GrafoCompletoLocalidades();
 		cargarLocalidadesdesdeArchivo();
 
@@ -118,7 +119,7 @@ public class Mapa extends JPanel {
 		agregarCamposParaIngresarLocalidad();
 
 		agregarBotonEliminarLocalidad();
-		
+    
 		agregarBotonLocalidadDesdeArchivo();
 
 		agregarBotonDibujarConexiones();

@@ -44,6 +44,10 @@ public class VentanaElegirLocalidades extends JFrame {
 
 	private JButton aceptarLocalidad;
 
+	private JButton borrarLocalidad;
+
+	private ArrayList<Localidad> localidadesElegidas;
+
 	private Mapa mapa;
 
 	public VentanaElegirLocalidades(Mapa mapa, ArchivoLocalidades archivo) {
@@ -76,6 +80,20 @@ public class VentanaElegirLocalidades extends JFrame {
 	}
 
 	private void crearSeleccionDeLocalidades() {
+		comboBoxLocalidades = new JComboBox<String>();
+		localidadesElegidas = new ArrayList<Localidad>();
+		resultadoLocalidadElegida = nuevaJLabel("", 20, 147, 490, 18);
+		resultadoLocalidadElegida.setOpaque(true);
+
+		aceptarLocalidad = nuevoJButton("Aceptar", 155, 185, 120, 21);
+		aceptarLocalidad.setEnabled(false);
+
+		borrarLocalidad = nuevoJButton("Borrar", 275, 185, 120, 21);
+		borrarLocalidad.setEnabled(false);
+
+		filasLocalidadesElegidas = new String[localidadesElegidas.size()][4];
+		setearPanelLocalidadesElegidas();
+
 		nuevaJLabel("Ingrese las localidades deseadas", 135, 15, 250, 18);
 
 		crearComboBoxProvincias();
@@ -125,6 +143,7 @@ public class VentanaElegirLocalidades extends JFrame {
 	}
 
 	private void agregarActionListenerAceptarLocalidad() {
+
 		aceptarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -265,6 +284,7 @@ public class VentanaElegirLocalidades extends JFrame {
 		Set<String> p = archivo.getProvincias();
 		String[] provinciasLista = archivo.getProvincias().toArray(new String[p.size()]);
 		Arrays.sort(provinciasLista);
+
 		return provinciasLista;
 	}
 
