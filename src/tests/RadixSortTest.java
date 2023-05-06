@@ -4,8 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import radixsort.AristaPesadaParaTests;
-import radixsort.RadixSort;
+import negocio.RadixSort;
 
 public class RadixSortTest {
 	@Test

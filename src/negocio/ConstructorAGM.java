@@ -1,7 +1,5 @@
 package negocio;
 
-import unionfind.UnionFind;
-
 public class ConstructorAGM {
 	private GrafoCompletoLocalidades grafoOriginal;
 	private int indiceProximaConexion;

@@ -1,4 +1,4 @@
-package unionfind;
+package negocio;
 
 public class UnionFind {
 	private Integer[] componentesConexas;

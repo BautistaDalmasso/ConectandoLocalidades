@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import radixsort.RadixSort;
-
 public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	private List<ConexionLocalidades> conexiones;
 	private Map<Localidad, Integer> localidadesConIndice;
