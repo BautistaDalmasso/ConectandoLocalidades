@@ -17,7 +17,6 @@ import org.openstreetmap.gui.jmapviewer.interfaces.*;
 import negocio.*;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -39,6 +38,7 @@ public class Mapa extends JPanel{
 	private VentanaElegirLocalidades ventanaElegirLocalidades;
 	
 	private HashMap<Localidad, MapMarker> puntosDelMapa;
+	private ArchivoLocalidades archivoLocalidades;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -61,11 +61,7 @@ public class Mapa extends JPanel{
 	private void initialize()
 	{
 		grafoCompleto = new GrafoCompletoLocalidades();
-		ArchivoLocalidades file = cargarLocalidadesdesdeArchivo();
-		
-		ventanaElegirLocalidades = new VentanaElegirLocalidades(this);
-		ventanaElegirLocalidades.setLocalidadesElegibles(file);
-		ventanaElegirLocalidades.launch();
+		archivoLocalidades = cargarLocalidadesdesdeArchivo();
 		
 		puntosDelMapa = new HashMap<Localidad, MapMarker>();
 		
@@ -73,20 +69,13 @@ public class Mapa extends JPanel{
 		crearYSetearPanelMapa();
 		crearPanelControl();
 		crearPanelDivisor(panelControl, panelMapa);	
+		
+		ventanaElegirLocalidades = new VentanaElegirLocalidades(this, archivoLocalidades);
 	}
 
 	private ArchivoLocalidades cargarLocalidadesdesdeArchivo() {
 		ArchivoLocalidades a = new ArchivoLocalidades("localidadesArgentinasJSON");
 		return a;
-	}
-
-	private void crearPanelControl() {
-		panelControl = new JPanel();
-		panelControl.setBackground(Color.BLACK);
-		panelControl.setLayout(new FlowLayout(FlowLayout.CENTER));
-		crearInstanciaDeAgregadoDeLocalidades(panelControl);
-		panelControl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		
 	}
 
 	private void crearPanelDivisor(JPanel panelControl, JPanel panelMapa) {
@@ -97,9 +86,8 @@ public class Mapa extends JPanel{
 	}
 
 	private void crearYSetearPanelMapa() {
-		panelMapa =new JPanel();
+		panelMapa = new JPanel();
 		panelMapa.setLayout(new BorderLayout());
-		panelMapa.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		mapa = new JMapViewer();
 //		setearPosicionYZoom();
 		setearPosInicialMapa();
@@ -116,41 +104,21 @@ public class Mapa extends JPanel{
 		frame.getContentPane().setLayout(new BorderLayout());
 	}
 	
-	private void crearInstanciaDeAgregadoDeLocalidades(JPanel panelControl) {
-		JPanel botones = new JPanel();
-		botones.setBackground(Color.getHSBColor(233, 18, 97));
-		botones.setLayout(new FlowLayout(1,7,15));		
-		botones.setPreferredSize(new Dimension(250, 300));
-		panelControl.add(botones);
-		crearComponentesParaAgregarLocalidad(botones);
+	private void crearPanelControl() {
+		panelControl = new JPanel();
+		panelControl.setBackground(Color.getHSBColor(233, 18, 97));
+		panelControl.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
-		JPanel localidades = new JPanel();
-		localidades.setBackground(Color.getHSBColor(233, 18, 97));
-		localidades.setPreferredSize(new Dimension(250, 350));
-		localidades.setLayout(new FlowLayout(1,30,20));
-		panelControl.add(localidades);
+		crearComponentesParaAgregarLocalidad(panelControl);		
 	}
 
-
 	private void crearComponentesParaAgregarLocalidad(JPanel botones) {
-		JButton botonDibujarArbol = new JButton("Dibujar Arbol Generador Minimo");
-		botonDibujarArbol.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				borrarMapa();
-				grafoCompleto.construirArbolGeneradorMinimo();
-				dibujarArbolMinimo();
-				setearPosicionYZoom();
-			}
-		});
-		botones.add(botonDibujarArbol);
-		
-		JLabel preguntaNombre = new JLabel("     Ingrese el nombre de la Localidad     ");
+		JLabel preguntaNombre = new JLabel("Ingrese el nombre de la Localidad");
 		botones.add(preguntaNombre);
 		fieldNombreLocalidad = new JTextField(15);
 		botones.add(fieldNombreLocalidad);
 
-		JLabel preguntaProv = new JLabel("      Ingrese el nombre de la provincia      ");
+		JLabel preguntaProv = new JLabel("Ingrese el nombre de la provincia");
 		botones.add(preguntaProv);		
 		fieldProvinciaLocalidad = new JTextField(15);
 		botones.add(fieldProvinciaLocalidad);
@@ -168,7 +136,7 @@ public class Mapa extends JPanel{
 		fieldLongitud = new JTextField(4);
 		botones.add(fieldLongitud);
 		
-		JButton botonAgregarLocalidad = new JButton("     Agregar Localidad     ");
+		JButton botonAgregarLocalidad = new JButton("Agregar Localidad");
 		botonAgregarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -177,6 +145,28 @@ public class Mapa extends JPanel{
 			}
 		});
 		botones.add(botonAgregarLocalidad);
+		
+		JButton agregarLocalidadDeArchivo = new JButton("Agregar Localidad Desde Archivo");
+		agregarLocalidadDeArchivo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ventanaElegirLocalidades.setVisible(true);
+				ventanaElegirLocalidades.toFront();
+			}
+		});
+		botones.add(agregarLocalidadDeArchivo);
+		
+		JButton botonDibujarArbol = new JButton("Dibujar Arbol Generador Minimo");
+		botonDibujarArbol.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				borrarMapa();
+				grafoCompleto.construirArbolGeneradorMinimo();
+				dibujarArbolMinimo();
+				setearPosicionYZoom();
+			}
+		});
+		botones.add(botonDibujarArbol);
 	}
 
 	private void agregarLocalidadIngresada() {
