@@ -21,8 +21,6 @@ import java.util.Set;
 
 import javax.swing.SwingConstants;
 
-import javax.swing.table.JTableHeader;
-
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -37,12 +35,11 @@ public class VentanaElegirLocalidades extends JFrame {
 	private ArchivoLocalidades archivo;
 	
 	private JComboBox<String> comboBoxLocalidades;
-	private JTable panelLocalidadesElegidas;
+	private JTable tablaLocalidadesElegidas;
 	private JScrollPane panelScroll;
-	private JPanel jpLocElegidas;
-	private String dataLocElegidas[][];
-	private String colLocElegidas[];
-	private JTableHeader encabezado;
+	private JPanel jpLocalidadesElegidas;
+	private String filasLocalidadesElegidas[][];
+	private String columnasLocalidadesElegidas[];
 	
 	private JLabel resultadoLocalidadElegida;
 	private String nombreProvinciaElegida;
@@ -69,25 +66,28 @@ public class VentanaElegirLocalidades extends JFrame {
 		getContentPane().setLayout(null);
 		setLocation(0, 0);
 		
-		setearPanelLocalidadesElegidas();
 	
 		comboBoxLocalidades = new JComboBox<String>();
 		localidadesElegidas = new ArrayList<Localidad>();
 		resultadoLocalidadElegida = nuevaJLabel("", 20, 147, 490, 18);
 		resultadoLocalidadElegida.setOpaque(true);
+
 		aceptarLocalidad = nuevoJButton("Aceptar", 155, 185, 120, 21);
 		aceptarLocalidad.setEnabled(false);
+		
 		borrarLocalidad = nuevoJButton("Borrar", 275, 185, 120, 21);
 		borrarLocalidad.setEnabled(false);
+		
+		filasLocalidadesElegidas = new String[localidadesElegidas.size()][4];
+		setearPanelLocalidadesElegidas();
 		
 		nuevaJLabel("Ingrese las localidades deseadas", 135, 15, 250, 18);
 		nuevaJLabel("Seleccione provincia:", 0, 67, 213, 18);
 		nuevaJLabel("Seleccione localidad:", 0, 107, 213, 18);
 
 		JComboBox<String> comboBoxProvincias = new JComboBox<String>();
-		String[] p = ordenar(listaProvincias());
 		
-		comboBoxProvincias.setModel(new DefaultComboBoxModel<String>(p));
+		comboBoxProvincias.setModel(new DefaultComboBoxModel<String>(ordenar(listaProvincias())));
 		comboBoxProvincias.setBounds(249, 67, 245, 23);
 		getContentPane().add(comboBoxProvincias);
 		
@@ -133,19 +133,19 @@ public class VentanaElegirLocalidades extends JFrame {
 
 	private void setearPanelLocalidadesElegidas()
 	{
-		jpLocElegidas = new JPanel();
-		dataLocElegidas = new String[][]{};
-		colLocElegidas= new String[] {"Localidad", "Provincia", "Latitud", "Longitud"};
-		panelLocalidadesElegidas = new JTable(dataLocElegidas, colLocElegidas);
-		panelLocalidadesElegidas.setFont(new java.awt.Font("Tahoma", 0, 10));
+		jpLocalidadesElegidas = new JPanel();
+		columnasLocalidadesElegidas= new String[] {"Localidad", "Provincia", "Latitud", "Longitud"};
+
+		tablaLocalidadesElegidas = new JTable(filasLocalidadesElegidas, columnasLocalidadesElegidas);
+		tablaLocalidadesElegidas.setFont(new java.awt.Font("Tahoma", 0, 10));
+		tablaLocalidadesElegidas.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		
-		encabezado = panelLocalidadesElegidas.getTableHeader();
-		encabezado.setBackground(Color.yellow);
-		panelScroll = new JScrollPane(panelLocalidadesElegidas);
-		panelLocalidadesElegidas.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		jpLocElegidas.add(panelScroll);
-		jpLocElegidas.setBounds(20,230,500,360);
-		add(jpLocElegidas);
+		tablaLocalidadesElegidas.getTableHeader().setBackground(Color.yellow);
+		
+		panelScroll = new JScrollPane(tablaLocalidadesElegidas);
+		jpLocalidadesElegidas.add(panelScroll);
+		jpLocalidadesElegidas.setBounds(20,230,500,360);
+		add(jpLocalidadesElegidas);
 	}
 	
 	private void avisarEleccionExitosa()
@@ -180,27 +180,27 @@ public class VentanaElegirLocalidades extends JFrame {
 	{
 		Localidad localidadActual = obtenerLocalidadActual();
 		
-		boolean entroAlGrafo = mapa.agregarLocalidad(localidadActual);
-		if (entroAlGrafo)
-		{	
+		try {			
+			mapa.agregarLocalidad(localidadActual);
 			addLocalidadATablaLocalidades(localidadActual);
 			return true;
 		}
-
-		return false;
+		catch (IllegalArgumentException e) {
+			return false;
+		}
 	}
 	
 	private boolean borrarLocalidadActual() {		
 		Localidad localidadActual = obtenerLocalidadActual();
 		
-		boolean localidadEliminada = mapa.eliminarLocalidad(localidadActual);
-		if (localidadEliminada) {			
+		try {
+			mapa.eliminarLocalidad(localidadActual);
 			localidadesElegidas.remove(localidadActual);
 			refrescarTablaLocElegidas();
 			return true;
+		} catch (IllegalArgumentException e) {
+			return false;
 		}
-		
-		return false;
 	}
 	
 	private Localidad obtenerLocalidadActual() {
@@ -228,26 +228,27 @@ public class VentanaElegirLocalidades extends JFrame {
 	
 	private void refrescarTablaLocElegidas()
 	{
-		String data[][] = new String[localidadesElegidas.size()][4];
-		String col[] = {"Localidad", "Provincia", "Latitud", "Longitud"};
-		
-		for (int i = 0; i < localidadesElegidas.size(); i++)
-		{
-			data[i][0] = localidadesElegidas.get(i).getNombre();
-			data[i][1] = localidadesElegidas.get(i).getProvincia();
-			data[i][2] = "" + localidadesElegidas.get(i).getPosicion().getLatitud();
-			data[i][3] = "" + localidadesElegidas.get(i).getPosicion().getLongitud();
-		}
+		filasLocalidadesElegidas = new String[localidadesElegidas.size()][4];
+
+		popularTablaLocalidades();
 			
-		panelLocalidadesElegidas = new JTable(data, col);
-		JPanel jpLocElegidas = new JPanel();
-		JTableHeader header = panelLocalidadesElegidas.getTableHeader();
-		header.setBackground(Color.yellow);
-		panelScroll = new JScrollPane(panelLocalidadesElegidas);
-		panelLocalidadesElegidas.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		jpLocElegidas.add(panelScroll);
-		jpLocElegidas.setBounds(20,230,500,310);
-		add(jpLocElegidas);
+		setearPanelLocalidadesElegidas();
+	}
+
+	private void popularTablaLocalidades() {
+		int fila = 0;
+		for (Localidad localidad : localidadesElegidas)
+		{
+			popularFilaLocalidad(fila, localidad);
+			fila++;
+		}
+	}
+
+	private void popularFilaLocalidad(int fila, Localidad localidad) {
+		filasLocalidadesElegidas[fila][0] = localidad.getNombre();
+		filasLocalidadesElegidas[fila][1] = localidad.getProvincia();
+		filasLocalidadesElegidas[fila][2] = "" + localidad.getPosicion().getLatitud();
+		filasLocalidadesElegidas[fila][3] = "" + localidad.getPosicion().getLongitud();
 	}
 
 	private void habilitarBotonLocalidades()
@@ -335,7 +336,6 @@ public class VentanaElegirLocalidades extends JFrame {
 		e.setFont(new Font("Arial", Font.PLAIN, 15));
 		e.setBounds(x, y, ancho, alto);
 		getContentPane().add(e);
-		e.setVisible(true);
 		return e;
 	}
 	
@@ -346,7 +346,6 @@ public class VentanaElegirLocalidades extends JFrame {
 		b.setFont(new Font("Arial", Font.PLAIN, 15));
 		b.setBounds(x, y, ancho, alto);
 		getContentPane().add(b);
-		b.setVisible(true);
 		return b;
 	}
 	

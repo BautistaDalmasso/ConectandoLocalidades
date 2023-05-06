@@ -61,7 +61,7 @@ public class Mapa extends JPanel{
 	private void initialize()
 	{
 		grafoCompleto = new GrafoCompletoLocalidades();
-		archivoLocalidades = cargarLocalidadesdesdeArchivo();
+		cargarLocalidadesdesdeArchivo();
 		
 		puntosDelMapa = new HashMap<Localidad, MapMarker>();
 		
@@ -73,28 +73,10 @@ public class Mapa extends JPanel{
 		ventanaElegirLocalidades = new VentanaElegirLocalidades(this, archivoLocalidades);
 	}
 
-	private ArchivoLocalidades cargarLocalidadesdesdeArchivo() {
-		ArchivoLocalidades a = new ArchivoLocalidades("localidadesArgentinasJSON");
-		return a;
+	private void cargarLocalidadesdesdeArchivo() {
+		archivoLocalidades = new ArchivoLocalidades("localidadesArgentinasJSON");
 	}
-
-	private void crearPanelDivisor(JPanel panelControl, JPanel panelMapa) {
-		panelDivisor = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelControl, panelMapa);
-		panelDivisor.setDividerLocation(250);
-		panelDivisor.setDividerSize(0);
-		frame.getContentPane().add(panelDivisor,BorderLayout.CENTER);
-	}
-
-	private void crearYSetearPanelMapa() {
-		panelMapa = new JPanel();
-		panelMapa.setLayout(new BorderLayout());
-		mapa = new JMapViewer();
-//		setearPosicionYZoom();
-		setearPosInicialMapa();
-		mapa.setBounds(0, 0, 500, 500);
-		panelMapa.add(mapa, BorderLayout.CENTER);
-	}
-
+	
 	private void crearYSetearVentanaPrincipal() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1200, 700);
@@ -103,40 +85,86 @@ public class Mapa extends JPanel{
 		frame.setTitle("Mapa de conexiones telefonicas");
 		frame.getContentPane().setLayout(new BorderLayout());
 	}
+
+	private void crearYSetearPanelMapa() {
+		panelMapa = new JPanel();
+		panelMapa.setLayout(new BorderLayout());
+		mapa = new JMapViewer();
+		setearPosInicialMapa();
+		mapa.setBounds(0, 0, 500, 500);
+		panelMapa.add(mapa, BorderLayout.CENTER);
+	}
+	
+	private void crearPanelDivisor(JPanel panelControl, JPanel panelMapa) {
+		panelDivisor = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelControl, panelMapa);
+		panelDivisor.setDividerLocation(250);
+		panelDivisor.setDividerSize(0);
+		frame.getContentPane().add(panelDivisor,BorderLayout.CENTER);
+	}
 	
 	private void crearPanelControl() {
 		panelControl = new JPanel();
 		panelControl.setBackground(Color.getHSBColor(233, 18, 97));
 		panelControl.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
-		crearComponentesParaAgregarLocalidad(panelControl);		
+		crearComponentesPanelDeControl();		
 	}
 
-	private void crearComponentesParaAgregarLocalidad(JPanel botones) {
-		JLabel preguntaNombre = new JLabel("Ingrese el nombre de la Localidad");
-		botones.add(preguntaNombre);
-		fieldNombreLocalidad = new JTextField(15);
-		botones.add(fieldNombreLocalidad);
+	private void crearComponentesPanelDeControl() {
+		agregarCamposParaIngresarLocalidad();
+		
+		agregarBotonLocalidadDesdeArchivo();
+		
+		agregarBotonDibujarConexiones();
+	}
 
+	private void agregarCamposParaIngresarLocalidad() {
+		agregarCampoParaLocalidad();
+		agregarCampoParaProvincia();
+		agregarCamposParaCoordenadas();
+		
+		agregarBotonLocalidadIngresada();
+	}
+
+	private void agregarCampoParaLocalidad() {
+		JLabel preguntaNombre = new JLabel("Ingrese el nombre de la Localidad");
+		panelControl.add(preguntaNombre);
+		fieldNombreLocalidad = new JTextField(15);
+		panelControl.add(fieldNombreLocalidad);
+	}
+
+	private void agregarCampoParaProvincia() {
 		JLabel preguntaProv = new JLabel("Ingrese el nombre de la provincia");
-		botones.add(preguntaProv);		
+		panelControl.add(preguntaProv);		
 		fieldProvinciaLocalidad = new JTextField(15);
-		botones.add(fieldProvinciaLocalidad);
+		panelControl.add(fieldProvinciaLocalidad);
+	}
+
+	private void agregarCamposParaCoordenadas() {
+		JLabel preguntaCoord = new JLabel("Ingrese las coordenadas");
+		panelControl.add(preguntaCoord);
+		JLabel saltoDeLinea = new JLabel();
+		saltoDeLinea.setPreferredSize(new Dimension(1000, 0));
+		panelControl.add(saltoDeLinea);
 		
-		JLabel preguntaCoord = new JLabel("          Ingrese las coordenadas          ");
-		botones.add(preguntaCoord);
-		
-		JLabel lat = new JLabel("Latitud:");
-		botones.add(lat);
+		JLabel latitud = new JLabel("Latitud:");
+		panelControl.add(latitud);
 		fieldLatitud = new JTextField(4);
-		botones.add(fieldLatitud);
+		panelControl.add(fieldLatitud);
 		
-		JLabel longi = new JLabel("Longitud:");
-		botones.add(longi);
+		JLabel longitud = new JLabel("Longitud:");
+		panelControl.add(longitud);
 		fieldLongitud = new JTextField(4);
-		botones.add(fieldLongitud);
-		
-		JButton botonAgregarLocalidad = new JButton("Agregar Localidad");
+		panelControl.add(fieldLongitud);
+	}
+
+	private void agregarBotonLocalidadIngresada() {
+		JButton botonAgregarLocalidad = new JButton("Agregar Localidad Ingresada");
+		agregarActionListenerLocalidadIngresada(botonAgregarLocalidad);
+		panelControl.add(botonAgregarLocalidad);
+	}
+
+	private void agregarActionListenerLocalidadIngresada(JButton botonAgregarLocalidad) {
 		botonAgregarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -144,9 +172,15 @@ public class Mapa extends JPanel{
 				setearPosicionYZoom();
 			}
 		});
-		botones.add(botonAgregarLocalidad);
-		
+	}
+
+	private void agregarBotonLocalidadDesdeArchivo() {
 		JButton agregarLocalidadDeArchivo = new JButton("Agregar Localidad Desde Archivo");
+		agregarActionListenerLocalidadDesdeArchivo(agregarLocalidadDeArchivo);
+		panelControl.add(agregarLocalidadDeArchivo);
+	}
+
+	private void agregarActionListenerLocalidadDesdeArchivo(JButton agregarLocalidadDeArchivo) {
 		agregarLocalidadDeArchivo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -154,9 +188,15 @@ public class Mapa extends JPanel{
 				ventanaElegirLocalidades.toFront();
 			}
 		});
-		botones.add(agregarLocalidadDeArchivo);
-		
-		JButton botonDibujarArbol = new JButton("Dibujar Arbol Generador Minimo");
+	}
+
+	private void agregarBotonDibujarConexiones() {
+		JButton botonDibujarArbol = new JButton("Dibujar Conexiones Optimas");
+		agregarActionListenerDibujarConexiones(botonDibujarArbol);
+		panelControl.add(botonDibujarArbol);
+	}
+
+	private void agregarActionListenerDibujarConexiones(JButton botonDibujarArbol) {
 		botonDibujarArbol.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -166,55 +206,35 @@ public class Mapa extends JPanel{
 				setearPosicionYZoom();
 			}
 		});
-		botones.add(botonDibujarArbol);
 	}
 
 	private void agregarLocalidadIngresada() {
-		String nombreLocalidad = fieldNombreLocalidad.getText();
-		String provinciaLocalidad = fieldProvinciaLocalidad.getText();
-		double latitud = Double.parseDouble(fieldLatitud.getText());
-		double longitud = Double.parseDouble(fieldLongitud.getText());
-		Localidad nuevaLocalidad = new Localidad(nombreLocalidad, provinciaLocalidad, latitud, longitud);
+		Localidad nuevaLocalidad = crearLocalidadIngresada();
 
 		agregarLocalidad(nuevaLocalidad);
 	}
-	
-	public boolean agregarLocalidad(Localidad localidad) {
-		if (agregarLocalidadAlGrafo(localidad)) {			
-			dibujarLocalidad(localidad);
-			
-			return true;
-		}
-		return false;
+
+	private Localidad crearLocalidadIngresada() {
+		String nombreLocalidad = fieldNombreLocalidad.getText();
+		String provinciaLocalidad = fieldProvinciaLocalidad.getText();
+
+		double latitud = Double.parseDouble(fieldLatitud.getText());
+		double longitud = Double.parseDouble(fieldLongitud.getText());
+
+		Localidad nuevaLocalidad = new Localidad(nombreLocalidad, provinciaLocalidad, latitud, longitud);
+
+		return nuevaLocalidad;
 	}
 	
-	private boolean agregarLocalidadAlGrafo(Localidad localidad) {
-		try {
-			grafoCompleto.agregarLocalidad(localidad);
-			return true;
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
+	public void agregarLocalidad(Localidad localidad) {
+		grafoCompleto.agregarLocalidad(localidad);
+		dibujarLocalidad(localidad);
 	}
 	
-	public boolean eliminarLocalidad(Localidad localidad) {
-		if (eliminarLocalidadDelGrafo(localidad)) {			
-			eliminarLocalidadDelGrafo(localidad);
-			borrarMapa();
-			dibujarTodasLasLocalidades();
-			
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean eliminarLocalidadDelGrafo(Localidad localidad) {
-		try {
-			grafoCompleto.eliminarLocalidad(localidad);
-			return true;
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
+	public void eliminarLocalidad(Localidad localidad) {
+		grafoCompleto.eliminarLocalidad(localidad);
+		borrarMapa();
+		dibujarTodasLasLocalidades();
 	}
 	
 	public static Coordinate getCoordenadas(Localidad loc)
@@ -235,14 +255,18 @@ public class Mapa extends JPanel{
 	private void dibujarArbolMinimo()
 	{
 		Set <Localidad> puntosDelMapa = grafoCompleto.getArbolGeneradorMinimo().getLocalidades();
-		for (Localidad loc: puntosDelMapa)
+		for (Localidad localidad: puntosDelMapa)
 		{
-			dibujarLocalidad(loc);		
-			Set <ConexionLocalidades> conexiones = grafoCompleto.getArbolGeneradorMinimo().obtenerConexiones(loc);		
-			for (ConexionLocalidades conexion: conexiones)
-			{
-				trazarArista(conexion);
-			}
+			dibujarLocalidadConSusConexiones(localidad);
+		}
+	}
+
+	private void dibujarLocalidadConSusConexiones(Localidad localidad) {
+		dibujarLocalidad(localidad);		
+		Set <ConexionLocalidades> conexiones = grafoCompleto.getArbolGeneradorMinimo().obtenerConexiones(localidad);		
+		for (ConexionLocalidades conexion: conexiones)
+		{
+			trazarArista(conexion);
 		}
 	}
 
@@ -300,12 +324,6 @@ public class Mapa extends JPanel{
 		Coordinate coordenada = new Coordinate((latMinima + latMaxima)/2,(longMinima + longMaxima)/2);
 		mapa.setDisplayPosition(coordenada, 5);
 	}
-	
-	 public void resetApp()
-	 {
-		 borrarMapa();
-		 ventanaElegirLocalidades.limpiarVentana();
-	 }
 
 	private void borrarMapa() {
 		mapa.removeAllMapMarkers();
