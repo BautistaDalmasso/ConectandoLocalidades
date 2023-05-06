@@ -27,46 +27,43 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-
 public class VentanaElegirLocalidades extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private String[] localidadesDeProvinciaSeleccionada;
 	private ArchivoLocalidades archivo;
-	
+
 	private JComboBox<String> comboBoxLocalidades;
 	private JTable tablaLocalidadesElegidas;
 	private JScrollPane panelScroll;
 	private JPanel jpLocalidadesElegidas;
 	private String filasLocalidadesElegidas[][];
 	private String columnasLocalidadesElegidas[];
-	
+
 	private JLabel resultadoLocalidadElegida;
 	private String nombreProvinciaElegida;
 	private String nombreLocalidadElegida;
-	
+
 	private JButton aceptarLocalidad;
 	private JButton borrarLocalidad;
-	
+
 	private ArrayList<Localidad> localidadesElegidas;
-	
+
 	private Mapa mapa;
 
-	public VentanaElegirLocalidades(Mapa mapa, ArchivoLocalidades archivo)
-	{	
+	public VentanaElegirLocalidades(Mapa mapa, ArchivoLocalidades archivo) {
 		this.mapa = mapa;
 		this.archivo = archivo;
 		initialize();
 	}
-	
+
 	private void initialize() {
 		setBounds(500, 100, 550, 700);
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setResizable(false);
 		getContentPane().setLayout(null);
 		setLocation(0, 0);
-		
-	
+
 		comboBoxLocalidades = new JComboBox<String>();
 		localidadesElegidas = new ArrayList<Localidad>();
 		resultadoLocalidadElegida = nuevaJLabel("", 20, 147, 490, 18);
@@ -74,23 +71,23 @@ public class VentanaElegirLocalidades extends JFrame {
 
 		aceptarLocalidad = nuevoJButton("Aceptar", 155, 185, 120, 21);
 		aceptarLocalidad.setEnabled(false);
-		
+
 		borrarLocalidad = nuevoJButton("Borrar", 275, 185, 120, 21);
 		borrarLocalidad.setEnabled(false);
-		
+
 		filasLocalidadesElegidas = new String[localidadesElegidas.size()][4];
 		setearPanelLocalidadesElegidas();
-		
+
 		nuevaJLabel("Ingrese las localidades deseadas", 135, 15, 250, 18);
 		nuevaJLabel("Seleccione provincia:", 0, 67, 213, 18);
 		nuevaJLabel("Seleccione localidad:", 0, 107, 213, 18);
 
 		JComboBox<String> comboBoxProvincias = new JComboBox<String>();
-		
+
 		comboBoxProvincias.setModel(new DefaultComboBoxModel<String>(ordenar(listaProvincias())));
 		comboBoxProvincias.setBounds(249, 67, 245, 23);
 		getContentPane().add(comboBoxProvincias);
-		
+
 		comboBoxProvincias.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -99,100 +96,90 @@ public class VentanaElegirLocalidades extends JFrame {
 				nombreProvinciaElegida = (String) comboBoxProvincias.getSelectedItem();
 				fetchListaLocalidades(nombreProvinciaElegida);
 				habilitarBotonLocalidades();
-		}
-			});
-		
+			}
+		});
+
 		aceptarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (agregarLocalidadActual())
-				{
+				if (agregarLocalidadActual()) {
 					avisarEleccionExitosa();
 				} else {
 					avisarEleccionRechazada();
 				}
 			}
 		});
-		
+
 		borrarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (borrarLocalidadActual())
-				{
+				if (borrarLocalidadActual()) {
 					avisarBorradoExitoso();
 				} else {
 					avisarBorradoRechazado();
 				}
-				
+
 				borrarLocalidad.setEnabled(false);
 			}
-			
+
 		});
 	}
-	
 
-	private void setearPanelLocalidadesElegidas()
-	{
+	private void setearPanelLocalidadesElegidas() {
 		jpLocalidadesElegidas = new JPanel();
-		columnasLocalidadesElegidas= new String[] {"Localidad", "Provincia", "Latitud", "Longitud"};
+		columnasLocalidadesElegidas = new String[] { "Localidad", "Provincia", "Latitud", "Longitud" };
 
 		tablaLocalidadesElegidas = new JTable(filasLocalidadesElegidas, columnasLocalidadesElegidas);
 		tablaLocalidadesElegidas.setFont(new java.awt.Font("Tahoma", 0, 10));
 		tablaLocalidadesElegidas.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		
+
 		tablaLocalidadesElegidas.getTableHeader().setBackground(Color.yellow);
-		
+
 		panelScroll = new JScrollPane(tablaLocalidadesElegidas);
 		jpLocalidadesElegidas.add(panelScroll);
-		jpLocalidadesElegidas.setBounds(20,230,500,360);
+		jpLocalidadesElegidas.setBounds(20, 230, 500, 360);
 		add(jpLocalidadesElegidas);
 	}
-	
-	private void avisarEleccionExitosa()
-	{
+
+	private void avisarEleccionExitosa() {
 		Localidad localidadActual = obtenerLocalidadActual();
 		resultadoLocalidadElegida.setText("Usted Eligió: " + localidadActual.getNombre());
 		resultadoLocalidadElegida.setBackground(Color.green);
 	}
-	
-	private void avisarEleccionRechazada()
-	{
+
+	private void avisarEleccionRechazada() {
 		resultadoLocalidadElegida.setBackground(Color.red);
 		resultadoLocalidadElegida.setForeground(Color.white);
 		resultadoLocalidadElegida.setText("Localidad ya ingresada");
 	}
-	
-	private void avisarBorradoExitoso()
-	{
+
+	private void avisarBorradoExitoso() {
 		Localidad localidadActual = obtenerLocalidadActual();
 		resultadoLocalidadElegida.setText(localidadActual.getNombre() + " eliminada de lista");
 		resultadoLocalidadElegida.setBackground(Color.green);
 	}
 
-	private void avisarBorradoRechazado()
-	{
+	private void avisarBorradoRechazado() {
 		resultadoLocalidadElegida.setBackground(Color.red);
 		resultadoLocalidadElegida.setForeground(Color.white);
 		resultadoLocalidadElegida.setText("Localidad no se encontraba en el grafo");
 	}
-		
-	private boolean agregarLocalidadActual()
-	{
+
+	private boolean agregarLocalidadActual() {
 		Localidad localidadActual = obtenerLocalidadActual();
-		
-		try {			
+
+		try {
 			mapa.agregarLocalidad(localidadActual);
 			addLocalidadATablaLocalidades(localidadActual);
 			return true;
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			return false;
 		}
 	}
-	
-	private boolean borrarLocalidadActual() {		
+
+	private boolean borrarLocalidadActual() {
 		Localidad localidadActual = obtenerLocalidadActual();
-		
+
 		try {
 			mapa.eliminarLocalidad(localidadActual);
 			localidadesElegidas.remove(localidadActual);
@@ -202,43 +189,39 @@ public class VentanaElegirLocalidades extends JFrame {
 			return false;
 		}
 	}
-	
+
 	private Localidad obtenerLocalidadActual() {
 		HashSet<Localidad> locsProvEspecifica = archivo.getLocalidadesDeUnaProvincia(nombreProvinciaElegida);
-		
-		for (Localidad localidad: locsProvEspecifica) {
+
+		for (Localidad localidad : locsProvEspecifica) {
 			if (localidad.getNombre().equals(nombreLocalidadElegida)) {
 				return localidad;
 			}
 		}
 		return null;
 	}
-	
-	private void addLocalidadATablaLocalidades(Localidad localidad)
-	{
+
+	private void addLocalidadATablaLocalidades(Localidad localidad) {
 		localidadesElegidas.add(localidad);
 		refrescarTablaLocElegidas();
 	}
-	
-	public void limpiarVentana()
-	{
+
+	public void limpiarVentana() {
 		localidadesElegidas = new ArrayList<Localidad>();
 		refrescarTablaLocElegidas();
 	}
-	
-	private void refrescarTablaLocElegidas()
-	{
+
+	private void refrescarTablaLocElegidas() {
 		filasLocalidadesElegidas = new String[localidadesElegidas.size()][4];
 
 		popularTablaLocalidades();
-			
+
 		setearPanelLocalidadesElegidas();
 	}
 
 	private void popularTablaLocalidades() {
 		int fila = 0;
-		for (Localidad localidad : localidadesElegidas)
-		{
+		for (Localidad localidad : localidadesElegidas) {
 			popularFilaLocalidad(fila, localidad);
 			fila++;
 		}
@@ -251,12 +234,11 @@ public class VentanaElegirLocalidades extends JFrame {
 		filasLocalidadesElegidas[fila][3] = "" + localidad.getPosicion().getLongitud();
 	}
 
-	private void habilitarBotonLocalidades()
-	{
+	private void habilitarBotonLocalidades() {
 		comboBoxLocalidades.setBounds(249, 107, 245, 23);
 		comboBoxLocalidades.setModel(new DefaultComboBoxModel<String>(ordenar(localidadesDeProvinciaSeleccionada)));
 		getContentPane().add(comboBoxLocalidades);
-		
+
 		comboBoxLocalidades.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -266,7 +248,7 @@ public class VentanaElegirLocalidades extends JFrame {
 			}
 		});
 	}
-	
+
 	private void habilitarBotonAceptar(String localidad) {
 		nombreLocalidadElegida = localidad;
 		aceptarLocalidad.setEnabled(true);
@@ -275,22 +257,20 @@ public class VentanaElegirLocalidades extends JFrame {
 		resultadoLocalidadElegida.setBackground(Color.orange);
 		resultadoLocalidadElegida.setText(localidad + ", " + nombreProvinciaElegida);
 	}
-	
-	private void limpiarLocalidadElegida()
-	{
+
+	private void limpiarLocalidadElegida() {
 		aceptarLocalidad.setEnabled(false);
 		resultadoLocalidadElegida.setBackground(Color.lightGray);
 		resultadoLocalidadElegida.setForeground(Color.black);
 		resultadoLocalidadElegida.setText("");
 	}
-	
+
 	private void fetchListaLocalidades(String provincia) {
 		HashSet<Localidad> localidades = archivo.getLocalidadesDeUnaProvincia(provincia);
 		localidadesDeProvinciaSeleccionada = new String[localidades.size()];
-		
+
 		int i = 0;
-		for (Localidad localidad: localidades)
-		{
+		for (Localidad localidad : localidades) {
 			String nuevaLoc = localidad.getNombre();
 			if (verificarSiEsNombreRepetido(nuevaLoc)) {
 				nuevaLoc = agregarNumeroAlNombre(nuevaLoc);
@@ -300,37 +280,32 @@ public class VentanaElegirLocalidades extends JFrame {
 			i++;
 		}
 	}
-	
-	private boolean verificarSiEsNombreRepetido(String n)
-	{
+
+	private boolean verificarSiEsNombreRepetido(String n) {
 		return Arrays.stream(localidadesDeProvinciaSeleccionada).anyMatch(n::equals);
 	}
-	
-	private String agregarNumeroAlNombre(String localidad)
-	{
+
+	private String agregarNumeroAlNombre(String localidad) {
 		int cont = 1;
-		while (Arrays.stream(localidadesDeProvinciaSeleccionada).anyMatch((localidad + "(" + cont + ")")::equals))
-		{
+		while (Arrays.stream(localidadesDeProvinciaSeleccionada).anyMatch((localidad + "(" + cont + ")")::equals)) {
 			cont++;
 		}
 		return localidad + "(" + cont + ")";
 	}
-	
-	private static String[] ordenar(String[] lista)
-	{
+
+	private static String[] ordenar(String[] lista) {
 		List<String> localidad = Arrays.asList(lista);
-		localidad.sort(null);		
+		localidad.sort(null);
 		return localidad.toArray(new String[localidad.size()]);
 	}
 
 	private String[] listaProvincias() {
-		Set<String> p = archivo.getProvincias();	
+		Set<String> p = archivo.getProvincias();
 		String[] provinciasLista = p.toArray(new String[p.size()]);
 		return provinciasLista;
 	}
-	
-	private JLabel nuevaJLabel(String texto, int x, int y, int ancho, int alto)
-	{
+
+	private JLabel nuevaJLabel(String texto, int x, int y, int ancho, int alto) {
 		JLabel e = new JLabel(texto);
 		e.setHorizontalAlignment(SwingConstants.RIGHT);
 		e.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -338,9 +313,8 @@ public class VentanaElegirLocalidades extends JFrame {
 		getContentPane().add(e);
 		return e;
 	}
-	
-	private JButton nuevoJButton(String texto, int x, int y, int ancho, int alto)
-	{
+
+	private JButton nuevoJButton(String texto, int x, int y, int ancho, int alto) {
 		JButton b = new JButton(texto);
 		b.setHorizontalAlignment(SwingConstants.CENTER);
 		b.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -348,10 +322,8 @@ public class VentanaElegirLocalidades extends JFrame {
 		getContentPane().add(b);
 		return b;
 	}
-	
-	public ArrayList<Localidad> getLocalidadesElegidas()
-	{
+
+	public ArrayList<Localidad> getLocalidadesElegidas() {
 		return localidadesElegidas;
 	}
 }
-

@@ -21,7 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
-public class Mapa extends JPanel{
+public class Mapa extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JFrame frame;
@@ -36,7 +36,7 @@ public class Mapa extends JPanel{
 	private JTextField fieldLatitud;
 	private JTextField fieldLongitud;
 	private VentanaElegirLocalidades ventanaElegirLocalidades;
-	
+
 	private HashMap<Localidad, MapMarker> puntosDelMapa;
 	private ArchivoLocalidades archivoLocalidades;
 
@@ -51,32 +51,31 @@ public class Mapa extends JPanel{
 				}
 			}
 		});
-		
+
 	}
 
 	public Mapa() {
 		initialize();
 	}
 
-	private void initialize()
-	{
+	private void initialize() {
 		grafoCompleto = new GrafoCompletoLocalidades();
 		cargarLocalidadesdesdeArchivo();
-		
+
 		puntosDelMapa = new HashMap<Localidad, MapMarker>();
-		
+
 		crearYSetearVentanaPrincipal();
 		crearYSetearPanelMapa();
 		crearPanelControl();
-		crearPanelDivisor(panelControl, panelMapa);	
-		
+		crearPanelDivisor(panelControl, panelMapa);
+
 		ventanaElegirLocalidades = new VentanaElegirLocalidades(this, archivoLocalidades);
 	}
 
 	private void cargarLocalidadesdesdeArchivo() {
 		archivoLocalidades = new ArchivoLocalidades("localidadesArgentinasJSON");
 	}
-	
+
 	private void crearYSetearVentanaPrincipal() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1200, 700);
@@ -94,27 +93,27 @@ public class Mapa extends JPanel{
 		mapa.setBounds(0, 0, 500, 500);
 		panelMapa.add(mapa, BorderLayout.CENTER);
 	}
-	
+
 	private void crearPanelDivisor(JPanel panelControl, JPanel panelMapa) {
 		panelDivisor = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelControl, panelMapa);
 		panelDivisor.setDividerLocation(250);
 		panelDivisor.setDividerSize(0);
-		frame.getContentPane().add(panelDivisor,BorderLayout.CENTER);
+		frame.getContentPane().add(panelDivisor, BorderLayout.CENTER);
 	}
-	
+
 	private void crearPanelControl() {
 		panelControl = new JPanel();
 		panelControl.setBackground(Color.getHSBColor(233, 18, 97));
 		panelControl.setLayout(new FlowLayout(FlowLayout.CENTER));
-		
-		crearComponentesPanelDeControl();		
+
+		crearComponentesPanelDeControl();
 	}
 
 	private void crearComponentesPanelDeControl() {
 		agregarCamposParaIngresarLocalidad();
-		
+
 		agregarBotonLocalidadDesdeArchivo();
-		
+
 		agregarBotonDibujarConexiones();
 	}
 
@@ -122,7 +121,7 @@ public class Mapa extends JPanel{
 		agregarCampoParaLocalidad();
 		agregarCampoParaProvincia();
 		agregarCamposParaCoordenadas();
-		
+
 		agregarBotonLocalidadIngresada();
 	}
 
@@ -135,7 +134,7 @@ public class Mapa extends JPanel{
 
 	private void agregarCampoParaProvincia() {
 		JLabel preguntaProv = new JLabel("Ingrese el nombre de la provincia");
-		panelControl.add(preguntaProv);		
+		panelControl.add(preguntaProv);
 		fieldProvinciaLocalidad = new JTextField(15);
 		panelControl.add(fieldProvinciaLocalidad);
 	}
@@ -146,12 +145,12 @@ public class Mapa extends JPanel{
 		JLabel saltoDeLinea = new JLabel();
 		saltoDeLinea.setPreferredSize(new Dimension(1000, 0));
 		panelControl.add(saltoDeLinea);
-		
+
 		JLabel latitud = new JLabel("Latitud:");
 		panelControl.add(latitud);
 		fieldLatitud = new JTextField(4);
 		panelControl.add(fieldLatitud);
-		
+
 		JLabel longitud = new JLabel("Longitud:");
 		panelControl.add(longitud);
 		fieldLongitud = new JTextField(4);
@@ -225,47 +224,41 @@ public class Mapa extends JPanel{
 
 		return nuevaLocalidad;
 	}
-	
+
 	public void agregarLocalidad(Localidad localidad) {
 		grafoCompleto.agregarLocalidad(localidad);
 		dibujarLocalidad(localidad);
 	}
-	
+
 	public void eliminarLocalidad(Localidad localidad) {
 		grafoCompleto.eliminarLocalidad(localidad);
 		borrarMapa();
 		dibujarTodasLasLocalidades();
 	}
-	
-	public static Coordinate getCoordenadas(Localidad loc)
-	{
-		return new Coordinate(loc.getPosicion().getLatitud(), 
-				   loc.getPosicion().getLongitud());
+
+	public static Coordinate getCoordenadas(Localidad loc) {
+		return new Coordinate(loc.getPosicion().getLatitud(), loc.getPosicion().getLongitud());
 	}
-	
-	public void trazarArista(Localidad loc1, Localidad loc2)
-	{
+
+	public void trazarArista(Localidad loc1, Localidad loc2) {
 		Coordinate uno = getCoordenadas(loc1);
 		Coordinate dos = getCoordenadas(loc2);
-		
+
 		List<Coordinate> ruta = new ArrayList<Coordinate>(Arrays.asList(uno, dos, dos));
 		mapa.addMapPolygon(new MapPolygonImpl(ruta));
 	}
-	
-	private void dibujarArbolMinimo()
-	{
-		Set <Localidad> puntosDelMapa = grafoCompleto.getArbolGeneradorMinimo().getLocalidades();
-		for (Localidad localidad: puntosDelMapa)
-		{
+
+	private void dibujarArbolMinimo() {
+		Set<Localidad> puntosDelMapa = grafoCompleto.getArbolGeneradorMinimo().getLocalidades();
+		for (Localidad localidad : puntosDelMapa) {
 			dibujarLocalidadConSusConexiones(localidad);
 		}
 	}
 
 	private void dibujarLocalidadConSusConexiones(Localidad localidad) {
-		dibujarLocalidad(localidad);		
-		Set <ConexionLocalidades> conexiones = grafoCompleto.getArbolGeneradorMinimo().obtenerConexiones(localidad);		
-		for (ConexionLocalidades conexion: conexiones)
-		{
+		dibujarLocalidad(localidad);
+		Set<ConexionLocalidades> conexiones = grafoCompleto.getArbolGeneradorMinimo().obtenerConexiones(localidad);
+		for (ConexionLocalidades conexion : conexiones) {
 			trazarArista(conexion);
 		}
 	}
@@ -273,55 +266,55 @@ public class Mapa extends JPanel{
 	private void trazarArista(ConexionLocalidades conexion) {
 		Coordinate partida = getCoordenadas(conexion.getLocalidadA());
 		Coordinate llegada = getCoordenadas(conexion.getLocalidadB());
-		
+
 		List<Coordinate> route = new ArrayList<Coordinate>(Arrays.asList(partida, llegada, llegada));
 		mapa.addMapPolygon(new MapPolygonImpl(route));
 	}
 
 	private void dibujarTodasLasLocalidades() {
-		for (Localidad localidad : grafoCompleto.getLocalidades())  {
+		for (Localidad localidad : grafoCompleto.getLocalidades()) {
 			dibujarLocalidad(localidad);
 		}
 	}
-	
+
 	private void dibujarLocalidad(Localidad localidad) {
-		MapMarker m = new MapMarkerDot(localidad.getNombre(), getCoordenadas(localidad));	
+		MapMarker m = new MapMarkerDot(localidad.getNombre(), getCoordenadas(localidad));
 		m.getStyle().setBackColor(Color.red);
 		m.getStyle().setColor(Color.red);
 		mapa.addMapMarker(m);
 		puntosDelMapa.put(localidad, m);
 	}
-	
+
 	private void setearPosInicialMapa() {
 		Coordinate coordenada = new Coordinate(-34, -64);
 		mapa.setDisplayPosition(coordenada, 5);
-		
+
 	}
-	
+
 	private void setearPosicionYZoom() {
 		Set<Localidad> localidades = grafoCompleto.getLocalidades();
 		double latMinima = 89;
 		double latMaxima = -89;
 		double longMinima = 189;
 		double longMaxima = -189;
-		for(Localidad localidad: localidades) {
+		for (Localidad localidad : localidades) {
 			PosicionGeografica coordenadas = localidad.getPosicion();
 			double latActual = coordenadas.getLatitud();
 			double longActual = coordenadas.getLongitud();
-			if(latActual < latMinima) {
+			if (latActual < latMinima) {
 				latMinima = latActual;
 			}
-			if(latActual > latMaxima) {
+			if (latActual > latMaxima) {
 				latMaxima = latActual;
 			}
-			if(longActual < longMinima) {
+			if (longActual < longMinima) {
 				longMinima = longActual;
 			}
-			if(longActual > longMaxima) {
+			if (longActual > longMaxima) {
 				longMaxima = longActual;
 			}
 		}
-		Coordinate coordenada = new Coordinate((latMinima + latMaxima)/2,(longMinima + longMaxima)/2);
+		Coordinate coordenada = new Coordinate((latMinima + latMaxima) / 2, (longMinima + longMaxima) / 2);
 		mapa.setDisplayPosition(coordenada, 5);
 	}
 
