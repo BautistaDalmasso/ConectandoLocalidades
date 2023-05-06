@@ -40,6 +40,8 @@ public class Mapa extends JPanel {
 	private HashMap<Localidad, MapMarker> puntosDelMapa;
 	private ArchivoLocalidades archivoLocalidades;
 
+	private List<Localidad> localidadesElegidas;
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -59,6 +61,7 @@ public class Mapa extends JPanel {
 	}
 
 	private void initialize() {
+		localidadesElegidas = new ArrayList<Localidad>();
 		grafoCompleto = new GrafoCompletoLocalidades();
 		cargarLocalidadesdesdeArchivo();
 
@@ -227,11 +230,19 @@ public class Mapa extends JPanel {
 
 	public void agregarLocalidad(Localidad localidad) {
 		grafoCompleto.agregarLocalidad(localidad);
+
+		localidadesElegidas.add(localidad);
+		ventanaElegirLocalidades.refrescarVentana();
+
 		dibujarLocalidad(localidad);
 	}
 
 	public void eliminarLocalidad(Localidad localidad) {
 		grafoCompleto.eliminarLocalidad(localidad);
+
+		localidadesElegidas.remove(localidad);
+		ventanaElegirLocalidades.refrescarVentana();
+
 		borrarMapa();
 		dibujarTodasLasLocalidades();
 	}
@@ -322,5 +333,9 @@ public class Mapa extends JPanel {
 		mapa.removeAllMapMarkers();
 		mapa.removeAllMapPolygons();
 		repaint();
+	}
+
+	public List<Localidad> getLocalidadesElegidas() {
+		return localidadesElegidas;
 	}
 }

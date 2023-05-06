@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,8 +44,6 @@ public class VentanaElegirLocalidades extends JFrame {
 
 	private JButton aceptarLocalidad;
 	private JButton borrarLocalidad;
-
-	private ArrayList<Localidad> localidadesElegidas;
 
 	private Mapa mapa;
 
@@ -117,7 +114,6 @@ public class VentanaElegirLocalidades extends JFrame {
 	private void crearComboBoxLocalidades() {
 		nuevaJLabel("Seleccione localidad:", 0, 107, 213, 18);
 		comboBoxLocalidades = new JComboBox<String>();
-		localidadesElegidas = new ArrayList<Localidad>();
 	}
 
 	private void crearLabelResultado() {
@@ -223,8 +219,7 @@ public class VentanaElegirLocalidades extends JFrame {
 
 		try {
 			mapa.eliminarLocalidad(localidadActual);
-			localidadesElegidas.remove(localidadActual);
-			refrescarTablaLocElegidas();
+			refrescarTablaLocalidadesElegidas();
 			return true;
 		} catch (IllegalArgumentException e) {
 			return false;
@@ -243,17 +238,15 @@ public class VentanaElegirLocalidades extends JFrame {
 	}
 
 	private void addLocalidadATablaLocalidades(Localidad localidad) {
-		localidadesElegidas.add(localidad);
-		refrescarTablaLocElegidas();
+		refrescarTablaLocalidadesElegidas();
 	}
 
-	public void limpiarVentana() {
-		localidadesElegidas = new ArrayList<Localidad>();
-		refrescarTablaLocElegidas();
+	public void refrescarVentana() {
+		refrescarTablaLocalidadesElegidas();
 	}
 
-	private void refrescarTablaLocElegidas() {
-		filasLocalidadesElegidas = new String[localidadesElegidas.size()][4];
+	private void refrescarTablaLocalidadesElegidas() {
+		filasLocalidadesElegidas = new String[mapa.getLocalidadesElegidas().size()][4];
 
 		popularTablaLocalidades();
 
@@ -262,7 +255,7 @@ public class VentanaElegirLocalidades extends JFrame {
 
 	private void popularTablaLocalidades() {
 		int fila = 0;
-		for (Localidad localidad : localidadesElegidas) {
+		for (Localidad localidad : mapa.getLocalidadesElegidas()) {
 			popularFilaLocalidad(fila, localidad);
 			fila++;
 		}
@@ -312,7 +305,7 @@ public class VentanaElegirLocalidades extends JFrame {
 		localidadesDeProvinciaSeleccionada = new String[localidades.size()];
 
 		int i = 0;
-		for (Localidad localidad : localidades) {			
+		for (Localidad localidad : localidades) {
 			localidadesDeProvinciaSeleccionada[i] = localidad.getNombre();
 			i++;
 		}
