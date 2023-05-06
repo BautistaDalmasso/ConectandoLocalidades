@@ -5,8 +5,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+
 import java.util.Set;
 
 import javax.swing.JFrame;
@@ -18,16 +19,15 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
-public class Mapa {
+public class Mapa extends JPanel{
 
+	private static final long serialVersionUID = 1L;
 	private JFrame frame;
 	private JMapViewer mapa;
 	private GrafoCompletoLocalidades grafoCompleto;
-	private GrafoLocalidades arbolMinimo;
 	private JPanel panelMapa;
 	private JPanel panelControl;
 	private JSplitPane panelDivisor;
@@ -36,15 +36,10 @@ public class Mapa {
 	private JTextField fieldProvinciaLocalidad;
 	private JTextField fieldLatitud;
 	private JTextField fieldLongitud;
+	private VentanaElegirLocalidades ventanaElegirLocalidades;
 	
-	/**
-	 * @wbp.nonvisual location=-48,259
-	 */
-	private final JPopupMenu popupMenu = new JPopupMenu();
+	private HashMap<Localidad, MapMarker> puntosDelMapa;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -59,35 +54,31 @@ public class Mapa {
 		
 	}
 
-
-	/**
-	 * Create the application.
-	 */
 	public Mapa() {
 		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		cargarGrafoDesdeArchivo("archivoBairesChico");
+	private void initialize()
+	{
+		grafoCompleto = new GrafoCompletoLocalidades();
+		ArchivoLocalidades file = cargarLocalidadesdesdeArchivo();
+		
+		ventanaElegirLocalidades = new VentanaElegirLocalidades(this);
+		ventanaElegirLocalidades.setLocalidadesElegibles(file);
+		ventanaElegirLocalidades.launch();
+		
+		puntosDelMapa = new HashMap<Localidad, MapMarker>();
+		
 		crearYSetearVentanaPrincipal();
 		crearYSetearPanelMapa();
 		crearPanelControl();
-		crearPanelDivisor(panelControl, panelMapa);
-		
-		
-		// carga el archivo y construye el grafo completo	
-		// FALTA IMPLEMENTAR: Pregunta al usuario por el archivo / localidades
-		
-		
-		// Calcula el árbol generador mínimo y dibuja el grafo resultante
-		arbolMinimo = grafoCompleto.getArbolGeneradorMinimo();
-		
-		pintarLocalidades();
+		crearPanelDivisor(panelControl, panelMapa);	
 	}
 
+	private ArchivoLocalidades cargarLocalidadesdesdeArchivo() {
+		ArchivoLocalidades a = new ArchivoLocalidades("localidadesArgentinasJSON");
+		return a;
+	}
 
 	private void crearPanelControl() {
 		panelControl = new JPanel();
@@ -98,7 +89,6 @@ public class Mapa {
 		
 	}
 
-
 	private void crearPanelDivisor(JPanel panelControl, JPanel panelMapa) {
 		panelDivisor = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelControl, panelMapa);
 		panelDivisor.setDividerLocation(250);
@@ -106,21 +96,21 @@ public class Mapa {
 		frame.getContentPane().add(panelDivisor,BorderLayout.CENTER);
 	}
 
-
 	private void crearYSetearPanelMapa() {
 		panelMapa =new JPanel();
 		panelMapa.setLayout(new BorderLayout());
 		panelMapa.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		mapa = new JMapViewer();
-		setearPosicionYZoom();
+//		setearPosicionYZoom();
+		setearPosInicialMapa();
 		mapa.setBounds(0, 0, 500, 500);
 		panelMapa.add(mapa, BorderLayout.CENTER);
 	}
 
-
 	private void crearYSetearVentanaPrincipal() {
 		frame = new JFrame();
-		frame.setBounds(300, 150, 1200, 700);
+		frame.setBounds(100, 100, 1200, 700);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Mapa de conexiones telefonicas");
 		frame.getContentPane().setLayout(new BorderLayout());
@@ -138,7 +128,6 @@ public class Mapa {
 		localidades.setBackground(Color.getHSBColor(233, 18, 97));
 		localidades.setPreferredSize(new Dimension(250, 350));
 		localidades.setLayout(new FlowLayout(1,30,20));
-		mostrarLocalidades(localidades);  //acá en realidad se deberian ir agregando
 		panelControl.add(localidades);
 	}
 
@@ -148,11 +137,10 @@ public class Mapa {
 		botonDibujarArbol.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mapa.removeAllMapMarkers();
-				mapa.removeAllMapPolygons();
-				mapa.repaint();
+				borrarMapa();
 				grafoCompleto.construirArbolGeneradorMinimo();
-				dibujarGrafo();
+				dibujarArbolMinimo();
+				setearPosicionYZoom();
 			}
 		});
 		botones.add(botonDibujarArbol);
@@ -185,6 +173,7 @@ public class Mapa {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				agregarLocalidadIngresada();
+				setearPosicionYZoom();
 			}
 		});
 		botones.add(botonAgregarLocalidad);
@@ -192,20 +181,49 @@ public class Mapa {
 
 	private void agregarLocalidadIngresada() {
 		String nombreLocalidad = fieldNombreLocalidad.getText();
-		String provinciaLocaliadad = fieldProvinciaLocalidad.getText();
+		String provinciaLocalidad = fieldProvinciaLocalidad.getText();
 		double latitud = Double.parseDouble(fieldLatitud.getText());
 		double longitud = Double.parseDouble(fieldLongitud.getText());
-		Localidad nuevaLocalidad = new Localidad(nombreLocalidad, provinciaLocaliadad, latitud, longitud);
-		
-		grafoCompleto.agregarLocalidad(nuevaLocalidad);
-		pintarPunto(nuevaLocalidad);
+		Localidad nuevaLocalidad = new Localidad(nombreLocalidad, provinciaLocalidad, latitud, longitud);
+
+		agregarLocalidad(nuevaLocalidad);
 	}
 	
-	private void mostrarLocalidades(JPanel panel) {
-		Set<Localidad> localidades = grafoCompleto.getLocalidades();
-		for(Localidad localidad: localidades) {
-			JLabel label = new JLabel(localidad.getNombre()+", "+localidad.getProvincia());
-			panel.add(label);
+	public boolean agregarLocalidad(Localidad localidad) {
+		if (agregarLocalidadAlGrafo(localidad)) {			
+			dibujarLocalidad(localidad);
+			
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean agregarLocalidadAlGrafo(Localidad localidad) {
+		try {
+			grafoCompleto.agregarLocalidad(localidad);
+			return true;
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+	}
+	
+	public boolean eliminarLocalidad(Localidad localidad) {
+		if (eliminarLocalidadDelGrafo(localidad)) {			
+			eliminarLocalidadDelGrafo(localidad);
+			borrarMapa();
+			dibujarTodasLasLocalidades();
+			
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean eliminarLocalidadDelGrafo(Localidad localidad) {
+		try {
+			grafoCompleto.eliminarLocalidad(localidad);
+			return true;
+		} catch (IllegalArgumentException e) {
+			return false;
 		}
 	}
 	
@@ -215,53 +233,55 @@ public class Mapa {
 				   loc.getPosicion().getLongitud());
 	}
 	
-	// TODO: mover al negocio.
-	private void cargarGrafoDesdeArchivo(String listaLocalidades) {
-		Archivo zona = new Archivo(listaLocalidades);
-		LinkedList<Localidad> pueblos = zona.fetchLocalidades();
-		grafoCompleto = new GrafoCompletoLocalidades();	
-		for (Localidad loc: pueblos)
-		{
-			grafoCompleto.agregarLocalidad(loc);
-		}	
-	}
-	
-	private void pintarLocalidades() {
-		Set <Localidad> puntosDelMapa = arbolMinimo.getLocalidades();
-		for (Localidad loc: puntosDelMapa)
-		{
-			pintarPunto(loc);
-		}
-	}
-	
-	private void dibujarGrafo()
-	{
-		Set <Localidad> puntosDelMapa = arbolMinimo.getLocalidades();
-		for (Localidad loc: puntosDelMapa)
-		{
-			pintarPunto(loc);		
-			Set <ConexionLocalidades> conexiones = arbolMinimo.obtenerConexiones(loc);		
-			for (ConexionLocalidades c: conexiones)
-			{
-				trazarArista(c.getLocalidadA(), c.getLocalidadB());
-			}
-		}
-	}
-	
-	private void pintarPunto(Localidad loc) {
-		MapMarker m = new MapMarkerDot(loc.getNombre(), getCoordenadas(loc));	
-		m.getStyle().setBackColor(Color.red);
-		m.getStyle().setColor(Color.red);
-		mapa.addMapMarker(m);
-	}
-
 	public void trazarArista(Localidad loc1, Localidad loc2)
 	{
 		Coordinate uno = getCoordenadas(loc1);
 		Coordinate dos = getCoordenadas(loc2);
 		
-		List<Coordinate> route = new ArrayList<Coordinate>(Arrays.asList(uno, dos, dos));
+		List<Coordinate> ruta = new ArrayList<Coordinate>(Arrays.asList(uno, dos, dos));
+		mapa.addMapPolygon(new MapPolygonImpl(ruta));
+	}
+	
+	private void dibujarArbolMinimo()
+	{
+		Set <Localidad> puntosDelMapa = grafoCompleto.getArbolGeneradorMinimo().getLocalidades();
+		for (Localidad loc: puntosDelMapa)
+		{
+			dibujarLocalidad(loc);		
+			Set <ConexionLocalidades> conexiones = grafoCompleto.getArbolGeneradorMinimo().obtenerConexiones(loc);		
+			for (ConexionLocalidades conexion: conexiones)
+			{
+				trazarArista(conexion);
+			}
+		}
+	}
+
+	private void trazarArista(ConexionLocalidades conexion) {
+		Coordinate partida = getCoordenadas(conexion.getLocalidadA());
+		Coordinate llegada = getCoordenadas(conexion.getLocalidadB());
+		
+		List<Coordinate> route = new ArrayList<Coordinate>(Arrays.asList(partida, llegada, llegada));
 		mapa.addMapPolygon(new MapPolygonImpl(route));
+	}
+
+	private void dibujarTodasLasLocalidades() {
+		for (Localidad localidad : grafoCompleto.getLocalidades())  {
+			dibujarLocalidad(localidad);
+		}
+	}
+	
+	private void dibujarLocalidad(Localidad localidad) {
+		MapMarker m = new MapMarkerDot(localidad.getNombre(), getCoordenadas(localidad));	
+		m.getStyle().setBackColor(Color.red);
+		m.getStyle().setColor(Color.red);
+		mapa.addMapMarker(m);
+		puntosDelMapa.put(localidad, m);
+	}
+	
+	private void setearPosInicialMapa() {
+		Coordinate coordenada = new Coordinate(-34, -64);
+		mapa.setDisplayPosition(coordenada, 5);
+		
 	}
 	
 	private void setearPosicionYZoom() {
@@ -288,6 +308,18 @@ public class Mapa {
 			}
 		}
 		Coordinate coordenada = new Coordinate((latMinima + latMaxima)/2,(longMinima + longMaxima)/2);
-		mapa.setDisplayPosition(coordenada, 6);
+		mapa.setDisplayPosition(coordenada, 5);
+	}
+	
+	 public void resetApp()
+	 {
+		 borrarMapa();
+		 ventanaElegirLocalidades.limpiarVentana();
+	 }
+
+	private void borrarMapa() {
+		mapa.removeAllMapMarkers();
+		mapa.removeAllMapPolygons();
+		repaint();
 	}
 }

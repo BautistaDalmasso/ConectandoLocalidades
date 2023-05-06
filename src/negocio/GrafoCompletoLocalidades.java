@@ -10,7 +10,7 @@ import radixsort.RadixSort;
 
 public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	private List<ConexionLocalidades> conexiones;
-	private Map<String, Integer> localidadesConIndice;
+	private Map<Localidad, Integer> localidadesConIndice;
 	private GrafoLocalidades arbolGeneradorMinimo;
 	private int cantidadDeLocalidades;
 	private Integer costoConexionMaxima;
@@ -24,7 +24,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 
 		arbolGeneradorMinimo = new GrafoLocalidades();
 		conexiones = new ArrayList<ConexionLocalidades>();
-		localidadesConIndice = new HashMap<String, Integer>();
+		localidadesConIndice = new HashMap<Localidad, Integer>();
 		cantidadDeLocalidades = 0;
 		costoConexionMaxima = 0;
 		constructorAGM = new ConstructorAGM(this);
@@ -73,7 +73,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	}
 
 	private void actualizarLocalidadesConIndice(Localidad localidad) {
-		localidadesConIndice.put(localidad.getNombreUnico(), cantidadDeLocalidades);
+		localidadesConIndice.put(localidad, cantidadDeLocalidades);
 		cantidadDeLocalidades++;
 	}
 	
@@ -96,23 +96,21 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	}
 
 	private void eliminarDeIndices(Localidad localidad) {
-		Integer indiceLocalidad = localidadesConIndice.get(localidad.getNombreUnico());
+		Integer indiceLocalidad = localidadesConIndice.get(localidad);
 
 		reducirIndices(indiceLocalidad);
 		
-		localidadesConIndice.remove(localidad.getNombreUnico());
+		localidadesConIndice.remove(localidad);
 	}
 	
 	private void reducirIndices(Integer pisoReduccion) {
-		String nombreUnicoLocalidad;
 		Integer indiceLocalidad;
 		
 		for (Localidad loc : getLocalidades()) {
-			nombreUnicoLocalidad = loc.getNombreUnico();
-			indiceLocalidad = localidadesConIndice.get(nombreUnicoLocalidad);
+			indiceLocalidad = localidadesConIndice.get(loc);
 			
 			if (indiceLocalidad.compareTo(pisoReduccion) > 0) {
-				localidadesConIndice.put(nombreUnicoLocalidad, indiceLocalidad - 1);
+				localidadesConIndice.put(loc, indiceLocalidad - 1);
 			}
 		}
 	}
@@ -140,7 +138,7 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	}
 	
 	private void seleccionarAlgoritmo() {
-		if (conexiones.size() - RadixSort.cantidadDeDigitos(costoConexionMaxima) > 5) {
+		if (elegibleParaRadixSort()) {
 			setAlgoritmoDeOrdenamiento(AlgoritmoDeOrdenamiento.RADIX_SORT);
 		}
 		else {
@@ -148,12 +146,20 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 		}
 	}
 	
+	@SuppressWarnings("unused")
+	private boolean elegibleParaRadixSort() {
+		// El stress test arrojo que RadixSort es más lento que Arrays.Sort en casi todos los casos.
+		// Mantenemos esta función como un ejemplo de selección "inteligente" de algoritmo que podría usarse si
+		// nuestra implementación de RadixSort fuera más eficiente en ciertos casos (actualmente siempre devuelve false).
+		return false && (conexiones.size() - RadixSort.cantidadDeDigitos(costoConexionMaxima) > 5);
+	}
+	
 	public Integer getIndiceLocalidad(Localidad localidad) {
 		if (localidad == null) {
 			throw new IllegalArgumentException("Localidad no puede ser null.");
 		}
 		
-		return localidadesConIndice.get(localidad.getNombreUnico());
+		return localidadesConIndice.get(localidad);
 	}
 	
 	public GrafoLocalidades getArbolGeneradorMinimo() {
@@ -162,5 +168,15 @@ public class GrafoCompletoLocalidades extends GrafoLocalidades {
 	
 	public void setAlgoritmoDeOrdenamiento(AlgoritmoDeOrdenamiento algoritmo) {
 		algoritmoDeOrdenamientoSeleccionado = algoritmo;
+	}
+	public void cargarListaLocalidades(ArrayList<Localidad> localidadesElegidas) {
+		for (Localidad l: localidadesElegidas)
+		{
+			this.agregarLocalidad(l);
+		}
+	}
+
+	public int getCantidadDeLocalidades() {
+		return cantidadDeLocalidades;
 	}
 }
