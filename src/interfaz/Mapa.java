@@ -41,6 +41,7 @@ public class Mapa extends JPanel {
 	private ArchivoLocalidades archivoLocalidades;
 
 	private List<Localidad> localidadesElegidas;
+	private VentanaEliminarLocalidad ventanaEliminarLocalidad;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -73,6 +74,7 @@ public class Mapa extends JPanel {
 		crearPanelDivisor(panelControl, panelMapa);
 
 		ventanaElegirLocalidades = new VentanaElegirLocalidades(this, archivoLocalidades);
+		ventanaEliminarLocalidad = new VentanaEliminarLocalidad(this);
 	}
 
 	private void cargarLocalidadesdesdeArchivo() {
@@ -115,6 +117,8 @@ public class Mapa extends JPanel {
 	private void crearComponentesPanelDeControl() {
 		agregarCamposParaIngresarLocalidad();
 
+		agregarBotonEliminarLocalidad();
+		
 		agregarBotonLocalidadDesdeArchivo();
 
 		agregarBotonDibujarConexiones();
@@ -175,6 +179,24 @@ public class Mapa extends JPanel {
 			}
 		});
 	}
+	
+	private void agregarBotonEliminarLocalidad() {
+		JButton btnEliminarLocalidad = new JButton("Eliminar Localidad");
+		
+		agregarActionListenerEliminarLocalidad(btnEliminarLocalidad);
+		
+		panelControl.add(btnEliminarLocalidad);
+	}
+
+	private void agregarActionListenerEliminarLocalidad(JButton btnEliminarLocalidad) {
+		btnEliminarLocalidad.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ventanaEliminarLocalidad.setVisible(true);
+				ventanaEliminarLocalidad.toFront();
+			}
+		});
+	}
 
 	private void agregarBotonLocalidadDesdeArchivo() {
 		JButton agregarLocalidadDeArchivo = new JButton("Agregar Localidad Desde Archivo");
@@ -191,7 +213,7 @@ public class Mapa extends JPanel {
 			}
 		});
 	}
-
+	
 	private void agregarBotonDibujarConexiones() {
 		JButton botonDibujarArbol = new JButton("Dibujar Conexiones Optimas");
 		agregarActionListenerDibujarConexiones(botonDibujarArbol);
@@ -232,7 +254,9 @@ public class Mapa extends JPanel {
 		grafoCompleto.agregarLocalidad(localidad);
 
 		localidadesElegidas.add(localidad);
+
 		ventanaElegirLocalidades.refrescarVentana();
+		ventanaEliminarLocalidad.refrescarVentana();
 
 		dibujarLocalidad(localidad);
 	}
@@ -241,14 +265,16 @@ public class Mapa extends JPanel {
 		grafoCompleto.eliminarLocalidad(localidad);
 
 		localidadesElegidas.remove(localidad);
+
 		ventanaElegirLocalidades.refrescarVentana();
+		ventanaEliminarLocalidad.refrescarVentana();
 
 		borrarMapa();
 		dibujarTodasLasLocalidades();
 	}
 
-	public static Coordinate getCoordenadas(Localidad loc) {
-		return new Coordinate(loc.getPosicion().getLatitud(), loc.getPosicion().getLongitud());
+	public static Coordinate getCoordenadas(Localidad localidad) {
+		return new Coordinate(localidad.getPosicion().getLatitud(), localidad.getPosicion().getLongitud());
 	}
 
 	public void trazarArista(Localidad loc1, Localidad loc2) {
