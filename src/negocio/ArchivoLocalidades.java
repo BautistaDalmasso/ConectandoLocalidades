@@ -14,44 +14,38 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ArchivoLocalidades
-{
+public class ArchivoLocalidades {
 	private ArrayList<Localidad> localidadesDisponibles;
 	private HashMap<String, HashSet<Localidad>> localidadesPorProvincia;
 
-	public ArchivoLocalidades(String nombreArchivoACargar)
-	{	
+	public ArchivoLocalidades(String nombreArchivoACargar) {
 		localidadesDisponibles = new ArrayList<Localidad>();
-		localidadesPorProvincia = new HashMap<String, HashSet<Localidad>>() ;
+		localidadesPorProvincia = new HashMap<String, HashSet<Localidad>>();
 		cargarArchivoJSON(nombreArchivoACargar);
 	}
-	
-	public ArchivoLocalidades()
-	{ // (constructor vacío requerido por JSON)
+
+	public ArchivoLocalidades() { // (constructor vacío requerido por JSON)
 	}
 
-	public void guardarEnDisco(String nombreArchivoAGuardar)
-	{
+	public void guardarEnDisco(String nombreArchivoAGuardar) {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json = gson.toJson(this);
-		try
-		{
+		try {
 			FileWriter writer = new FileWriter(nombreArchivoAGuardar);
 			writer.write(json);
 			writer.close();
+		} catch (Exception e) {
 		}
-		catch(Exception e) {}
 	}
-	
-	public void cargarArchivoJSON(String archivo)
-	{		
-		try {  
-            JsonArray arrayJSON = leerLocalidades(archivo);
-            asignaLocalidadesASusProvincias(arrayJSON);
-            
-	        } catch (Exception e) {
-	            e.printStackTrace();
-        }
+
+	public void cargarArchivoJSON(String archivo) {
+		try {
+			JsonArray arrayJSON = leerLocalidades(archivo);
+			asignaLocalidadesASusProvincias(arrayJSON);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private JsonArray leerLocalidades(String archivo) throws FileNotFoundException {
@@ -65,14 +59,14 @@ public class ArchivoLocalidades
 	private void asignaLocalidadesASusProvincias(JsonArray arrayJSON) {
 		Gson gson = new Gson();
 		for (int i = 0; i < arrayJSON.size(); i++) {
-		    Localidad localidad = traerLocalidadDesdeArchivo(arrayJSON, gson, i);	    
-		    addLocalidadASuProvincia(localidad);
+			Localidad localidad = traerLocalidadDesdeArchivo(arrayJSON, gson, i);
+			addLocalidadASuProvincia(localidad);
 		}
 	}
 
 	private Localidad traerLocalidadDesdeArchivo(JsonArray arrayJSON, Gson gson, int i) {
 		JsonObject datoLocalidad = arrayJSON.get(i).getAsJsonObject();
-		LocalidadJSON localidadJSON = gson.fromJson(datoLocalidad, LocalidadJSON.class);	
+		LocalidadJSON localidadJSON = gson.fromJson(datoLocalidad, LocalidadJSON.class);
 		Localidad localidad = new Localidad(localidadJSON.getNombre(), localidadJSON.getProvincia(),
 				localidadJSON.getLatitud(), localidadJSON.getLongitud());
 		return localidad;
@@ -87,7 +81,7 @@ public class ArchivoLocalidades
 		String provinciaActual = localidad.getProvincia();
 		if (localidadesPorProvincia.containsKey(provinciaActual))
 			agregaLocalidadAProvinciaExistente(localidad, provinciaActual);
-		 else 
+		else
 			agregaLocalidadAProvinciaNueva(localidad, provinciaActual);
 	}
 
@@ -104,19 +98,17 @@ public class ArchivoLocalidades
 	public ArrayList<Localidad> getLocalidadesDisponibles() {
 		return localidadesDisponibles;
 	}
-	
+
 	public HashMap<String, HashSet<Localidad>> getLocalidadesPorProvincia() {
 		return localidadesPorProvincia;
 	}
-	
-	public Set<String> getProvincias()
-	{
+
+	public Set<String> getProvincias() {
 		return localidadesPorProvincia.keySet();
 	}
 
-	public HashSet<Localidad> getLocalidadesDeUnaProvincia(String provincia)
-	{
+	public HashSet<Localidad> getLocalidadesDeUnaProvincia(String provincia) {
 		return localidadesPorProvincia.get(provincia);
 	}
-	
+
 }
