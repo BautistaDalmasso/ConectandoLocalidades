@@ -18,7 +18,11 @@ public class ArchivoLocalidades {
 	private ArrayList<Localidad> localidadesDisponibles;
 	private HashMap<String, HashSet<Localidad>> localidadesPorProvincia;
 
-	public ArchivoLocalidades(String nombreArchivoACargar) {
+
+	public ArchivoLocalidades(String nombreArchivoACargar)
+	{	
+		validarNombreArchivo(nombreArchivoACargar);
+		
 		localidadesDisponibles = new ArrayList<Localidad>();
 		localidadesPorProvincia = new HashMap<String, HashSet<Localidad>>();
 		cargarArchivoJSON(nombreArchivoACargar);
@@ -27,25 +31,59 @@ public class ArchivoLocalidades {
 	public ArchivoLocalidades() { // (constructor vacío requerido por JSON)
 	}
 
-	public void guardarEnDisco(String nombreArchivoAGuardar) {
+
+	public boolean guardarEnDisco(String nombreArchivoAGuardar)
+	{	
+		validarNombreArchivo(nombreArchivoAGuardar);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json = gson.toJson(this);
 		try {
 			FileWriter writer = new FileWriter(nombreArchivoAGuardar);
 			writer.write(json);
 			writer.close();
-		} catch (Exception e) {
+		catch(Exception e) {
+			return false;
+		}
+		return true;
+	}
+	
+	public void validarNombreArchivo(String n) {
+		validarStrNoNulo(n);
+		validarStrNoVacio(n);
+		validarStrNoCharsProhibidos(n);
+	}
+
+	private void validarStrNoCharsProhibidos(String n) {
+		String caracteresProhibidos = " \\/:*?\"<>|";
+		for (int i=0; i<n.length(); i++) {
+			if (caracteresProhibidos.contains(""+n.charAt(i)))
+				throw new IllegalArgumentException("El nombre no puede"
+						+ "contener caracteres reservados: "
+						+ caracteresProhibidos);
 		}
 	}
 
-	public void cargarArchivoJSON(String archivo) {
-		try {
-			JsonArray arrayJSON = leerLocalidades(archivo);
-			asignaLocalidadesASusProvincias(arrayJSON);
+	private void validarStrNoVacio(String n) {
+		if (n.equals("")) throw new IllegalArgumentException(
+				"El nombre de archivo no puede ser cadena vacía.");
+	}
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private void validarStrNoNulo(String n) {
+		if (n == null) throw new IllegalArgumentException(
+				"El nombre de archivo no puede ser null.");
+	}
+
+	
+	public boolean cargarArchivoJSON(String archivo)
+	{		
+		try {  
+            JsonArray arrayJSON = leerLocalidades(archivo);
+            asignaLocalidadesASusProvincias(arrayJSON);
+            
+	        } catch (Exception e) {
+	        	return false;
+        }
+		return true;
 	}
 
 	private JsonArray leerLocalidades(String archivo) throws FileNotFoundException {
