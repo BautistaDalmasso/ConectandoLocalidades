@@ -17,6 +17,7 @@ import org.openstreetmap.gui.jmapviewer.interfaces.*;
 import negocio.*;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -42,6 +43,7 @@ public class Mapa extends JPanel {
 
 	private List<Localidad> localidadesElegidas;
 	private VentanaEliminarLocalidad ventanaEliminarLocalidad;
+	private static Localidad localidadElegidaManualmente;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -175,8 +177,11 @@ public class Mapa extends JPanel {
 		botonAgregarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				agregarLocalidadIngresada();
-				setearPosicionYZoom();
+				if (leerLocalidadIngresadaManualmente())
+				{
+					agregarLocalidad(localidadElegidaManualmente);
+					setearPosicionYZoom();
+				}	
 			}
 		});
 	}
@@ -233,26 +238,32 @@ public class Mapa extends JPanel {
 		});
 	}
 
-	private void agregarLocalidadIngresada() {
-		Localidad nuevaLocalidad = crearLocalidadIngresada();
-
-		agregarLocalidad(nuevaLocalidad);
-	}
-
-	private Localidad crearLocalidadIngresada() {
-		String nombreLocalidad = fieldNombreLocalidad.getText();
-		String provinciaLocalidad = fieldProvinciaLocalidad.getText();
-
-		double latitud = Double.parseDouble(fieldLatitud.getText());
-		double longitud = Double.parseDouble(fieldLongitud.getText());
-
-		Localidad nuevaLocalidad = new Localidad(nombreLocalidad, provinciaLocalidad, latitud, longitud);
-
-		return nuevaLocalidad;
+	private boolean leerLocalidadIngresadaManualmente()
+	{
+		try
+		{
+			String nombreLocalidad = fieldNombreLocalidad.getText();
+			String provinciaLocalidad = fieldProvinciaLocalidad.getText();
+			double latitud = Double.parseDouble(fieldLatitud.getText());
+			double longitud = Double.parseDouble(fieldLongitud.getText());
+			
+			localidadElegidaManualmente = new Localidad(nombreLocalidad, provinciaLocalidad, latitud, longitud);
+			return true;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Datos de localidad incorrectos o incompletos!");
+			return false;
+		}
 	}
 
 	public void agregarLocalidad(Localidad localidad) {
-		grafoCompleto.agregarLocalidad(localidad);
+		try
+		{
+			grafoCompleto.agregarLocalidad(localidad);
+		} catch (Exception e)
+		{
+			JOptionPane.showMessageDialog(null,"Localidad ya ingresada!");
+			return;
+		}
 
 		localidadesElegidas.add(localidad);
 
