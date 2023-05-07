@@ -41,6 +41,7 @@ public class ArchivoLocalidades {
 			FileWriter writer = new FileWriter(nombreArchivoAGuardar);
 			writer.write(json);
 			writer.close();
+		}
 		catch(Exception e) {
 			return false;
 		}
