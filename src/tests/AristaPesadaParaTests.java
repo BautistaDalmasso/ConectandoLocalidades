@@ -1,4 +1,4 @@
-package radixsort;
+package tests;
 
 import java.util.Objects;
 

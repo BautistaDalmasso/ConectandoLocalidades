@@ -1,6 +1,4 @@
-package radixsort;
-
-import negocio.AristaPesada;
+package negocio;
 
 public class RadixSort {
 	private static final int BASE = 10;

@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import unionfind.UnionFind;
+import negocio.UnionFind;
 
 public class UnionFindTest {
 	@Test(expected = IllegalArgumentException.class)
