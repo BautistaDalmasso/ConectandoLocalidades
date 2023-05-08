@@ -17,6 +17,8 @@ public class PosicionGeografica {
 		this.longitud = longitud;
 	}
 	
+	public PosicionGeografica() {} //constructor vacío requerido por Gson
+	
 	private static void validarLatitudYLongitud(double latitud, double longitud) {
 		if (latitud < -90 || latitud > 90) {
 			throw new IllegalArgumentException("Latitud debe estar en el rango [-90, 90], se recibió latitud=" + latitud);
