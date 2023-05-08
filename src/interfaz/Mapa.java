@@ -125,6 +125,8 @@ public class Mapa extends JPanel {
 		agregarBotonLocalidadDesdeArchivo();
 
 		agregarBotonDibujarConexiones();
+		
+		agregarBotonGuardarLocIngresadas();
 	}
 
 	private void agregarCamposParaIngresarLocalidad() {
@@ -237,6 +239,27 @@ public class Mapa extends JPanel {
 			}
 		});
 	}
+	
+	
+	private void agregarBotonGuardarLocIngresadas() {
+		JButton botonGuardarLocIngresadas = new JButton("Guardar localidades ingresadas");
+		agregarActionListenerGuardarLocIngresadas(botonGuardarLocIngresadas);
+		panelControl.add(botonGuardarLocIngresadas);
+	}
+
+	private void agregarActionListenerGuardarLocIngresadas(JButton botonGuardarLocIngresadas) {
+		botonGuardarLocIngresadas.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (puntosDelMapa.size() == 0)
+				{
+					JOptionPane.showMessageDialog(null, "No existen localidades ingresadas!");
+				} else {
+					// guardar localidades en archivo
+				}		
+			}
+		});
+	}	
 	
 	private void redibujarConexionesOptimas() {
 		borrarMapa();
