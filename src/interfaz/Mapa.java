@@ -168,7 +168,7 @@ public class Mapa extends JPanel {
 	}
 
 	private void agregarBotonLocalidadIngresada() {
-		JButton botonAgregarLocalidad = new JButton("Agregar Localidad Ingresada");
+		JButton botonAgregarLocalidad = new JButton("Agregar localidad ingresada");
 		agregarActionListenerLocalidadIngresada(botonAgregarLocalidad);
 		panelControl.add(botonAgregarLocalidad);
 	}
@@ -187,7 +187,7 @@ public class Mapa extends JPanel {
 	}
 	
 	private void agregarBotonEliminarLocalidad() {
-		JButton btnEliminarLocalidad = new JButton("Eliminar Localidad");
+		JButton btnEliminarLocalidad = new JButton("Eliminar localidad");
 		
 		agregarActionListenerEliminarLocalidad(btnEliminarLocalidad);
 		
@@ -205,7 +205,7 @@ public class Mapa extends JPanel {
 	}
 
 	private void agregarBotonLocalidadDesdeArchivo() {
-		JButton agregarLocalidadDeArchivo = new JButton("Agregar Localidad Desde Archivo");
+		JButton agregarLocalidadDeArchivo = new JButton("Agregar localidad desde archivo");
 		agregarActionListenerLocalidadDesdeArchivo(agregarLocalidadDeArchivo);
 		panelControl.add(agregarLocalidadDeArchivo);
 	}
@@ -221,7 +221,7 @@ public class Mapa extends JPanel {
 	}
 	
 	private void agregarBotonDibujarConexiones() {
-		JButton botonDibujarArbol = new JButton("Dibujar Conexiones Optimas");
+		JButton botonDibujarArbol = new JButton("Dibujar conexiones óptimas");
 		agregarActionListenerDibujarConexiones(botonDibujarArbol);
 		panelControl.add(botonDibujarArbol);
 	}
@@ -230,12 +230,19 @@ public class Mapa extends JPanel {
 		botonDibujarArbol.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				borrarMapa();
-				grafoCompleto.construirArbolGeneradorMinimo();
-				dibujarArbolMinimo();
-				setearPosicionYZoom();
+				if (puntosDelMapa.size() > 0)
+				{
+					redibujarConexionesOptimas();
+				}
 			}
 		});
+	}
+	
+	private void redibujarConexionesOptimas() {
+		borrarMapa();
+		grafoCompleto.construirArbolGeneradorMinimo();
+		dibujarArbolMinimo();
+		setearPosicionYZoom();
 	}
 
 	private boolean leerLocalidadIngresadaManualmente()
@@ -340,7 +347,7 @@ public class Mapa extends JPanel {
 
 	}
 
-private void setearPosicionYZoom() {
+	private void setearPosicionYZoom() {
 		Set<Localidad> localidades = grafoCompleto.getLocalidades();
 		double latMinima = 89;
 		double latMaxima = -89;
