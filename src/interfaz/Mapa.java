@@ -289,26 +289,20 @@ public class Mapa extends JPanel {
 			File selectedFile;
 			@Override
 			public void actionPerformed(ActionEvent e) {			
-		
 					JFileChooser chooser = new JFileChooser();
 					if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					    selectedFile = chooser.getSelectedFile();
 					}
+					else {
+						return;
+					}
 					
 					try {
-						List<Localidad> nuevaLista = archivoLocalidades.cargarDelDisco(selectedFile);
-						localidadesElegidas = nuevaLista;
-						ventanaElegirLocalidades.refrescarVentana();
-						ventanaEliminarLocalidad.refrescarVentana();
-						for (Localidad l: localidadesElegidas)
+						for (Localidad localidad: archivoLocalidades.cargarDelDisco(selectedFile))
 						{
-							dibujarLocalidad(l);
-							grafoCompleto.agregarLocalidad(l);
+							agregarLocalidad(localidad);
 						}
-						grafoCompleto.construirArbolGeneradorMinimo();
-						dibujarArbolMinimo();
-						setearPosicionYZoom();
-						
+						redibujarConexionesOptimas();
 					} catch (FileNotFoundException e1) {
 						e1.printStackTrace();
 					}	

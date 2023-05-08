@@ -3,11 +3,8 @@ package negocio;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -68,11 +65,8 @@ public class ArchivoLocalidades {
 			
 			JsonObject dato = listaLocJSON.get(i).getAsJsonObject();
 			Localidad localidad = gson.fromJson(dato, Localidad.class);
-//			Localidad localidad = new Localidad(localidadJSON.getNombre(), localidadJSON.getProvincia(),
-	//				localidadJSON.getLatitud(), localidadJSON.getLongitud());
 			listaLoc.add(localidad);
 		}
-		System.out.println(listaLocJSON.toString());
 		return listaLoc;
 	}
 	
@@ -163,6 +157,16 @@ public class ArchivoLocalidades {
 		localidadesPorProvincia.get(provinciaActual).add(localidad);
 	}
 
+	public Localidad obtenerLocalidad(String nombreLocalidad, String provinciaLocalidad) {
+		for (Localidad localidad : localidadesPorProvincia.get(provinciaLocalidad)) {
+			if (localidad.getNombre().equals(nombreLocalidad)) {
+				return localidad;
+			}
+		}
+		
+		return null;
+	}
+	
 	public ArrayList<Localidad> getLocalidadesDisponibles() {
 		return localidadesDisponibles;
 	}
