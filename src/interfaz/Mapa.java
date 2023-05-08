@@ -46,6 +46,8 @@ public class Mapa extends JPanel {
 
 	private List<Localidad> localidadesElegidas;
 	private VentanaEliminarLocalidad ventanaEliminarLocalidad;
+	private JLabel lblMensajeCostoTotal;
+	private JLabel lblNumeroCostoTotal;
 	private static Localidad localidadElegidaManualmente;
 
 	public static void main(String[] args) {
@@ -132,6 +134,8 @@ public class Mapa extends JPanel {
 		agregarBotonGuardarLocIngresadas();
 		
 		agregarBotonCargarLocGuardadas();
+		
+		agregarZonaCostoTotal();
 	}
 
 	private void agregarCamposParaIngresarLocalidad() {
@@ -313,13 +317,31 @@ public class Mapa extends JPanel {
 	}	
 	
 
+	private void agregarZonaCostoTotal() {
+		lblMensajeCostoTotal = new JLabel("Costo total: ");
+		panelControl.add(lblMensajeCostoTotal);
+		lblMensajeCostoTotal.setVisible(false);
+		
+		lblNumeroCostoTotal = new JLabel("");
+		panelControl.add(lblNumeroCostoTotal);
+		lblNumeroCostoTotal.setVisible(false);
+	}
+	
 	private void redibujarConexionesOptimas() {
 		borrarMapa();
 		grafoCompleto.construirArbolGeneradorMinimo();
 		dibujarArbolMinimo();
 		setearPosicionYZoom();
+		mostrarCostoTotal();
 	}
 
+	private void mostrarCostoTotal() {
+		lblMensajeCostoTotal.setVisible(true);
+		
+		lblNumeroCostoTotal.setText(this.grafoCompleto.getCostoTotalConexiones().toString() + "$");
+		lblNumeroCostoTotal.setVisible(true);
+	}
+	
 	private boolean leerLocalidadIngresadaManualmente()
 	{
 		try
@@ -352,6 +374,7 @@ public class Mapa extends JPanel {
 		ventanaElegirLocalidades.refrescarVentana();
 		ventanaEliminarLocalidad.refrescarVentana();
 
+		ocultarCostoTotal();
 		dibujarLocalidad(localidad);
 	}
 
@@ -364,9 +387,15 @@ public class Mapa extends JPanel {
 		ventanaEliminarLocalidad.refrescarVentana();
 
 		borrarMapa();
+		ocultarCostoTotal();
 		dibujarTodasLasLocalidades();
 	}
 
+	private void ocultarCostoTotal() {
+		lblMensajeCostoTotal.setVisible(false);
+		lblNumeroCostoTotal.setVisible(false);
+	}
+	
 	public static Coordinate getCoordenadas(Localidad localidad) {
 		return new Coordinate(localidad.getPosicion().getLatitud(), localidad.getPosicion().getLongitud());
 	}
@@ -399,7 +428,7 @@ public class Mapa extends JPanel {
 		Coordinate llegada = getCoordenadas(conexion.getLocalidadB());
 
 		List<Coordinate> route = new ArrayList<Coordinate>(Arrays.asList(partida, llegada, llegada));
-		mapa.addMapPolygon(new MapPolygonImpl(route));
+		mapa.addMapPolygon(new MapPolygonImpl(conexion.getCostoDeLaConexion().toString() + "$", route));
 	}
 
 	private void dibujarTodasLasLocalidades() {
