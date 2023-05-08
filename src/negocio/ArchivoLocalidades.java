@@ -67,7 +67,6 @@ public class ArchivoLocalidades {
 			Localidad localidad = gson.fromJson(dato, Localidad.class);
 			listaLoc.add(localidad);
 		}
-		System.out.println(listaLocJSON.toString());
 		return listaLoc;
 	}
 	
