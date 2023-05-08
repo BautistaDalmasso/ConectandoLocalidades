@@ -3,15 +3,20 @@ package negocio;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ArchivoLocalidades {
@@ -32,22 +37,46 @@ public class ArchivoLocalidades {
 	}
 
 
-	public boolean guardarEnDisco(String nombreArchivoAGuardar)
+	public boolean guardarEnDisco(File nombreArchivoAGuardar, List<Localidad> localidades)
 	{	
-		validarNombreArchivo(nombreArchivoAGuardar);
+		validarNombreArchivo(nombreArchivoAGuardar.getName());
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String json = gson.toJson(this);
+		String json = gson.toJson(localidades);
 		try {
 			FileWriter writer = new FileWriter(nombreArchivoAGuardar);
 			writer.write(json);
 			writer.close();
 		}
-		catch(Exception e) {
+		catch(IOException e) {
 			return false;
 		}
 		return true;
 	}
+
 	
+	public List<Localidad> cargarDelDisco(File nombreArchivoACargar) throws FileNotFoundException
+	{
+		
+		JsonParser parser = new JsonParser();
+		FileReader lectorArchivo = new FileReader(nombreArchivoACargar);
+		JsonArray listaLocJSON = (JsonArray) parser.parse(lectorArchivo);
+		
+		List <Localidad> listaLoc = new ArrayList<Localidad>();
+
+		Gson gson = new Gson();
+		for (int i = 0; i < listaLocJSON.size(); i++) {
+			
+			JsonObject dato = listaLocJSON.get(i).getAsJsonObject();
+			Localidad localidad = gson.fromJson(dato, Localidad.class);
+//			Localidad localidad = new Localidad(localidadJSON.getNombre(), localidadJSON.getProvincia(),
+	//				localidadJSON.getLatitud(), localidadJSON.getLongitud());
+			listaLoc.add(localidad);
+		}
+		System.out.println(listaLocJSON.toString());
+		return listaLoc;
+	}
+	
+
 	public void validarNombreArchivo(String n) {
 		validarStrNoNulo(n);
 		validarStrNoVacio(n);

@@ -12,5 +12,5 @@ module ConectandoLocalidades {
 	requires JMapViewer;
 	requires gson;
 
-	exports negocio to gson;
+	opens negocio to gson;
 }

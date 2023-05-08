@@ -13,6 +13,8 @@ public class Localidad {
 		this.provincia = provincia;
 		this.posicion = new PosicionGeografica(latitud, longitud);
 	}
+	
+	public Localidad() {} // constructor vacío requerido por Gson
 
 	public Double distanciaEnKilometros(Localidad otra) {
 		return PosicionGeografica.distanciaEnKilometros(posicion, otra.posicion);

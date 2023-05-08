@@ -3,6 +3,8 @@ package interfaz;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,7 +19,9 @@ import org.openstreetmap.gui.jmapviewer.interfaces.*;
 import negocio.*;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
@@ -42,6 +46,9 @@ public class Mapa extends JPanel {
 
 	private List<Localidad> localidadesElegidas;
 	private VentanaEliminarLocalidad ventanaEliminarLocalidad;
+	private JLabel lblMensajeCostoTotal;
+	private JLabel lblNumeroCostoTotal;
+	private static Localidad localidadElegidaManualmente;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -123,6 +130,12 @@ public class Mapa extends JPanel {
 		agregarBotonLocalidadDesdeArchivo();
 
 		agregarBotonDibujarConexiones();
+		
+		agregarBotonGuardarLocIngresadas();
+		
+		agregarBotonCargarLocGuardadas();
+		
+		agregarZonaCostoTotal();
 	}
 
 	private void agregarCamposParaIngresarLocalidad() {
@@ -166,7 +179,7 @@ public class Mapa extends JPanel {
 	}
 
 	private void agregarBotonLocalidadIngresada() {
-		JButton botonAgregarLocalidad = new JButton("Agregar Localidad Ingresada");
+		JButton botonAgregarLocalidad = new JButton("Agregar localidad ingresada");
 		agregarActionListenerLocalidadIngresada(botonAgregarLocalidad);
 		panelControl.add(botonAgregarLocalidad);
 	}
@@ -175,14 +188,17 @@ public class Mapa extends JPanel {
 		botonAgregarLocalidad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				agregarLocalidadIngresada();
-				setearPosicionYZoom();
+				if (leerLocalidadIngresadaManualmente())
+				{
+					agregarLocalidad(localidadElegidaManualmente);
+					setearPosicionYZoom();
+				}	
 			}
 		});
 	}
 	
 	private void agregarBotonEliminarLocalidad() {
-		JButton btnEliminarLocalidad = new JButton("Eliminar Localidad");
+		JButton btnEliminarLocalidad = new JButton("Eliminar localidad");
 		
 		agregarActionListenerEliminarLocalidad(btnEliminarLocalidad);
 		
@@ -200,7 +216,7 @@ public class Mapa extends JPanel {
 	}
 
 	private void agregarBotonLocalidadDesdeArchivo() {
-		JButton agregarLocalidadDeArchivo = new JButton("Agregar Localidad Desde Archivo");
+		JButton agregarLocalidadDeArchivo = new JButton("Agregar localidad desde archivo");
 		agregarActionListenerLocalidadDesdeArchivo(agregarLocalidadDeArchivo);
 		panelControl.add(agregarLocalidadDeArchivo);
 	}
@@ -216,7 +232,7 @@ public class Mapa extends JPanel {
 	}
 	
 	private void agregarBotonDibujarConexiones() {
-		JButton botonDibujarArbol = new JButton("Dibujar Conexiones Optimas");
+		JButton botonDibujarArbol = new JButton("Dibujar conexiones óptimas");
 		agregarActionListenerDibujarConexiones(botonDibujarArbol);
 		panelControl.add(botonDibujarArbol);
 	}
@@ -225,40 +241,140 @@ public class Mapa extends JPanel {
 		botonDibujarArbol.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				borrarMapa();
-				grafoCompleto.construirArbolGeneradorMinimo();
-				dibujarArbolMinimo();
-				setearPosicionYZoom();
+				if (puntosDelMapa.size() > 0)
+				{
+					redibujarConexionesOptimas();
+				}
 			}
 		});
 	}
-
-	private void agregarLocalidadIngresada() {
-		Localidad nuevaLocalidad = crearLocalidadIngresada();
-
-		agregarLocalidad(nuevaLocalidad);
+	
+	
+	private void agregarBotonGuardarLocIngresadas() {
+		JButton botonGuardarLocIngresadas = new JButton("Guardar localidades ingresadas");
+		agregarActionListenerGuardarLocIngresadas(botonGuardarLocIngresadas);
+		panelControl.add(botonGuardarLocIngresadas);
 	}
 
-	private Localidad crearLocalidadIngresada() {
-		String nombreLocalidad = fieldNombreLocalidad.getText();
-		String provinciaLocalidad = fieldProvinciaLocalidad.getText();
+	private void agregarActionListenerGuardarLocIngresadas(JButton botonGuardarLocIngresadas) {
+		botonGuardarLocIngresadas.addActionListener(new ActionListener() {
+			File selectedFile;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (puntosDelMapa.size() == 0)
+				{
+					JOptionPane.showMessageDialog(null, "No existen localidades ingresadas!");
+				} else {
+					
+					JFileChooser chooser = new JFileChooser();
+					if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					    selectedFile = chooser.getSelectedFile();
+					}
+					
+					archivoLocalidades.guardarEnDisco(selectedFile, localidadesElegidas);
+				}		
+			}
+		});
+	}	
+	
+	
+	private void agregarBotonCargarLocGuardadas() {
+		JButton botonCargarLocGuardadas = new JButton("Cargar localidades desde archivo");
+		agregarActionListenerCargarLocGuardadas(botonCargarLocGuardadas);
+		panelControl.add(botonCargarLocGuardadas);
+	}
 
-		double latitud = Double.parseDouble(fieldLatitud.getText());
-		double longitud = Double.parseDouble(fieldLongitud.getText());
+	private void agregarActionListenerCargarLocGuardadas(JButton botonCargarLocGuardadas) {
+		botonCargarLocGuardadas.addActionListener(new ActionListener() {
+			File selectedFile;
+			@Override
+			public void actionPerformed(ActionEvent e) {			
+		
+					JFileChooser chooser = new JFileChooser();
+					if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					    selectedFile = chooser.getSelectedFile();
+					}
+					
+					try {
+						List<Localidad> nuevaLista = archivoLocalidades.cargarDelDisco(selectedFile);
+						localidadesElegidas = nuevaLista;
+						ventanaElegirLocalidades.refrescarVentana();
+						ventanaEliminarLocalidad.refrescarVentana();
+						for (Localidad l: localidadesElegidas)
+						{
+							dibujarLocalidad(l);
+							grafoCompleto.agregarLocalidad(l);
+						}
+						grafoCompleto.construirArbolGeneradorMinimo();
+						dibujarArbolMinimo();
+						setearPosicionYZoom();
+						
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					}	
+			}
+		});
+	}	
+	
 
-		Localidad nuevaLocalidad = new Localidad(nombreLocalidad, provinciaLocalidad, latitud, longitud);
+	private void agregarZonaCostoTotal() {
+		lblMensajeCostoTotal = new JLabel("Costo total: ");
+		panelControl.add(lblMensajeCostoTotal);
+		lblMensajeCostoTotal.setVisible(false);
+		
+		lblNumeroCostoTotal = new JLabel("");
+		panelControl.add(lblNumeroCostoTotal);
+		lblNumeroCostoTotal.setVisible(false);
+	}
+	
+	private void redibujarConexionesOptimas() {
+		borrarMapa();
+		grafoCompleto.construirArbolGeneradorMinimo();
+		dibujarArbolMinimo();
+		setearPosicionYZoom();
+		mostrarCostoTotal();
+	}
 
-		return nuevaLocalidad;
+	private void mostrarCostoTotal() {
+		lblMensajeCostoTotal.setVisible(true);
+		
+		lblNumeroCostoTotal.setText(this.grafoCompleto.getCostoTotalConexiones().toString() + "$");
+		lblNumeroCostoTotal.setVisible(true);
+	}
+	
+	private boolean leerLocalidadIngresadaManualmente()
+	{
+		try
+		{
+			String nombreLocalidad = fieldNombreLocalidad.getText();
+			String provinciaLocalidad = fieldProvinciaLocalidad.getText();
+			double latitud = Double.parseDouble(fieldLatitud.getText());
+			double longitud = Double.parseDouble(fieldLongitud.getText());
+			
+			localidadElegidaManualmente = new Localidad(nombreLocalidad, provinciaLocalidad, latitud, longitud);
+			return true;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Datos de localidad incorrectos o incompletos!");
+			return false;
+		}
 	}
 
 	public void agregarLocalidad(Localidad localidad) {
-		grafoCompleto.agregarLocalidad(localidad);
+		try
+		{
+			grafoCompleto.agregarLocalidad(localidad);
+		} catch (Exception e)
+		{
+			JOptionPane.showMessageDialog(null,"Localidad ya ingresada!");
+			return;
+		}
 
 		localidadesElegidas.add(localidad);
 
 		ventanaElegirLocalidades.refrescarVentana();
 		ventanaEliminarLocalidad.refrescarVentana();
 
+		ocultarCostoTotal();
 		dibujarLocalidad(localidad);
 	}
 
@@ -271,9 +387,15 @@ public class Mapa extends JPanel {
 		ventanaEliminarLocalidad.refrescarVentana();
 
 		borrarMapa();
+		ocultarCostoTotal();
 		dibujarTodasLasLocalidades();
 	}
 
+	private void ocultarCostoTotal() {
+		lblMensajeCostoTotal.setVisible(false);
+		lblNumeroCostoTotal.setVisible(false);
+	}
+	
 	public static Coordinate getCoordenadas(Localidad localidad) {
 		return new Coordinate(localidad.getPosicion().getLatitud(), localidad.getPosicion().getLongitud());
 	}
@@ -306,7 +428,7 @@ public class Mapa extends JPanel {
 		Coordinate llegada = getCoordenadas(conexion.getLocalidadB());
 
 		List<Coordinate> route = new ArrayList<Coordinate>(Arrays.asList(partida, llegada, llegada));
-		mapa.addMapPolygon(new MapPolygonImpl(route));
+		mapa.addMapPolygon(new MapPolygonImpl(conexion.getCostoDeLaConexion().toString() + "$", route));
 	}
 
 	private void dibujarTodasLasLocalidades() {
@@ -339,18 +461,11 @@ public class Mapa extends JPanel {
 			PosicionGeografica coordenadas = localidad.getPosicion();
 			double latActual = coordenadas.getLatitud();
 			double longActual = coordenadas.getLongitud();
-			if (latActual < latMinima) {
-				latMinima = latActual;
-			}
-			if (latActual > latMaxima) {
-				latMaxima = latActual;
-			}
-			if (longActual < longMinima) {
-				longMinima = longActual;
-			}
-			if (longActual > longMaxima) {
-				longMaxima = longActual;
-			}
+			
+			latMinima = Math.min(latMinima, latActual);
+			latMaxima = Math.max(latMaxima, latActual);
+			longMinima = Math.min(longMinima, longActual);
+			longMaxima = Math.max(longMaxima, longActual);
 		}
 		Coordinate coordenada = new Coordinate((latMinima + latMaxima) / 2, (longMinima + longMaxima) / 2);
 		mapa.setDisplayPosition(coordenada, 5);

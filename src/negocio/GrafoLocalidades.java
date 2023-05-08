@@ -9,10 +9,12 @@ import java.util.Set;
 public class GrafoLocalidades {
 	private Set<Localidad> localidades;
 	private Map<Localidad, Set<ConexionLocalidades>> localidadesConSusVecinos;
+	private Integer costoTotalConexiones;
 
 	public GrafoLocalidades() {
 		localidades = new HashSet<Localidad>();
 		localidadesConSusVecinos = new HashMap<Localidad, Set<ConexionLocalidades>>();
+		costoTotalConexiones = 0;
 	}
 
 	public void agregarLocalidad(Localidad localidad) {
@@ -36,6 +38,8 @@ public class GrafoLocalidades {
 	
 	public ConexionLocalidades agregarConexion(Localidad localidadA, Localidad localidadB) {
 		ConexionLocalidades nuevaConexion = new ConexionLocalidades(localidadA, localidadB);
+		
+		this.costoTotalConexiones += nuevaConexion.getCostoDeLaConexion();
 		
 		return agregarConexion(nuevaConexion);
 	}
@@ -86,6 +90,8 @@ public class GrafoLocalidades {
 		
 		conexionesLocalidadA.remove(conexion);
 		conexionesLocalidadB.remove(conexion);
+		
+		this.costoTotalConexiones -= conexion.getCostoDeLaConexion();
 	}
 	
 	public void limpiarConexiones() {
@@ -108,6 +114,10 @@ public class GrafoLocalidades {
 	
 	public int getTamanio() {
 		return localidades.size();
+	}
+	
+	public Integer getCostoTotalConexiones() {
+		return this.costoTotalConexiones;
 	}
 
 	@Override
