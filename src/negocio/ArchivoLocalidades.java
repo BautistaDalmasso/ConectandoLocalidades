@@ -9,9 +9,11 @@ import com.google.gson.JsonParser;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ArchivoLocalidades {
@@ -32,22 +34,23 @@ public class ArchivoLocalidades {
 	}
 
 
-	public boolean guardarEnDisco(String nombreArchivoAGuardar)
+	public boolean guardarEnDisco(String nombreArchivoAGuardar, List<Localidad> localidades)
 	{	
 		validarNombreArchivo(nombreArchivoAGuardar);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String json = gson.toJson(this);
+		String json = gson.toJson(localidades);
 		try {
 			FileWriter writer = new FileWriter(nombreArchivoAGuardar);
 			writer.write(json);
 			writer.close();
 		}
-		catch(Exception e) {
+		catch(IOException e) {
 			return false;
 		}
 		return true;
 	}
-	
+
+
 	public void validarNombreArchivo(String n) {
 		validarStrNoNulo(n);
 		validarStrNoVacio(n);
