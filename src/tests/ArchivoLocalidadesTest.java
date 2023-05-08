@@ -3,7 +3,6 @@ package tests;
 import org.junit.Test;
 
 import negocio.ArchivoLocalidades;
-//import negocio.Localidad;
 
 public class ArchivoLocalidadesTest {
 	@Test
