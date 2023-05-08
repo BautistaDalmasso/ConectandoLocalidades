@@ -340,7 +340,7 @@ public class Mapa extends JPanel {
 
 	}
 
-	private void setearPosicionYZoom() {
+private void setearPosicionYZoom() {
 		Set<Localidad> localidades = grafoCompleto.getLocalidades();
 		double latMinima = 89;
 		double latMaxima = -89;
@@ -350,18 +350,11 @@ public class Mapa extends JPanel {
 			PosicionGeografica coordenadas = localidad.getPosicion();
 			double latActual = coordenadas.getLatitud();
 			double longActual = coordenadas.getLongitud();
-			if (latActual < latMinima) {
-				latMinima = latActual;
-			}
-			if (latActual > latMaxima) {
-				latMaxima = latActual;
-			}
-			if (longActual < longMinima) {
-				longMinima = longActual;
-			}
-			if (longActual > longMaxima) {
-				longMaxima = longActual;
-			}
+			
+			latMinima = Math.min(latMinima, latActual);
+			latMaxima = Math.max(latMaxima, latActual);
+			longMinima = Math.min(longMinima, longActual);
+			longMaxima = Math.max(longMaxima, longActual);
 		}
 		Coordinate coordenada = new Coordinate((latMinima + latMaxima) / 2, (longMinima + longMaxima) / 2);
 		mapa.setDisplayPosition(coordenada, 5);
