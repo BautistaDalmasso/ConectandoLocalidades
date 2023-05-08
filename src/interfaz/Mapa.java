@@ -3,6 +3,8 @@ package interfaz;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
@@ -127,6 +130,8 @@ public class Mapa extends JPanel {
 		agregarBotonDibujarConexiones();
 		
 		agregarBotonGuardarLocIngresadas();
+		
+		agregarBotonCargarLocGuardadas();
 	}
 
 	private void agregarCamposParaIngresarLocalidad() {
@@ -249,18 +254,65 @@ public class Mapa extends JPanel {
 
 	private void agregarActionListenerGuardarLocIngresadas(JButton botonGuardarLocIngresadas) {
 		botonGuardarLocIngresadas.addActionListener(new ActionListener() {
+			File selectedFile;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (puntosDelMapa.size() == 0)
 				{
 					JOptionPane.showMessageDialog(null, "No existen localidades ingresadas!");
 				} else {
-					// guardar localidades en archivo
+					
+					JFileChooser chooser = new JFileChooser();
+					if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					    selectedFile = chooser.getSelectedFile();
+					}
+					
+					archivoLocalidades.guardarEnDisco(selectedFile, localidadesElegidas);
 				}		
 			}
 		});
 	}	
 	
+	
+	private void agregarBotonCargarLocGuardadas() {
+		JButton botonCargarLocGuardadas = new JButton("Cargar localidades desde archivo");
+		agregarActionListenerCargarLocGuardadas(botonCargarLocGuardadas);
+		panelControl.add(botonCargarLocGuardadas);
+	}
+
+	private void agregarActionListenerCargarLocGuardadas(JButton botonCargarLocGuardadas) {
+		botonCargarLocGuardadas.addActionListener(new ActionListener() {
+			File selectedFile;
+			@Override
+			public void actionPerformed(ActionEvent e) {			
+		
+					JFileChooser chooser = new JFileChooser();
+					if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					    selectedFile = chooser.getSelectedFile();
+					}
+					
+					try {
+						List<Localidad> nuevaLista = archivoLocalidades.cargarDelDisco(selectedFile);
+						localidadesElegidas = nuevaLista;
+						ventanaElegirLocalidades.refrescarVentana();
+						ventanaEliminarLocalidad.refrescarVentana();
+						for (Localidad l: localidadesElegidas)
+						{
+							dibujarLocalidad(l);
+							grafoCompleto.agregarLocalidad(l);
+						}
+						grafoCompleto.construirArbolGeneradorMinimo();
+						dibujarArbolMinimo();
+						setearPosicionYZoom();
+						
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					}	
+			}
+		});
+	}	
+	
+
 	private void redibujarConexionesOptimas() {
 		borrarMapa();
 		grafoCompleto.construirArbolGeneradorMinimo();
