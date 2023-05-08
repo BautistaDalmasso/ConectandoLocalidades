@@ -185,14 +185,7 @@ public class VentanaElegirLocalidades extends JFrame {
 	}
 
 	private Localidad obtenerLocalidadActual() {
-		HashSet<Localidad> locsProvEspecifica = archivo.getLocalidadesDeUnaProvincia(nombreProvinciaElegida);
-
-		for (Localidad localidad : locsProvEspecifica) {
-			if (localidad.getNombre().equals(nombreLocalidadElegida)) {
-				return localidad;
-			}
-		}
-		return null;
+		return archivo.obtenerLocalidad(nombreLocalidadElegida, nombreProvinciaElegida);
 	}
 
 	private void addLocalidadATablaLocalidades(Localidad localidad) {
