@@ -109,6 +109,7 @@ public class VentanaElegirLocalidades extends JFrame {
 				nombreProvinciaElegida = (String) comboBoxProvincias.getSelectedItem();
 				fetchListaLocalidades(nombreProvinciaElegida);
 				habilitarBotonLocalidades();
+				habilitarBotonAceptar();
 			}
 		});
 	}
@@ -160,8 +161,9 @@ public class VentanaElegirLocalidades extends JFrame {
 
 	private void avisarEleccionExitosa() {
 		Localidad localidadActual = obtenerLocalidadActual();
-		resultadoLocalidadElegida.setText("Usted Eligió: " + localidadActual.getNombre());
 		resultadoLocalidadElegida.setBackground(Color.green);
+		resultadoLocalidadElegida.setForeground(Color.black);
+		resultadoLocalidadElegida.setText("Usted Eligió: " + localidadActual.getNombre());
 	}
 
 	private void avisarEleccionRechazada() {
@@ -233,19 +235,19 @@ public class VentanaElegirLocalidades extends JFrame {
 		comboBoxLocalidades.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String localidadSeleccionada = (String) comboBoxLocalidades.getSelectedItem();
-				habilitarBotonAceptar(localidadSeleccionada);
+				habilitarBotonAceptar();
 			}
 		});
 	}
 
-	private void habilitarBotonAceptar(String localidad) {
-		nombreLocalidadElegida = localidad;
+	private void habilitarBotonAceptar() {
+		nombreLocalidadElegida = (String) comboBoxLocalidades.getSelectedItem();
 		aceptarLocalidad.setEnabled(true);
+
 		resultadoLocalidadElegida.setHorizontalAlignment(SwingConstants.CENTER);
 		resultadoLocalidadElegida.setForeground(Color.black);
 		resultadoLocalidadElegida.setBackground(Color.orange);
-		resultadoLocalidadElegida.setText(localidad + ", " + nombreProvinciaElegida);
+		resultadoLocalidadElegida.setText(nombreLocalidadElegida + ", " + nombreProvinciaElegida);
 	}
 
 	private void limpiarLocalidadElegida() {
