@@ -3,9 +3,12 @@ package negocio;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -34,9 +37,9 @@ public class ArchivoLocalidades {
 	}
 
 
-	public boolean guardarEnDisco(String nombreArchivoAGuardar, List<Localidad> localidades)
+	public boolean guardarEnDisco(File nombreArchivoAGuardar, List<Localidad> localidades)
 	{	
-		validarNombreArchivo(nombreArchivoAGuardar);
+		validarNombreArchivo(nombreArchivoAGuardar.getName());
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json = gson.toJson(localidades);
 		try {
@@ -50,6 +53,29 @@ public class ArchivoLocalidades {
 		return true;
 	}
 
+	
+	public List<Localidad> cargarDelDisco(File nombreArchivoACargar) throws FileNotFoundException
+	{
+		
+		JsonParser parser = new JsonParser();
+		FileReader lectorArchivo = new FileReader(nombreArchivoACargar);
+		JsonArray listaLocJSON = (JsonArray) parser.parse(lectorArchivo);
+		
+		List <Localidad> listaLoc = new ArrayList<Localidad>();
+
+		Gson gson = new Gson();
+		for (int i = 0; i < listaLocJSON.size(); i++) {
+			
+			JsonObject dato = listaLocJSON.get(i).getAsJsonObject();
+			Localidad localidad = gson.fromJson(dato, Localidad.class);
+//			Localidad localidad = new Localidad(localidadJSON.getNombre(), localidadJSON.getProvincia(),
+	//				localidadJSON.getLatitud(), localidadJSON.getLongitud());
+			listaLoc.add(localidad);
+		}
+		System.out.println(listaLocJSON.toString());
+		return listaLoc;
+	}
+	
 
 	public void validarNombreArchivo(String n) {
 		validarStrNoNulo(n);
