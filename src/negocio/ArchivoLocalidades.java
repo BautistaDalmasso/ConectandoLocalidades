@@ -77,7 +77,7 @@ public class ArchivoLocalidades {
 		validarStrNoCharsProhibidos(n);
 	}
 
-	private void validarStrNoCharsProhibidos(String n) {
+	public void validarStrNoCharsProhibidos(String n) {
 		String caracteresProhibidos = " \\/:*?\"<>|";
 		for (int i=0; i<n.length(); i++) {
 			if (caracteresProhibidos.contains(""+n.charAt(i)))
