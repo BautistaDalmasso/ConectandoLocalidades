@@ -241,10 +241,11 @@ public class Mapa extends JPanel {
 		botonDibujarArbol.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (puntosDelMapa.size() > 0)
-				{
-					redibujarConexionesOptimas();
-				}
+				if (puntosDelMapa.size() == 0 || puntosDelMapa.size() == 1){
+					JOptionPane.showMessageDialog(null, "No hay localidades suficientes para dibujar conexiones");
+				} else {
+						redibujarConexionesOptimas();
+					}
 			}
 		});
 	}
@@ -374,9 +375,8 @@ public class Mapa extends JPanel {
 
 	public void eliminarLocalidad(Localidad localidad) {
 		grafoCompleto.eliminarLocalidad(localidad);
-
+		puntosDelMapa.remove(localidad);
 		localidadesElegidas.remove(localidad);
-
 		ventanaElegirLocalidades.refrescarVentana();
 		ventanaEliminarLocalidad.refrescarVentana();
 
