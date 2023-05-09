@@ -39,8 +39,6 @@ public class GrafoLocalidades {
 	public ConexionLocalidades agregarConexion(Localidad localidadA, Localidad localidadB) {
 		ConexionLocalidades nuevaConexion = new ConexionLocalidades(localidadA, localidadB);
 		
-		this.costoTotalConexiones += nuevaConexion.getCostoDeLaConexion();
-		
 		return agregarConexion(nuevaConexion);
 	}
 	
@@ -51,6 +49,9 @@ public class GrafoLocalidades {
 		conexionesLocalidadA.add(conexion);
 		conexionesLocalidadB.add(conexion);
 		
+		
+		this.costoTotalConexiones += conexion.getCostoDeLaConexion();
+
 		return conexion;
 	}
 	
