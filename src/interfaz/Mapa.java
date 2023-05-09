@@ -332,7 +332,7 @@ public class Mapa extends JPanel {
 	private void mostrarCostoTotal() {
 		lblMensajeCostoTotal.setVisible(true);
 		
-		lblNumeroCostoTotal.setText(this.grafoCompleto.getCostoTotalConexiones().toString() + "$");
+		lblNumeroCostoTotal.setText(this.grafoCompleto.getArbolGeneradorMinimo().getCostoTotalConexiones().toString() + "$");
 		lblNumeroCostoTotal.setVisible(true);
 	}
 	
