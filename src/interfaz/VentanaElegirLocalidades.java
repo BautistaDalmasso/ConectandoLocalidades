@@ -163,7 +163,7 @@ public class VentanaElegirLocalidades extends JFrame {
 		Localidad localidadActual = obtenerLocalidadActual();
 		resultadoLocalidadElegida.setBackground(Color.green);
 		resultadoLocalidadElegida.setForeground(Color.black);
-		resultadoLocalidadElegida.setText("Usted Eligió: " + localidadActual.getNombre());
+		resultadoLocalidadElegida.setText("Usted Eligio: " + localidadActual.getNombre());
 	}
 
 	private void avisarEleccionRechazada() {

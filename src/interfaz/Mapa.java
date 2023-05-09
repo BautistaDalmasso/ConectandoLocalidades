@@ -232,7 +232,7 @@ public class Mapa extends JPanel {
 	}
 	
 	private void agregarBotonDibujarConexiones() {
-		JButton botonDibujarArbol = new JButton("Dibujar conexiones óptimas");
+		JButton botonDibujarArbol = new JButton("Dibujar conexiones optimas");
 		agregarActionListenerDibujarConexiones(botonDibujarArbol);
 		panelControl.add(botonDibujarArbol);
 	}
