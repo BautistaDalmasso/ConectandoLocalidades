@@ -241,9 +241,14 @@ public class Mapa extends JPanel {
 		botonDibujarArbol.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (puntosDelMapa.size() > 0)
-				{
-					redibujarConexionesOptimas();
+				if (puntosDelMapa.size() == 0){
+					JOptionPane.showMessageDialog(null, "No existen localidades ingresadas!");
+				} else {
+					if (puntosDelMapa.size() == 1) {
+						JOptionPane.showMessageDialog(null, "Necesita haber mas de una Localidad");
+					} else {
+						redibujarConexionesOptimas();
+					}
 				}
 			}
 		});
