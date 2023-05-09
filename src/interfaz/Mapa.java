@@ -332,7 +332,7 @@ public class Mapa extends JPanel {
 	private void mostrarCostoTotal() {
 		lblMensajeCostoTotal.setVisible(true);
 		
-		lblNumeroCostoTotal.setText(this.grafoCompleto.getArbolGeneradorMinimo().getCostoTotalConexiones().toString() + "$");
+		lblNumeroCostoTotal.setText("$" + this.grafoCompleto.getArbolGeneradorMinimo().getCostoTotalConexiones().toString());
 		lblNumeroCostoTotal.setVisible(true);
 	}
 	
@@ -422,7 +422,7 @@ public class Mapa extends JPanel {
 		Coordinate llegada = getCoordenadas(conexion.getLocalidadB());
 
 		List<Coordinate> route = new ArrayList<Coordinate>(Arrays.asList(partida, llegada, llegada));
-		mapa.addMapPolygon(new MapPolygonImpl(conexion.getCostoDeLaConexion().toString() + "$", route));
+		mapa.addMapPolygon(new MapPolygonImpl("$" + conexion.getCostoDeLaConexion().toString(), route));
 	}
 
 	private void dibujarTodasLasLocalidades() {

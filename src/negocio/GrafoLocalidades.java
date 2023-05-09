@@ -99,6 +99,8 @@ public class GrafoLocalidades {
 		for (Localidad loc : localidades) {
 			localidadesConSusVecinos.put(loc, new HashSet<ConexionLocalidades>());
 		}
+		
+		costoTotalConexiones = 0;
 	}
 
 	public Set<ConexionLocalidades> obtenerConexiones(Localidad localidad) {
